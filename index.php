@@ -1,6 +1,6 @@
 <?php
 require_once 'db.php';
-require_once __DIR__ . 'php/classes/utilisateurPOO.php';
+require_once __DIR__ . '/php/classes/utilisateurPOO.php';
 session_start();
 
 // Session utilisateur → objet Utilisateur
