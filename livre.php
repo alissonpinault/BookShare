@@ -1,8 +1,8 @@
 <?php
 require_once 'db.php';
-require_once '/php/LivrePOO.php';
-require_once '/php/UtilisateurPOO.php';
-require_once '/php/ReservationPOO.php';
+require_once 'php/LivrePOO.php';
+require_once 'php/UtilisateurPOO.php';
+require_once 'php/ReservationPOO.php';
 
 session_start();
 
@@ -11,7 +11,7 @@ $utilisateur_id = $_SESSION['utilisateur_id'] ?? null;
 $utilisateur = null;
 
 if ($utilisateur_id) {
-    require_once 'classes/UtilisateurPOO.php';
+    require_once '/php/UtilisateurPOO.php';
     $utilisateur = new Utilisateur(
     $pdo,
     $utilisateur_id,
