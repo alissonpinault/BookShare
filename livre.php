@@ -1,8 +1,8 @@
 <?php
 require_once 'db.php';
-require_once 'classes/LivrePOO.php';
-require_once 'classes/UtilisateurPOO.php';
-require_once 'classes/ReservationPOO.php';
+require_once '/php/LivrePOO.php';
+require_once '/php/UtilisateurPOO.php';
+require_once '/php/ReservationPOO.php';
 
 session_start();
 
