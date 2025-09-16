@@ -11,7 +11,7 @@ $utilisateur_id = $_SESSION['utilisateur_id'] ?? null;
 $utilisateur = null;
 
 if ($utilisateur_id) {
-    require_once '/php/UtilisateurPOO.php';
+    require_once 'php/UtilisateurPOO.php';
     $utilisateur = new Utilisateur(
     $pdo,
     $utilisateur_id,

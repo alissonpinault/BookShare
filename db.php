@@ -18,10 +18,24 @@ try {
 // --------------------
 // Connexion MongoDB
 // --------------------
-require 'vendor/autoload.php';
+require __DIR__ . '/vendor/autoload.php'; // Charge l'autoloader de MongoDB
+
 use MongoDB\Client;
 
-$mongoUri = getenv('MONGODB_URI') ?: 'mongodb://mongo:27017'; // URI locale ou Heroku
-$mongoClient = new Client($mongoUri);
-$mongoDB = $mongoClient->bookshare;
+// Récupération de l'URI MongoDB (d'abord depuis Heroku, sinon valeur par défaut locale)
+$mongoUri = getenv('MONGODB_URI');
+if (!$mongoUri) {
+    die("Erreur : MONGODB_URI non défini. Configure ton URI MongoDB Atlas sur Heroku.");
+}
+
+// Connexion au cluster
+try {
+    $mongoClient = new Client($mongoUri);
+
+    // Sélection de la base "bookshare"
+    $mongoDB = $mongoClient->selectDatabase('bookshare');
+
+} catch (Exception $e) {
+    die("Erreur de connexion à MongoDB : " . $e->getMessage());
+}
 ?>

@@ -1,32 +1,65 @@
 <?php
 require_once 'db.php';
-require_once 'classes/LivrePOO.php';
-require_once 'classes/UtilisateurPOO.php';
-require_once 'classes/ReservationPOO.php';
+require_once 'php/LivrePOO.php';
+require_once 'php/UtilisateurPOO.php';
+require_once 'php/ReservationPOO.php';
 
 session_start();
 
+// --------------------
 // Sécurité : utilisateur connecté
+// --------------------
 if (empty($_SESSION['utilisateur_id'])) {
     header('Location: index.php');
     exit;
 }
 
-// Récupération de l'utilisateur
-$utilisateur = Utilisateur::getById($pdo, (int)$_SESSION['utilisateur_id']);
+try {
+    // Récupération de l'utilisateur
+    if (!class_exists('Utilisateur')) {
+        throw new Exception("Classe Utilisateur introuvable.");
+    }
+    if (!method_exists('Utilisateur', 'getById')) {
+        throw new Exception("Méthode statique getById manquante dans UtilisateurPOO.php.");
+    }
 
-// Instanciation de la classe Reservation
-$reservationObj = new Reservation($pdo);
+    $utilisateur = Utilisateur::getById($pdo, (int)$_SESSION['utilisateur_id']);
 
-// Récupération des réservations par statut
-$reservationsEnCours = $reservationObj->getReservationsEnCours($utilisateur->getId());
-$reservationsArchivees = $reservationObj->getReservationsArchivees($utilisateur->getId());
+    if (!$utilisateur) {
+        throw new Exception("Utilisateur introuvable en base.");
+    }
 
-// Annulation d'une réservation
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['annuler'], $_POST['reservation_id'])) {
-    $stmt = $pdo->prepare("UPDATE reservations SET statut = 'archive' WHERE reservation_id = ? AND utilisateur_id = ?");
-    $stmt->execute([(int)$_POST['reservation_id'], $utilisateur->getId()]);
-    header("Location: reservation.php?message=Réservation annulée avec succès");
+    // Instanciation de la classe Reservation
+    if (!class_exists('Reservation')) {
+        throw new Exception("Classe Reservation introuvable.");
+    }
+
+    $reservationObj = new Reservation($pdo);
+
+    if (!method_exists($reservationObj, 'getReservationsEnCours') ||
+        !method_exists($reservationObj, 'getReservationsArchivees')) {
+        throw new Exception("Méthodes de récupération des réservations manquantes.");
+    }
+
+    // Récupération des réservations par statut
+    $reservationsEnCours = $reservationObj->getReservationsEnCours($utilisateur->getId());
+    $reservationsArchivees = $reservationObj->getReservationsArchivees($utilisateur->getId());
+
+    // Annulation d'une réservation
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['annuler'], $_POST['reservation_id'])) {
+        $stmt = $pdo->prepare("UPDATE reservations SET statut = 'terminer' 
+                            WHERE reservation_id = ? 
+                            AND utilisateur_id = ?");
+
+        $stmt->execute([(int)$_POST['reservation_id'], $utilisateur->getId()]);
+        header("Location: reservation.php?message=Réservation annulée avec succès");
+        exit;
+    }
+
+} catch (Exception $e) {
+    // Si erreur -> affichage au lieu d'un 500 silencieux
+    echo "<h2 style='color:red; text-align:center;'>Erreur : " . htmlspecialchars($e->getMessage()) . "</h2>";
+    error_log("reservation.php ERROR: " . $e->getMessage());
     exit;
 }
 ?>
@@ -60,20 +93,6 @@ nav button:hover { background:#00332c; transform: translateY(-2px); }
 
 .list { list-style:none; padding:0; margin:0; }
 .list li { display:flex; align-items:center; justify-content: space-between; padding:10px; border-bottom:1px solid #ddd; }
-.list li > a.reservation-link { display:flex; align-items:center; text-decoration:none; color:inherit; flex:1; }
-.list img { width:50px; height:70px; object-fit:cover; border-radius:4px; margin-right:15px; }
-.card-content { display:flex; flex-direction:column; }
-.list h3 { margin:0; font-size:1.1em; color:#00796b; }
-.list p { margin:2px 0; font-size:0.9em; color:#444; }
-.date { font-size:0.8em; color:#666; }
-.empty { text-align:center; padding:20px; font-style:italic; color:#666; }
-
-.note-container { display:flex; align-items:center; gap:5px; }
-.stars { display:flex; gap:2px; }
-.star { font-size:1.5em; color:#ccc; cursor:pointer; transition: color 0.2s; }
-.star.hover, .star.selected { color: gold; }
-.list li { display:flex; align-items:center; justify-content: space-between; padding:10px; border-bottom:1px solid #ddd; }
-.list li > a.reservation-link { display:flex; align-items:center; text-decoration:none; color:inherit; flex:1; }
 .list li img { width:50px; height:70px; object-fit:cover; border-radius:4px; margin-right:15px; }
 .card-content { display:flex; flex-direction:column; }
 </style>
@@ -103,13 +122,11 @@ nav button:hover { background:#00332c; transform: translateY(-2px); }
     </div>
 </nav>
 
-</style>
-</head>
-<body>
+<div class="container">
     <h1>Mes réservations</h1>
 
-    <?php if (isset($message)): ?>
-        <p style="color: green;"><?= htmlspecialchars($message) ?></p>
+    <?php if (isset($_GET['message'])): ?>
+        <p style="color: green;"><?= htmlspecialchars($_GET['message']) ?></p>
     <?php endif; ?>
 
     <!-- Onglets -->
@@ -125,14 +142,13 @@ nav button:hover { background:#00332c; transform: translateY(-2px); }
         <?php else: ?>
             <ul>
                 <?php foreach ($reservationsEnCours as $res): ?>
-                    <li style="margin-bottom: 15px;">
-                        <img src="<?= htmlspecialchars($res['image_url']) ?>" alt="Couverture" width="60" style="vertical-align: middle; margin-right: 10px;">
-                        <strong><?= htmlspecialchars($res['titre']) ?></strong>
-                        de <?= htmlspecialchars($res['auteur']) ?><br>
-                        Réservé le : <?= htmlspecialchars($res['date_reservation']) ?>
+                    <li>
+                        <img src="<?= htmlspecialchars($res->getImageUrl()) ?>" alt="Couverture" width="60" style="vertical-align: middle; margin-right: 10px;">
+                        <strong><?= htmlspecialchars($res->getTitre()) ?></strong>
+                            de <?= htmlspecialchars($res->getAuteur()) ?><br>
+                            Réservé le : <?= htmlspecialchars($res->getDateReservation()) ?>
+                            <input type="hidden" name="reservation_id" value="<?= (int) $res->getId() ?>">
 
-                        <form method="post" style="display:inline;">
-                            <input type="hidden" name="reservation_id" value="<?= (int) $res['reservation_id'] ?>">
                             <button type="submit" name="annuler">Annuler</button>
                         </form>
                     </li>
@@ -148,31 +164,33 @@ nav button:hover { background:#00332c; transform: translateY(-2px); }
         <?php else: ?>
             <ul>
                 <?php foreach ($reservationsArchivees as $res): ?>
-                    <li style="margin-bottom: 15px;">
-                        <img src="<?= htmlspecialchars($res['image_url']) ?>" alt="Couverture" width="60" style="vertical-align: middle; margin-right: 10px;">
-                        <strong><?= htmlspecialchars($res['titre']) ?></strong>
-                        de <?= htmlspecialchars($res['auteur']) ?><br>
-                        Réservé le : <?= htmlspecialchars($res['date_reservation']) ?>
+                    <li>
+                        <img src="<?= htmlspecialchars($res->getImageUrl()) ?>" alt="Couverture" width="60" style="vertical-align: middle; margin-right: 10px;">
+                        <strong><?= htmlspecialchars($res->getTitre()) ?></strong>
+                        de <?= htmlspecialchars($res->getAuteur()) ?><br>
+                        Réservé le : <?= htmlspecialchars($res->getDateReservation()) ?>
+
                     </li>
                 <?php endforeach; ?>
             </ul>
         <?php endif; ?>
     </div>
+</div>
 
-    <script>
-        // Gestion des onglets
-        const tabs = document.querySelectorAll(".tab");
-        const contents = document.querySelectorAll(".tab-content");
+<script>
+    // Gestion des onglets
+    const tabs = document.querySelectorAll(".tab");
+    const contents = document.querySelectorAll(".tab-content");
 
-        tabs.forEach(tab => {
-            tab.addEventListener("click", () => {
-                tabs.forEach(t => t.classList.remove("active"));
-                contents.forEach(c => c.classList.remove("active"));
+    tabs.forEach(tab => {
+        tab.addEventListener("click", () => {
+            tabs.forEach(t => t.classList.remove("active"));
+            contents.forEach(c => c.classList.remove("active"));
 
-                tab.classList.add("active");
-                document.getElementById(tab.dataset.target).classList.add("active");
-            });
+            tab.classList.add("active");
+            document.getElementById(tab.dataset.target).classList.add("active");
         });
-    </script>
+    });
+</script>
 </body>
 </html>

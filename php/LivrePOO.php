@@ -45,11 +45,9 @@ class Livre {
     }
 
     /**
-     * Réserver : retourne true si ok, false sinon.
-     * Utilise une transaction simple pour cohérence.
+     * Réserver un livre
      */
     public function reserver(int $utilisateur_id): bool {
-        // Vérifier disponibilité actuelle
         if ($this->getDisponibilite() !== 'disponible') {
             return false;
         }
@@ -57,19 +55,20 @@ class Livre {
         try {
             $this->pdo->beginTransaction();
 
-            // Mettre à jour la disponibilité
+            // Marquer le livre indisponible
             $update = $this->pdo->prepare("UPDATE livres SET disponibilite = 'indisponible' WHERE livre_id = ?");
             $update->execute([$this->id]);
 
-            // Insérer la réservation (évite doublon simple)
-            $insert = $this->pdo->prepare("INSERT INTO reservations (utilisateur_id, livre_id, date_reservation) VALUES (?, ?, NOW())");
+            // Ajouter la réservation avec statut explicite = 'en cours'
+            $insert = $this->pdo->prepare("
+                INSERT INTO reservations (utilisateur_id, livre_id, date_reservation, statut) 
+                VALUES (?, ?, NOW(), 'en cours')
+            ");
             $insert->execute([$utilisateur_id, $this->id]);
 
             $this->pdo->commit();
 
-            // Mettre à jour données chargées localement
             $this->data['disponibilite'] = 'indisponible';
-
             return true;
         } catch (Exception $e) {
             $this->pdo->rollBack();
@@ -81,8 +80,7 @@ class Livre {
         $stmt = $this->pdo->prepare("SELECT AVG(note) AS moyenne FROM notes WHERE livre_id = ?");
         $stmt->execute([$this->id]);
         $res = $stmt->fetch(PDO::FETCH_ASSOC);
-        $m = $res['moyenne'] ?? null;
-        return ($m !== null) ? round((float)$m, 1) : 0.0;
+        return isset($res['moyenne']) ? round((float)$res['moyenne'], 1) : 0.0;
     }
 
     public function getNombreVotes(): int {

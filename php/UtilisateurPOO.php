@@ -1,11 +1,11 @@
 <?php
 class Utilisateur {
-    private $id;
-    private $pseudo;
-    private $email;
-    private $role;
+    private int $id;
+    private string $pseudo;
+    private string $email;
+    private string $role;
 
-    public function __construct($id, $pseudo, $email, $role = 'user') {
+    public function __construct(int $id, string $pseudo, string $email, string $role = 'utilisateur') {
         $this->id = $id;
         $this->pseudo = $pseudo;
         $this->email = $email;
@@ -13,13 +13,13 @@ class Utilisateur {
     }
 
     // Getters
-    public function getId() { return $this->id; }
-    public function getPseudo() { return $this->pseudo; }
-    public function getEmail() { return $this->email; }
-    public function getRole() { return $this->role; }
+    public function getId(): int { return $this->id; }
+    public function getPseudo(): string { return $this->pseudo; }
+    public function getEmail(): string { return $this->email; }
+    public function getRole(): string { return $this->role; }
 
     // Vérifie si admin
-    public function estAdmin() {
+    public function estAdmin(): bool {
         return $this->role === 'admin';
     }
 
@@ -31,12 +31,12 @@ class Utilisateur {
 
         if ($data) {
             return new Utilisateur(
-                $data['utilisateur_id'],
+                (int)$data['utilisateur_id'],
                 $data['pseudo'],
                 $data['email'],
-                $data['role']
+                $data['role'] // ⚡ correspond à ENUM('utilisateur','admin')
             );
         }
-        return null; // aucun utilisateur trouvé
+        return null;
     }
 }

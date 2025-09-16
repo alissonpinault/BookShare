@@ -8,7 +8,7 @@ class Reservation {
         $this->data = $data;
     }
 
-    // Getters (accèdent au tableau $data)
+    // Getters
     public function getId(): ?int { return $this->data['reservation_id'] ?? null; }
     public function getUtilisateurId(): ?int { return $this->data['utilisateur_id'] ?? null; }
     public function getLivreId(): ?int { return $this->data['livre_id'] ?? null; }
@@ -21,7 +21,7 @@ class Reservation {
     public function getGenre(): string { return $this->data['genre'] ?? ''; }
     public function getImageUrl(): string { return $this->data['image_url'] ?? ''; }
 
-    // 🔎 Récupérer toutes les réservations (en cours + archivées)
+    // 🔎 Toutes les réservations d’un utilisateur
     public function getReservationsByUtilisateur(int $utilisateurId): array {
         $stmt = $this->pdo->prepare("
             SELECT r.*, l.titre, l.auteur, l.genre, l.image_url, n.note
@@ -37,55 +37,54 @@ class Reservation {
         return array_map(fn($r) => new Reservation($this->pdo, $r), $rows);
     }
 
-    // Récupérer uniquement les réservations en cours
-public function getReservationsEnCours($utilisateurId) {
-    $stmt = $this->pdo->prepare("
-        SELECT r.*, l.titre, l.auteur, l.genre, l.image_url, n.note
-        FROM reservations r
-        JOIN livres l ON r.livre_id = l.livre_id
-        LEFT JOIN notes n ON r.livre_id = n.livre_id AND r.utilisateur_id = n.utilisateur_id
-        WHERE r.utilisateur_id = ? AND r.statut = 'en cours'
-        ORDER BY r.date_reservation DESC
-    ");
-    $stmt->execute([$utilisateurId]);
-    return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
-}
+    // Réservations en cours
+    public function getReservationsEnCours(int $utilisateurId): array {
+        $stmt = $this->pdo->prepare("
+            SELECT r.*, l.titre, l.auteur, l.genre, l.image_url, n.note
+            FROM reservations r
+            JOIN livres l ON r.livre_id = l.livre_id
+            LEFT JOIN notes n ON r.livre_id = n.livre_id AND r.utilisateur_id = n.utilisateur_id
+            WHERE r.utilisateur_id = ? AND r.statut = 'en cours'
+            ORDER BY r.date_reservation DESC
+        ");
+        $stmt->execute([$utilisateurId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+    }
 
-// Récupérer uniquement les réservations archivées
-public function getReservationsArchivees($utilisateurId) {
-    $stmt = $this->pdo->prepare("
-        SELECT r.*, l.titre, l.auteur, l.genre, l.image_url, n.note
-        FROM reservations r
-        JOIN livres l ON r.livre_id = l.livre_id
-        LEFT JOIN notes n ON r.livre_id = n.livre_id AND r.utilisateur_id = n.utilisateur_id
-        WHERE r.utilisateur_id = ? AND r.statut = 'archive'
-        ORDER BY r.date_reservation DESC
-    ");
-    $stmt->execute([$utilisateurId]);
-    return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
-}
+    // Réservations terminées
+    public function getReservationsTerminees(int $utilisateurId): array {
+        $stmt = $this->pdo->prepare("
+            SELECT r.*, l.titre, l.auteur, l.genre, l.image_url, n.note
+            FROM reservations r
+            JOIN livres l ON r.livre_id = l.livre_id
+            LEFT JOIN notes n ON r.livre_id = n.livre_id AND r.utilisateur_id = n.utilisateur_id
+            WHERE r.utilisateur_id = ? AND r.statut = 'terminer'
+            ORDER BY r.date_reservation DESC
+        ");
+        $stmt->execute([$utilisateurId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+    }
 
-    // Annuler une réservation en cours
+    // Annuler une réservation (passe de "en cours" à "terminer")
     public function annulerReservation(int $reservationId, int $utilisateurId): bool {
-        // Vérifier que la réservation appartient à l'utilisateur et est en cours
         $stmt = $this->pdo->prepare("SELECT * FROM reservations WHERE reservation_id = ? AND utilisateur_id = ? AND statut = 'en cours'");
         $stmt->execute([$reservationId, $utilisateurId]);
         $reservation = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if (!$reservation) {
-            return false; // Réservation non trouvée ou pas en cours
+            return false;
         }
 
         try {
             $this->pdo->beginTransaction();
 
-            // Supprimer la réservation
-            $delete = $this->pdo->prepare("DELETE FROM reservations WHERE reservation_id = ?");
-            $delete->execute([$reservationId]);
+            // ✅ Mettre à jour le statut plutôt que DELETE
+            $update = $this->pdo->prepare("UPDATE reservations SET statut = 'terminer' WHERE reservation_id = ?");
+            $update->execute([$reservationId]);
 
-            // Mettre à jour la disponibilité du livre
-            $update = $this->pdo->prepare("UPDATE livres SET disponibilite = 'disponible' WHERE livre_id = ?");
-            $update->execute([$reservation['livre_id']]);
+            // ✅ Rendre le livre disponible
+            $livreUpdate = $this->pdo->prepare("UPDATE livres SET disponibilite = 'disponible' WHERE livre_id = ?");
+            $livreUpdate->execute([$reservation['livre_id']]);
 
             $this->pdo->commit();
             return true;
