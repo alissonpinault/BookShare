@@ -1,65 +1,41 @@
-<?php
-require_once 'db.php';
-require_once 'php/LivrePOO.php';
-require_once 'php/UtilisateurPOO.php';
-require_once 'php/ReservationPOO.php';
+﻿<?php
+require_once __DIR__ . '/db.php';
+require_once __DIR__ . '/php/LivrePOO.php';
+require_once __DIR__ . '/php/UtilisateurPOO.php';
+require_once __DIR__ . '/php/ReservationPOO.php';
 
 session_start();
 
-// --------------------
-// Sécurité : utilisateur connecté
-// --------------------
 if (empty($_SESSION['utilisateur_id'])) {
     header('Location: index.php');
     exit;
 }
 
 try {
-    // Récupération de l'utilisateur
-    if (!class_exists('Utilisateur')) {
-        throw new Exception("Classe Utilisateur introuvable.");
-    }
-    if (!method_exists('Utilisateur', 'getById')) {
-        throw new Exception("Méthode statique getById manquante dans UtilisateurPOO.php.");
-    }
-
-    $utilisateur = Utilisateur::getById($pdo, (int)$_SESSION['utilisateur_id']);
-
+    $utilisateur = Utilisateur::getById($pdo, (int) $_SESSION['utilisateur_id']);
     if (!$utilisateur) {
-        throw new Exception("Utilisateur introuvable en base.");
+        throw new RuntimeException('Utilisateur introuvable.');
     }
 
-    // Instanciation de la classe Reservation
-    if (!class_exists('Reservation')) {
-        throw new Exception("Classe Reservation introuvable.");
-    }
+    $reservationService = new Reservation($pdo);
 
-    $reservationObj = new Reservation($pdo);
-
-    if (!method_exists($reservationObj, 'getReservationsEnCours') ||
-        !method_exists($reservationObj, 'getReservationsArchivees')) {
-        throw new Exception("Méthodes de récupération des réservations manquantes.");
-    }
-
-    // Récupération des réservations par statut
-    $reservationsEnCours = $reservationObj->getReservationsEnCours($utilisateur->getId());
-    $reservationsArchivees = $reservationObj->getReservationsArchivees($utilisateur->getId());
-
-    // Annulation d'une réservation
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['annuler'], $_POST['reservation_id'])) {
-        $stmt = $pdo->prepare("UPDATE reservations SET statut = 'terminer' 
-                            WHERE reservation_id = ? 
-                            AND utilisateur_id = ?");
+        $reservationId = (int) $_POST['reservation_id'];
+        $annulee = $reservationService->annulerReservation($reservationId, $utilisateur->getId());
 
-        $stmt->execute([(int)$_POST['reservation_id'], $utilisateur->getId()]);
-        header("Location: reservation.php?message=Réservation annulée avec succès");
+        $message = $annulee
+            ? 'Reservation annulee avec succes.'
+            : "Impossible d'annuler cette reservation.";
+
+        header('Location: reservation.php?message=' . urlencode($message));
         exit;
     }
 
-} catch (Exception $e) {
-    // Si erreur -> affichage au lieu d'un 500 silencieux
-    echo "<h2 style='color:red; text-align:center;'>Erreur : " . htmlspecialchars($e->getMessage()) . "</h2>";
-    error_log("reservation.php ERROR: " . $e->getMessage());
+    $reservationsEnCours = $reservationService->getReservationsEnCours($utilisateur->getId());
+    $reservationsArchivees = $reservationService->getReservationsArchivees($utilisateur->getId());
+} catch (Throwable $e) {
+    echo "<h2 style='color:red; text-align:center;'>Erreur : " . htmlspecialchars($e->getMessage()) . '</h2>';
+    error_log('reservation.php ERROR: ' . $e->getMessage());
     exit;
 }
 ?>
@@ -68,7 +44,7 @@ try {
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<title>Mes Réservations - BookShare</title>
+<title>Mes Reservations - BookShare</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Great+Vibes&display=swap" rel="stylesheet">
 <link rel="icon" type="image/jpg" href="https://img.freepik.com/vecteurs-premium/lire-logo-du-livre_7888-13.jpg">
@@ -92,9 +68,12 @@ nav button:hover { background:#00332c; transform: translateY(-2px); }
 .tab-content.active { display:block; }
 
 .list { list-style:none; padding:0; margin:0; }
-.list li { display:flex; align-items:center; justify-content: space-between; padding:10px; border-bottom:1px solid #ddd; }
-.list li img { width:50px; height:70px; object-fit:cover; border-radius:4px; margin-right:15px; }
-.card-content { display:flex; flex-direction:column; }
+.list li { display:flex; align-items:center; justify-content: space-between; padding:10px; border-bottom:1px solid #ddd; gap:15px; }
+.list li img { width:60px; height:80px; object-fit:cover; border-radius:4px; }
+.reservation-info { flex:1; display:flex; flex-direction:column; }
+.reservation-actions { display:flex; align-items:center; gap:10px; }
+.reservation-actions button { padding:6px 12px; background:#f57c00; border:none; border-radius:4px; color:white; cursor:pointer; }
+.reservation-actions button:hover { background:#c76a05; }
 </style>
 </head>
 <body>
@@ -110,45 +89,45 @@ nav button:hover { background:#00332c; transform: translateY(-2px); }
         </form>
         <button onclick="window.location.href='index.php'">Accueil</button>
         <?php if ($utilisateur): ?>
-            <?php if($utilisateur->getRole() === 'admin'): ?>
+            <?php if ($utilisateur->estAdmin()): ?>
                 <button onclick="window.location.href='admin.php'">Panneau Admin</button>
             <?php endif; ?>
-            <button onclick="window.location.href='reservation.php'">Mes Réservations</button>
-            <button onclick="window.location.href='deconnexion.php'">Déconnexion (<?= htmlspecialchars($utilisateur->getPseudo()) ?>)</button>
+            <button onclick="window.location.href='reservation.php'">Mes Reservations</button>
+            <button onclick="window.location.href='deconnexion.php'">Deconnexion (<?= htmlspecialchars($utilisateur->getPseudo()) ?>)</button>
         <?php else: ?>
             <button onclick="window.location.href='connexion.php'">Connexion</button>
-            <button onclick="window.location.href='inscription.php'">Créer un compte</button>
+            <button onclick="window.location.href='inscription.php'">Creer un compte</button>
         <?php endif; ?>
     </div>
 </nav>
 
 <div class="container">
-    <h1>Mes réservations</h1>
+    <h1>Mes reservations</h1>
 
-    <?php if (isset($_GET['message'])): ?>
-        <p style="color: green;"><?= htmlspecialchars($_GET['message']) ?></p>
+    <?php if (!empty($_GET['message'])): ?>
+        <p style="color: green; text-align:center;"><?= htmlspecialchars($_GET['message']) ?></p>
     <?php endif; ?>
 
-    <!-- Onglets -->
     <div class="tabs">
-        <div class="tab active" data-target="encours">En cours</div>
-        <div class="tab" data-target="archivees">Archivées</div>
+        <button class="tab active" data-target="encours">En cours</button>
+        <button class="tab" data-target="archivees">Archivees</button>
     </div>
 
-    <!-- Réservations en cours -->
     <div id="encours" class="tab-content active">
         <?php if (empty($reservationsEnCours)): ?>
-            <p>Aucune réservation en cours.</p>
+            <p>Aucune reservation en cours.</p>
         <?php else: ?>
-            <ul>
-                <?php foreach ($reservationsEnCours as $res): ?>
+            <ul class="list">
+                <?php foreach ($reservationsEnCours as $reservation): ?>
                     <li>
-                        <img src="<?= htmlspecialchars($res->getImageUrl()) ?>" alt="Couverture" width="60" style="vertical-align: middle; margin-right: 10px;">
-                        <strong><?= htmlspecialchars($res->getTitre()) ?></strong>
-                            de <?= htmlspecialchars($res->getAuteur()) ?><br>
-                            Réservé le : <?= htmlspecialchars($res->getDateReservation()) ?>
-                            <input type="hidden" name="reservation_id" value="<?= (int) $res->getId() ?>">
-
+                        <img src="<?= htmlspecialchars($reservation->getImageUrl() ?: 'images/livre-defaut.jpg') ?>" alt="Couverture">
+                        <div class="reservation-info">
+                            <strong><?= htmlspecialchars($reservation->getTitre()) ?></strong>
+                            <span>Auteur : <?= htmlspecialchars($reservation->getAuteur()) ?></span>
+                            <span>Reserve le : <?= htmlspecialchars($reservation->getDateReservation() ?? '') ?></span>
+                        </div>
+                        <form method="post" class="reservation-actions">
+                            <input type="hidden" name="reservation_id" value="<?= (int) $reservation->getId() ?>">
                             <button type="submit" name="annuler">Annuler</button>
                         </form>
                     </li>
@@ -157,19 +136,19 @@ nav button:hover { background:#00332c; transform: translateY(-2px); }
         <?php endif; ?>
     </div>
 
-    <!-- Réservations archivées -->
     <div id="archivees" class="tab-content">
         <?php if (empty($reservationsArchivees)): ?>
-            <p>Aucune réservation archivée.</p>
+            <p>Aucune reservation archivee.</p>
         <?php else: ?>
-            <ul>
-                <?php foreach ($reservationsArchivees as $res): ?>
+            <ul class="list">
+                <?php foreach ($reservationsArchivees as $reservation): ?>
                     <li>
-                        <img src="<?= htmlspecialchars($res->getImageUrl()) ?>" alt="Couverture" width="60" style="vertical-align: middle; margin-right: 10px;">
-                        <strong><?= htmlspecialchars($res->getTitre()) ?></strong>
-                        de <?= htmlspecialchars($res->getAuteur()) ?><br>
-                        Réservé le : <?= htmlspecialchars($res->getDateReservation()) ?>
-
+                        <img src="<?= htmlspecialchars($reservation->getImageUrl() ?: 'images/livre-defaut.jpg') ?>" alt="Couverture">
+                        <div class="reservation-info">
+                            <strong><?= htmlspecialchars($reservation->getTitre()) ?></strong>
+                            <span>Auteur : <?= htmlspecialchars($reservation->getAuteur()) ?></span>
+                            <span>Reserve le : <?= htmlspecialchars($reservation->getDateReservation() ?? '') ?></span>
+                        </div>
                     </li>
                 <?php endforeach; ?>
             </ul>
@@ -178,19 +157,18 @@ nav button:hover { background:#00332c; transform: translateY(-2px); }
 </div>
 
 <script>
-    // Gestion des onglets
-    const tabs = document.querySelectorAll(".tab");
-    const contents = document.querySelectorAll(".tab-content");
+const tabs = document.querySelectorAll('.tab');
+const contents = document.querySelectorAll('.tab-content');
 
-    tabs.forEach(tab => {
-        tab.addEventListener("click", () => {
-            tabs.forEach(t => t.classList.remove("active"));
-            contents.forEach(c => c.classList.remove("active"));
+tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active'));
+        contents.forEach(c => c.classList.remove('active'));
 
-            tab.classList.add("active");
-            document.getElementById(tab.dataset.target).classList.add("active");
-        });
+        tab.classList.add('active');
+        document.getElementById(tab.dataset.target).classList.add('active');
     });
+});
 </script>
 </body>
 </html>
