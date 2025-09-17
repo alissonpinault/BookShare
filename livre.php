@@ -87,14 +87,14 @@ button:disabled { background:#ccc; cursor:default; }
                 <button onclick="window.location.href='admin.php'">Panneau Admin</button>
             <?php endif; ?>
 
-            <button onclick="window.location.href='reservation.php'">Mes Reservations</button>
+            <button onclick="window.location.href='reservation.php'">Mes Réservations</button>
 
             <button onclick="window.location.href='deconnexion.php'">
                 Deconnexion (<?= htmlspecialchars($utilisateur->getPseudo()) ?>)
             </button>
         <?php else: ?>
             <button onclick="window.location.href='connexion.php'">Connexion</button>
-            <button onclick="window.location.href='inscription.php'">Creer un compte</button>
+            <button onclick="window.location.href='inscription.php'">Créer un compte</button>
         <?php endif; ?>
     </div>
 </nav>
@@ -124,14 +124,14 @@ button:disabled { background:#ccc; cursor:default; }
     <?= $message ?>
 
     <?php if (!$utilisateurId): ?>
-        <p style="color:red; font-weight:bold;">Veuillez vous connecter pour reserver.</p>
+        <p style="color:red; font-weight:bold;">Veuillez vous connecter pour réserver.</p>
     <?php elseif ($livre->getDisponibilite() === 'disponible'): ?>
         <form method="post">
             <input type="hidden" name="livre_id" value="<?= $livre->getId() ?>">
-            <button type="submit" name="reserver">Reserver</button>
+            <button type="submit" name="reserver">Réserver</button>
         </form>
     <?php else: ?>
-        <button disabled>Deja reserve</button>
+        <button disabled>Déjà réservé</button>
     <?php endif; ?>
 </div>
 
