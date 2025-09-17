@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 require_once 'db.php';
 session_start();
 
@@ -36,6 +36,27 @@ if($_SERVER['REQUEST_METHOD']==='POST' && isset($_POST['action'])){
         $pdo->prepare("DELETE FROM livres WHERE livre_id=?")->execute([$_POST['livre_id']]);
         echo json_encode(['success'=>true]); exit;
     }
+    elseif($_POST['action']==='supprimerUtilisateur'){
+        $userId = isset($_POST['utilisateur_id']) ? (int) $_POST['utilisateur_id'] : 0;
+        if($userId){
+            if($utilisateur_id && $userId === (int)$utilisateur_id){
+                echo json_encode(['success'=>false,'message'=>"Impossible de supprimer votre propre compte."]); exit;
+            }
+            try{
+                $pdo->beginTransaction();
+                $pdo->prepare("DELETE FROM notes WHERE utilisateur_id=?")->execute([$userId]);
+                $pdo->prepare("DELETE FROM reservations WHERE utilisateur_id=?")->execute([$userId]);
+                $pdo->prepare("DELETE FROM utilisateurs WHERE utilisateur_id=?")->execute([$userId]);
+                $pdo->commit();
+                echo json_encode(['success'=>true]); exit;
+            }catch(Throwable $e){
+                $pdo->rollBack();
+                error_log('Admin delete user error: '. $e->getMessage());
+                echo json_encode(['success'=>false,'message'=>'Suppression impossible.']); exit;
+            }
+        }
+        echo json_encode(['success'=>false,'message'=>'Utilisateur introuvable.']); exit;
+    }
 }
 
 // --- Récupération des données ---
@@ -62,7 +83,7 @@ $chartUsers = $pdo->query("
     LEFT JOIN reservations r ON u.utilisateur_id = r.utilisateur_id
     GROUP BY u.utilisateur_id
 ")->fetchAll(PDO::FETCH_ASSOC);
-
+$utilisateurs = $pdo->query("\n    SELECT utilisateur_id, pseudo, email, role, date_inscription\n    FROM utilisateurs\n    ORDER BY pseudo\n")->fetchAll(PDO::FETCH_ASSOC);\r\n
 ?>
 
 <!DOCTYPE html>
@@ -141,6 +162,7 @@ button.modifier:hover { background: #52a058ff;color: white;}
 <div class="tab-buttons">
     <button class="tabBtn active" onclick="openTab('reservations', event)">Réservations</button>
     <button class="tabBtn" onclick="openTab('gererLivres', event)">Gérer les livres</button>
+    <button class="tabBtn" onclick="openTab('utilisateurs', event)">Gestion utilisateurs</button>
     <button class="tabBtn" onclick="openTab('statistiques', event)">Statistiques</button>
 </div>
 
@@ -235,6 +257,39 @@ button.modifier:hover { background: #52a058ff;color: white;}
     </div>
 </div>
 
+<!-- Onglet Gestion utilisateurs -->
+<div id="utilisateurs" class="tabContent">
+    <?php if (empty($utilisateurs)): ?>
+        <p style="text-align:center;">Aucun utilisateur enregistre.</p>
+    <?php else: ?>
+        <table>
+            <tr><th>Pseudo</th><th>Email</th><th>Role</th><th>Inscription</th><th>Actions</th></tr>
+            <?php foreach ($utilisateurs as $u): ?>
+                <?php
+                    $roleUtilisateur = $u['role'] ?? 'utilisateur';
+                    $isSelf = $utilisateur_id && (int) $u['utilisateur_id'] === (int) $utilisateur_id;
+                    $isAdminRole = $roleUtilisateur === 'admin';
+                    $dateInscription = isset($u['date_inscription']) ? date('Y-m-d', strtotime($u['date_inscription'])) : '-';
+                ?>
+                <tr>
+                    <td><?= htmlspecialchars($u['pseudo']) ?></td>
+                    <td><?= htmlspecialchars($u['email']) ?></td>
+                    <td><?= htmlspecialchars($roleUtilisateur) ?></td>
+                    <td><?= htmlspecialchars($dateInscription) ?></td>
+                    <td>
+                        <?php if ($isSelf): ?>
+                            <em>Compte actuel</em>
+                        <?php elseif ($isAdminRole): ?>
+                            <em>Administrateur</em>
+                        <?php else: ?>
+                            <button class="action supprimer" data-user="<?= (int) $u['utilisateur_id'] ?>" data-pseudo="<?= htmlspecialchars($u['pseudo'], ENT_QUOTES, 'UTF-8') ?>" onclick="deleteUser(this.dataset.user, this.dataset.pseudo)">Supprimer</button>
+                        <?php endif; ?>
+                    </td>
+                </tr>
+            <?php endforeach; ?>
+        </table>
+    <?php endif; ?>
+</div>
 <!-- Onglet Statistiques -->
 <div id="statistiques" class="tabContent">
     <div id="statsContent" style="text-align:center;">
