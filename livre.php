@@ -72,7 +72,7 @@ button:disabled { background:#ccc; cursor:default; }
 
 <nav>
     <div class="logo">
-        <img src="images\logo.jpg" alt="Logo BookShare">
+        <img src="images/logo.jpg" alt="Logo BookShare">
         BookShare
     </div>
     <div class="actions">
