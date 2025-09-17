@@ -59,7 +59,7 @@ h1 { text-align:center; color:#00796b; margin:20px 0; font-family:'Great Vibes',
 
 <nav>
     <div class="logo">
-        <img src="https://img.freepik.com/vecteurs-premium/lire-logo-du-livre_7888-13.jpg" alt="Logo BookShare">
+        <img src="images\logo.jpg" alt="Logo BookShare">
         BookShare
     </div>
    <div class="actions">
