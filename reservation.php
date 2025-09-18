@@ -74,6 +74,22 @@ nav button:hover { background:#00332c; transform: translateY(-2px); }
 .reservation-actions { display:flex; align-items:center; gap:10px; }
 .reservation-actions button { padding:6px 12px; background:#f57c00; border:none; border-radius:4px; color:white; cursor:pointer; }
 .reservation-actions button:hover { background:#c76a05; }
+
+.stars {
+    display: flex;
+    gap: 4px;
+    cursor: pointer;
+}
+.star {
+    font-size: 1.5em;
+    color: #ccc; /* vide */
+    transition: color 0.2s;
+}
+.star.hover,
+.star.selected {
+    color: gold; /* survolée ou validée */
+}
+
 </style>
 </head>
 <body>
@@ -138,7 +154,7 @@ nav button:hover { background:#00332c; transform: translateY(-2px); }
 
     <div id="archivees" class="tab-content">
     <?php if (empty($reservationsArchivees)): ?>
-        <p>Aucune reservation archivee.</p>
+        <p>Aucune réservation archivée.</p>
     <?php else: ?>
         <ul class="list">
             <?php foreach ($reservationsArchivees as $reservation): ?>
@@ -147,25 +163,27 @@ nav button:hover { background:#00332c; transform: translateY(-2px); }
                     <div class="reservation-info">
                         <strong><?= htmlspecialchars($reservation->getTitre()) ?></strong>
                         <span>Auteur : <?= htmlspecialchars($reservation->getAuteur()) ?></span>
-                        <span>Reserve le : <?= htmlspecialchars($reservation->getDateReservation() ?? '') ?></span>
+                        <span>Réservé le : <?= htmlspecialchars($reservation->getDateReservation() ?? '') ?></span>
+                    </div>
 
-                        <?php if ($reservation->getNote()): ?>
-                            <span>Votre note :
-                                <?php for ($i=1; $i<=5; $i++): ?>
-                                    <span style="color:<?= $i <= $reservation->getNote() ? 'gold' : '#ccc' ?>">★</span>
-                                <?php endfor; ?>
-                                (<?= $reservation->getNote() ?>/5)
-                            </span>
-                        <?php else: ?>
-                            <span>Pas encore noté</span>
-                        <?php endif; ?>
+                    <!-- Bloc étoiles -->
+                    <div class="stars" 
+                         data-livre="<?= (int)$reservation->getLivreId() ?>" 
+                         data-user="<?= (int)$utilisateur->getId() ?>"
+                         data-note="<?= (int)$reservation->getNote() ?>">
+                        <?php 
+                        $note = (int) $reservation->getNote();
+                        for ($i = 1; $i <= 5; $i++): 
+                            $class = $i <= $note ? "star selected" : "star";
+                        ?>
+                            <span class="<?= $class ?>" data-value="<?= $i ?>">★</span>
+                        <?php endfor; ?>
                     </div>
                 </li>
             <?php endforeach; ?>
         </ul>
     <?php endif; ?>
 </div>
-
 
 <script>
 const tabs = document.querySelectorAll('.tab');
@@ -180,6 +198,61 @@ tabs.forEach(tab => {
         document.getElementById(tab.dataset.target).classList.add('active');
     });
 });
+
+// Gestion des étoiles
+document.querySelectorAll('.stars').forEach(starsContainer => {
+    const stars = starsContainer.querySelectorAll('.star');
+    const livreId = starsContainer.dataset.livre;
+    const userId = starsContainer.dataset.user;
+    let noteExistante = parseInt(starsContainer.dataset.note);
+
+    // Si une note existe déjà → fige l'affichage
+    if (noteExistante > 0) {
+        stars.forEach(star => {
+            if (parseInt(star.dataset.value) <= noteExistante) {
+                star.classList.add('selected');
+            }
+        });
+        return; // pas d'interaction possible
+    }
+
+    // Sinon interaction active
+    stars.forEach(star => {
+        star.addEventListener('mouseenter', () => {
+            const val = parseInt(star.dataset.value);
+            stars.forEach(s => s.classList.toggle('hover', parseInt(s.dataset.value) <= val));
+        });
+
+        star.addEventListener('mouseleave', () => {
+            stars.forEach(s => s.classList.remove('hover'));
+        });
+
+        star.addEventListener('click', () => {
+            const note = parseInt(star.dataset.value);
+
+            // Envoi vers PHP
+            fetch('note_livre.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ livre_id: livreId, utilisateur_id: userId, note: note })
+            })
+            .then(resp => resp.json())
+            .then(data => {
+                if (data.success) {
+                    // fige l'affichage
+                    stars.forEach(s => {
+                        s.classList.remove('hover');
+                        s.classList.toggle('selected', parseInt(s.dataset.value) <= note);
+                    });
+                } else {
+                    alert("Erreur : " + data.message);
+                }
+            })
+            .catch(err => console.error(err));
+        });
+    });
+});
+
 </script>
 </body>
 </html>

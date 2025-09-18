@@ -315,8 +315,15 @@ function terminer(reservationId, livreId){
 
 // Livres
 function filterBooks(){
-    let input = document.getElementById('searchBook').value.toLowerCase();
-    document.querySelectorAll('#booksTable tr').forEach((row,i)=>{ if(i===0) return; row.style.display = (row.cells[1].innerText.toLowerCase()+row.cells[2].innerText.toLowerCase()).includes(input)?'':'none'; });
+    const input = document.getElementById('searchBook').value.toLowerCase();
+    document.querySelectorAll('#booksTable tr').forEach((row, i) => {
+        if(i === 0) return;
+        const title = row.cells[0] ? row.cells[0].innerText.toLowerCase() : '';
+        const author = row.cells[1] ? row.cells[1].innerText.toLowerCase() : '';
+        const genre = row.cells[2] ? row.cells[2].innerText.toLowerCase() : '';
+        const searchableText = `${title} ${author} ${genre}`.toLowerCase();
+        row.style.display = searchableText.includes(input) ? '' : 'none';
+    });
 }
 
 function openAddModal(){
