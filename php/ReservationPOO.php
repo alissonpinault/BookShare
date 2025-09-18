@@ -120,7 +120,23 @@ class Reservation
     private function fetchReservations(string $sql, array $params): array
     {
         $stmt = $this->pdo->prepare($sql);
-        $stmt->execute($params);
+
+        foreach (array_values($params) as $index => $value) {
+            $position = $index + 1;
+            $type = PDO::PARAM_STR;
+
+            if (is_int($value)) {
+                $type = PDO::PARAM_INT;
+            } elseif (is_bool($value)) {
+                $type = PDO::PARAM_BOOL;
+            } elseif ($value === null) {
+                $type = PDO::PARAM_NULL;
+            }
+
+            $stmt->bindValue($position, $value, $type);
+        }
+
+        $stmt->execute();
         $rows = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
 
         return array_map(fn(array $row) => new self($this->pdo, $row), $rows);
@@ -130,15 +146,15 @@ class Reservation
     {
         if ($limit !== null) {
             $sql .= ' LIMIT ?';
-            $params[] = $limit;
+            $params[] = (int) $limit;
 
             if ($offset !== null) {
                 $sql .= ' OFFSET ?';
-                $params[] = $offset;
+                $params[] = (int) $offset;
             }
         } elseif ($offset !== null) {
             $sql .= ' LIMIT 18446744073709551615 OFFSET ?';
-            $params[] = $offset;
+            $params[] = (int) $offset;
         }
 
         return $sql;
