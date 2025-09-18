@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 use MongoDB\Client;
 use MongoDB\Exception\Exception as MongoDBException;
 
