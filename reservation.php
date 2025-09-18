@@ -24,8 +24,8 @@ try {
         $annulee = $reservationService->annulerReservation($reservationId, $utilisateur->getId());
 
         $message = $annulee
-            ? 'Reservation annulee avec succes.'
-            : "Impossible d'annuler cette reservation.";
+            ? 'Réservation annulée avec succès.'
+            : "Impossible d'annuler cette réservation.";
 
         header('Location: reservation.php?message=' . urlencode($message));
         exit;
@@ -44,7 +44,7 @@ try {
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<title>Mes Reservations - BookShare</title>
+<title>Mes Réservations - BookShare</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Great+Vibes&display=swap" rel="stylesheet">
 <link rel="icon" type="image/jpg" href="https://img.freepik.com/vecteurs-premium/lire-logo-du-livre_7888-13.jpg">
