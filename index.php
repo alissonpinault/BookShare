@@ -208,22 +208,24 @@ h1 {
 
 .filters-form {
     display: flex;
-    flex-wrap: wrap;      /* permet de passer en colonne sur petit écran */
+    flex-wrap: nowrap;
     gap: 18px;
-    justify-content: flex-start; /* aligne tous les filtres sur une ligne */
+    justify-content: flex-start;
     align-items: flex-end;
 }
 
 
+
 .filters-form label {
-    flex: 0 0 auto;      /* chaque filtre garde sa largeur naturelle */
-    min-width: 160px;    /* réduit un peu la largeur minimale */
+    flex: 0 0 auto;           
+    min-width: 150px;         
     display: flex;
     flex-direction: column;
     font-weight: 600;
     color: #004d40;
     font-size: 0.95em;
 }
+
 
 
 .filters-form select,
