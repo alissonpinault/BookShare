@@ -379,6 +379,18 @@ function deleteBook(livreId){
     }
 }
 
+function deleteUser(utilisateurId, pseudo){
+    if(!confirm("Supprimer l'utilisateur "+pseudo+" ?")){
+        return;
+    }
+    const params = new URLSearchParams();
+    params.append('action','supprimerUtilisateur');
+    params.append('utilisateur_id', utilisateurId);
+    fetch('admin.php',{method:'POST', body:params})
+        .then(r=>r.json())
+        .then(d=>{ if(d.success) location.reload(); else alert(d.message || 'Erreur'); });
+}
+
 // Graphiques
 let chartsCreated = false;
 
