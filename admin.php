@@ -14,27 +14,86 @@ $role = $_SESSION['role'];
 // --- Gestion du POST pour actions AJAX ---
 if($_SERVER['REQUEST_METHOD']==='POST' && isset($_POST['action'])){
     if($_POST['action']==='terminer'){
-        $id = $_POST['id'] ?? 0;
-        $livre_id = $_POST['livre_id'] ?? 0;
+        $id = isset($_POST['id']) ? (int) $_POST['id'] : 0;
+        $livre_id = isset($_POST['livre_id']) ? (int) $_POST['livre_id'] : 0;
         if($id && $livre_id){
-            $pdo->prepare("UPDATE reservations SET statut='terminer' WHERE reservation_id=?")->execute([$id]);
-            $pdo->prepare("UPDATE livres SET disponibilite='disponible' WHERE livre_id=?")->execute([$livre_id]);
-            echo json_encode(['success'=>true]); exit;
+            try{
+                $pdo->prepare("UPDATE reservations SET statut='terminer' WHERE reservation_id=?")->execute([$id]);
+                $pdo->prepare("UPDATE livres SET disponibilite='disponible' WHERE livre_id=?")->execute([$livre_id]);
+                echo json_encode(['success'=>true,'reservation_id'=>$id,'livre_id'=>$livre_id,'statut'=>'terminer']); exit;
+            }catch(Throwable $e){
+                error_log('Admin terminer reservation error: '. $e->getMessage());
+            }
         }
+        echo json_encode(['success'=>false,'message'=>'Impossible de terminer la réservation.']); exit;
     }
     elseif($_POST['action']==='ajouterLivre'){
-        $stmt = $pdo->prepare("INSERT INTO livres (titre,auteur,genre,description,image_url,disponibilite) VALUES (?,?,?,?,?,'disponible')");
-        $stmt->execute([$_POST['titre'], $_POST['auteur'], $_POST['genre'], $_POST['description'], $_POST['image_url']]);
-        echo json_encode(['success'=>true]); exit;
+        $titre = $_POST['titre'] ?? '';
+        $auteur = $_POST['auteur'] ?? '';
+        $genre = $_POST['genre'] ?? '';
+        $description = $_POST['description'] ?? '';
+        $imageUrl = $_POST['image_url'] ?? '';
+        try{
+            $stmt = $pdo->prepare("INSERT INTO livres (titre,auteur,genre,description,image_url,disponibilite) VALUES (?,?,?,?,?,'disponible')");
+            $stmt->execute([$titre, $auteur, $genre, $description, $imageUrl]);
+            $livreId = (int) $pdo->lastInsertId();
+            echo json_encode([
+                'success'=>true,
+                'book'=>[
+                    'livre_id'=>$livreId,
+                    'titre'=>$titre,
+                    'auteur'=>$auteur,
+                    'genre'=>$genre,
+                    'description'=>$description,
+                    'image_url'=>$imageUrl,
+                    'disponibilite'=>'disponible'
+                ]
+            ]); exit;
+        }catch(Throwable $e){
+            error_log('Admin add book error: '. $e->getMessage());
+            echo json_encode(['success'=>false,'message'=>"L'ajout du livre a échoué."]); exit;
+        }
     }
     elseif($_POST['action']==='modifierLivre'){
-        $stmt = $pdo->prepare("UPDATE livres SET titre=?, auteur=?, genre=?, description=?, image_url=? WHERE livre_id=?");
-        $stmt->execute([$_POST['titre'],$_POST['auteur'],$_POST['genre'],$_POST['description'],$_POST['image_url'],$_POST['livre_id']]);
-        echo json_encode(['success'=>true]); exit;
+        $livreId = isset($_POST['livre_id']) ? (int) $_POST['livre_id'] : 0;
+        if(!$livreId){
+            echo json_encode(['success'=>false,'message'=>'Livre introuvable.']); exit;
+        }
+        $titre = $_POST['titre'] ?? '';
+        $auteur = $_POST['auteur'] ?? '';
+        $genre = $_POST['genre'] ?? '';
+        $description = $_POST['description'] ?? '';
+        $imageUrl = $_POST['image_url'] ?? '';
+        try{
+            $stmt = $pdo->prepare("UPDATE livres SET titre=?, auteur=?, genre=?, description=?, image_url=? WHERE livre_id=?");
+            $stmt->execute([$titre,$auteur,$genre,$description,$imageUrl,$livreId]);
+            echo json_encode([
+                'success'=>true,
+                'book'=>[
+                    'livre_id'=>$livreId,
+                    'titre'=>$titre,
+                    'auteur'=>$auteur,
+                    'genre'=>$genre,
+                    'description'=>$description,
+                    'image_url'=>$imageUrl
+                ]
+            ]); exit;
+        }catch(Throwable $e){
+            error_log('Admin edit book error: '. $e->getMessage());
+            echo json_encode(['success'=>false,'message'=>'La mise à jour du livre a échoué.']); exit;
+        }
     }
     elseif($_POST['action']==='supprimerLivre'){
-        $pdo->prepare("DELETE FROM livres WHERE livre_id=?")->execute([$_POST['livre_id']]);
-        echo json_encode(['success'=>true]); exit;
+        $livreId = isset($_POST['livre_id']) ? (int) $_POST['livre_id'] : 0;
+        if($livreId){
+            try{
+                $pdo->prepare("DELETE FROM livres WHERE livre_id=?")->execute([$livreId]);
+                echo json_encode(['success'=>true,'livre_id'=>$livreId]); exit;
+            }catch(Throwable $e){
+                error_log('Admin delete book error: '. $e->getMessage());
+            }
+        }
+        echo json_encode(['success'=>false,'message'=>'Suppression du livre impossible.']); exit;
     }
     elseif($_POST['action']==='supprimerUtilisateur'){
         $userId = isset($_POST['utilisateur_id']) ? (int) $_POST['utilisateur_id'] : 0;
@@ -48,7 +107,7 @@ if($_SERVER['REQUEST_METHOD']==='POST' && isset($_POST['action'])){
                 $pdo->prepare("DELETE FROM reservations WHERE utilisateur_id=?")->execute([$userId]);
                 $pdo->prepare("DELETE FROM utilisateurs WHERE utilisateur_id=?")->execute([$userId]);
                 $pdo->commit();
-                echo json_encode(['success'=>true]); exit;
+                echo json_encode(['success'=>true,'utilisateur_id'=>$userId]); exit;
             }catch(Throwable $e){
                 $pdo->rollBack();
                 error_log('Admin delete user error: '. $e->getMessage());
@@ -180,7 +239,7 @@ button.modifier:hover { background: #52a058ff;color: white;}
             <td><?= $r['statut'] ?></td>
             <td>
                 <?php if($r['statut'] === 'en cours'): ?>
-                    <button class="action terminer" onclick="terminer(<?= $r['reservation_id'] ?>, <?= $r['livre_id'] ?>)">Terminer</button>
+                    <button class="action terminer" data-reservation="<?= (int) $r['reservation_id'] ?>" data-livre="<?= (int) $r['livre_id'] ?>" onclick="terminer(this, <?= (int) $r['reservation_id'] ?>, <?= (int) $r['livre_id'] ?>)">Terminer</button>
                 <?php endif; ?>
             </td>
         </tr>
@@ -232,8 +291,8 @@ button.modifier:hover { background: #52a058ff;color: white;}
         <td><?= htmlspecialchars($b['auteur']) ?></td>
         <td><?= htmlspecialchars($b['genre']) ?></td>
         <td>
-            <button class="action modifier" data-livre='<?= htmlspecialchars(json_encode($b), ENT_QUOTES, 'UTF-8') ?>'onclick="openEditModal(this)">Modifier</button>
-            <button class="action supprimer" onclick="deleteBook(<?= $b['livre_id'] ?>)">Supprimer</button>
+            <button class="action modifier" data-livre='<?= htmlspecialchars(json_encode($b), ENT_QUOTES, 'UTF-8') ?>' onclick="openEditModal(this)">Modifier</button>
+            <button class="action supprimer" onclick="deleteBook(this, <?= (int) $b['livre_id'] ?>)">Supprimer</button>
         </td>
     </tr>
     <?php endforeach; ?>
@@ -282,7 +341,7 @@ button.modifier:hover { background: #52a058ff;color: white;}
                         <?php elseif ($isAdminRole): ?>
                             <em>Administrateur</em>
                         <?php else: ?>
-                            <button class="action supprimer" data-user="<?= (int) $u['utilisateur_id'] ?>" data-pseudo="<?= htmlspecialchars($u['pseudo'], ENT_QUOTES, 'UTF-8') ?>" onclick="deleteUser(this.dataset.user, this.dataset.pseudo)">Supprimer</button>
+                            <button class="action supprimer" data-user="<?= (int) $u['utilisateur_id'] ?>" data-pseudo="<?= htmlspecialchars($u['pseudo'], ENT_QUOTES, 'UTF-8') ?>" onclick="deleteUser(this, this.dataset.user, this.dataset.pseudo)">Supprimer</button>
                         <?php endif; ?>
                     </td>
                 </tr>
@@ -300,17 +359,86 @@ button.modifier:hover { background: #52a058ff;color: white;}
 </div>
 
 <script>
-function openTab(tabName, evt){
-    document.querySelectorAll('.tabContent').forEach(c=>c.style.display='none');
-    document.getElementById(tabName).style.display='block';
-    document.querySelectorAll('.tabBtn').forEach(b=>b.classList.remove('active'));
-    evt.currentTarget.classList.add('active');
+// Utilitaires
+const DEFAULT_ERROR_MESSAGE = 'Une erreur est survenue. Veuillez réessayer.';
+
+function showError(message){
+    alert(message || DEFAULT_ERROR_MESSAGE);
+}
+
+function toJson(response){
+    if(!response.ok){
+        throw new Error('Réponse réseau invalide');
+    }
+    return response.json();
+}
+
+function handleRequestError(error){
+    console.error(error);
+    showError("La requête a échoué. Veuillez réessayer.");
+}
+
+function createBookRow(book){
+    const row = document.createElement('tr');
+    row.dataset.id = book.livre_id;
+
+    const titreCell = document.createElement('td');
+    titreCell.textContent = book.titre || '';
+    row.appendChild(titreCell);
+
+    const auteurCell = document.createElement('td');
+    auteurCell.textContent = book.auteur || '';
+    row.appendChild(auteurCell);
+
+    const genreCell = document.createElement('td');
+    genreCell.textContent = book.genre || '';
+    row.appendChild(genreCell);
+
+    const actionsCell = document.createElement('td');
+
+    const editButton = document.createElement('button');
+    editButton.className = 'action modifier';
+    editButton.textContent = 'Modifier';
+    editButton.dataset.livre = JSON.stringify(book);
+    editButton.addEventListener('click', function(){ openEditModal(this); });
+    actionsCell.appendChild(editButton);
+
+    const deleteButton = document.createElement('button');
+    deleteButton.className = 'action supprimer';
+    deleteButton.textContent = 'Supprimer';
+    deleteButton.addEventListener('click', function(){ deleteBook(this, book.livre_id); });
+    actionsCell.appendChild(deleteButton);
+
+    row.appendChild(actionsCell);
+
+    return row;
 }
 
 // Réservations
-function terminer(reservationId, livreId){
-    fetch('admin.php', { method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:'action=terminer&id='+reservationId+'&livre_id='+livreId })
-    .then(res=>res.json()).then(d=>{ if(d.success) location.reload(); else alert('Erreur'); });
+function terminer(button, reservationId, livreId){
+    const params = new URLSearchParams();
+    params.append('action','terminer');
+    params.append('id', reservationId);
+    params.append('livre_id', livreId);
+
+    fetch('admin.php', { method:'POST', body:params })
+        .then(toJson)
+        .then(d=>{
+            if(d.success){
+                const row = button.closest('tr');
+                if(row){
+                    if(row.cells[3]){
+                        row.cells[3].textContent = d.statut || 'terminer';
+                    }
+                    if(row.cells[4]){
+                        row.cells[4].textContent = '';
+                    }
+                }
+            }else{
+                showError(d.message);
+            }
+        })
+        .catch(handleRequestError);
 }
 
 // Livres
@@ -344,7 +472,20 @@ document.getElementById('formAddBook').addEventListener('submit', e=>{
     const data = new URLSearchParams(new FormData(e.target));
     data.append('action','ajouterLivre');
     fetch('admin.php',{method:'POST', body:data})
-        .then(r=>r.json()).then(d=>{ if(d.success) location.reload(); else alert('Erreur'); });
+        .then(toJson)
+        .then(d=>{
+            if(d.success && d.book){
+                const table = document.getElementById('booksTable');
+                const tbody = table.tBodies.length ? table.tBodies[0] : table;
+                const newRow = createBookRow(d.book);
+                tbody.appendChild(newRow);
+                e.target.reset();
+                closeAddModal();
+            }else{
+                showError(d.message);
+            }
+        })
+        .catch(handleRequestError);
 });
 
 function openEditModal(button) {
@@ -376,17 +517,54 @@ document.getElementById('formEditBookModal').addEventListener('submit', e => {
     const data = new URLSearchParams(new FormData(e.target));
     data.append('action','modifierLivre');
     fetch('admin.php',{method:'POST', body:data})
-        .then(r=>r.json()).then(d=>{ if(d.success) location.reload(); else alert('Erreur'); });
+        .then(toJson)
+        .then(d=>{
+            if(d.success && d.book){
+                const row = document.querySelector(`#booksTable tr[data-id="${d.book.livre_id}"]`);
+                if(row){
+                    if(row.cells[0]) row.cells[0].textContent = d.book.titre || '';
+                    if(row.cells[1]) row.cells[1].textContent = d.book.auteur || '';
+                    if(row.cells[2]) row.cells[2].textContent = d.book.genre || '';
+                    const editBtn = row.querySelector('button.modifier');
+                    if(editBtn){
+                        editBtn.dataset.livre = JSON.stringify(d.book);
+                    }
+                }
+                closeEditModal();
+            }else{
+                showError(d.message);
+            }
+        })
+        .catch(handleRequestError);
 });
 
-function deleteBook(livreId){
-    if(confirm('Supprimer ce livre ?')){
-        fetch('admin.php',{method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:'action=supprimerLivre&livre_id='+livreId})
-        .then(r=>r.json()).then(d=>{ if(d.success) location.reload(); else alert('Erreur'); });
+function deleteBook(button, livreId){
+    if(!confirm('Supprimer ce livre ?')){
+        return;
     }
+    const params = new URLSearchParams();
+    params.append('action','supprimerLivre');
+    params.append('livre_id', livreId);
+    fetch('admin.php',{method:'POST', body:params})
+        .then(toJson)
+        .then(d=>{
+            if(d.success){
+                const row = button.closest('tr');
+                if(row){
+                    row.remove();
+                }
+                const editModalId = parseInt(document.getElementById('modal_edit_livre_id').value, 10);
+                if(editModalId === Number(livreId)){
+                    closeEditModal();
+                }
+            }else{
+                showError(d.message);
+            }
+        })
+        .catch(handleRequestError);
 }
 
-function deleteUser(utilisateurId, pseudo){
+function deleteUser(button, utilisateurId, pseudo){
     if(!confirm("Supprimer l'utilisateur "+pseudo+" ?")){
         return;
     }
@@ -394,8 +572,18 @@ function deleteUser(utilisateurId, pseudo){
     params.append('action','supprimerUtilisateur');
     params.append('utilisateur_id', utilisateurId);
     fetch('admin.php',{method:'POST', body:params})
-        .then(r=>r.json())
-        .then(d=>{ if(d.success) location.reload(); else alert(d.message || 'Erreur'); });
+        .then(toJson)
+        .then(d=>{
+            if(d.success){
+                const row = button.closest('tr');
+                if(row){
+                    row.remove();
+                }
+            }else{
+                showError(d.message);
+            }
+        })
+        .catch(handleRequestError);
 }
 
 // Graphiques
