@@ -142,12 +142,73 @@ nav input[type="text"] { padding:6px 10px; border:none; border-radius:4px; width
 nav button { background:#004d40; border:none; color:white; padding:6px 12px; border-radius:4px; cursor:pointer; transition: all 0.3s; }
 nav button:hover { background:#00332c; transform: translateY(-2px); }
 h1 { text-align:center; color:#00796b; margin:20px 0; font-family:'Great Vibes', cursive; font-size:3em; }
-.filters-form {display: flex;flex-wrap: wrap;gap: 18px;justify-content: space-between;align-items: flex-end;}
-.filters-form label {flex: 1;min-width: 180px;}
-.filters-actions {width: 100%;display: flex;justify-content: center;margin-top: 15px;}
-.filters-actions button {background: #00796b;color: #ffffff;border: none;padding: 10px 18px;border-radius: 6px;cursor: pointer;font-weight: 600;transition: background 0.3s, transform 0.2s;}
-.filters-actions button:hover {background: #004d40;transform: translateY(-1px);}
-.cards-container { display:flex; flex-wrap:wrap; gap:20px; justify-content:center; padding: 20px; }
+.filters-panel {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 10px;
+    padding: 20px;
+    margin-top: 15px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+    border: 1px solid #c8e6c9;
+}
+
+.filters-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
+.filters-form label {
+    flex: 1;
+    min-width: 180px;
+    display: flex;
+    flex-direction: column;
+    font-weight: 600;
+    color: #004d40;
+    font-size: 0.95em;
+}
+
+.filters-form select,
+.filters-form input[type="text"] {
+    margin-top: 6px;
+    padding: 8px 10px;
+    border-radius: 6px;
+    border: 1px solid #b2dfdb;
+    font-size: 0.95em;
+    background-color: #f3faf9;
+}
+
+.filters-actions {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-top: 15px;
+}
+
+.filters-actions button {
+    background: #00796b;
+    color: #ffffff;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.3s, transform 0.2s;
+}
+
+.filters-actions button:hover {
+    background: #004d40;
+    transform: translateY(-1px);
+}
+
+/* Responsive : en colonne sur petits écrans */
+@media (max-width: 768px) {
+    .filters-form {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}
 .card { background:white; border-radius:10px; box-shadow:0 4px 8px rgba(0,0,0,0.2); width:250px; overflow:hidden; transition: transform 0.2s; }
 .card:hover { transform: scale(1.05); }
 .card img { width:100%; height:150px; object-fit:cover; }
