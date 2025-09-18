@@ -434,9 +434,6 @@ h1 {
         <h2 class="filters-title">🔍 Filtres de recherche</h2>
         <form method="get" action="index.php" class="filters-form">
             <div class="filters-row">
-                <label for="filter-search">Recherche
-                    <input type="text" id="filter-search" name="q" value="<?= htmlspecialchars($q) ?>" placeholder="Rechercher un livre...">
-                </label>
                 <label for="filter-genre">Genre
                     <select id="filter-genre" name="genre">
                         <option value="">Tous les genres</option>
