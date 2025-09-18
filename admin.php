@@ -240,7 +240,7 @@ button.modifier:hover { background: #52a058ff;color: white;}
 </table>
 </div>
 
-<!-- Modal Modifier (unique) -->
+<!-- Modal Modifier -->
 <div id="modalEdit" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); justify-content:center; align-items:center; z-index:1000;">
     <div style="background:white; padding:30px; border-radius:15px; max-width:500px; width:90%; position:relative; box-shadow:0 10px 30px rgba(0,0,0,0.3); transform:scale(0.9); transition: transform 0.3s ease;">
         <span style="position:absolute; top:15px; right:20px; cursor:pointer; font-size:1.5em;" onclick="closeEditModal()">✖</span>
