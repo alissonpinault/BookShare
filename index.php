@@ -142,19 +142,11 @@ nav input[type="text"] { padding:6px 10px; border:none; border-radius:4px; width
 nav button { background:#004d40; border:none; color:white; padding:6px 12px; border-radius:4px; cursor:pointer; transition: all 0.3s; }
 nav button:hover { background:#00332c; transform: translateY(-2px); }
 h1 { text-align:center; color:#00796b; margin:20px 0; font-family:'Great Vibes', cursive; font-size:3em; }
-.filters-wrapper { max-width:960px; margin:0 auto 20px; padding:0 20px; }
-.filters-toggle { background:#004d40; border:none; color:#ffffff; padding:10px 16px; border-radius:6px; cursor:pointer; font-weight:600; box-shadow:0 3px 6px rgba(0,0,0,0.2); transition: background 0.3s, transform 0.2s; }
-.filters-toggle:hover { background:#00332c; transform: translateY(-2px); }
-.filters-toggle:focus { outline:2px solid #80cbc4; outline-offset:2px; }
-.filters-panel { background:rgba(255,255,255,0.95); border-radius:10px; padding:20px; margin-top:15px; box-shadow:0 8px 16px rgba(0,0,0,0.15); border:1px solid #c8e6c9; }
-.filters-panel[hidden] { display:none; }
-.filters-form { display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:18px; align-items:end; }
-.filters-form label { display:flex; flex-direction:column; font-weight:600; color:#004d40; font-size:0.95em; }
-.filters-form select, .filters-form input[type="text"] { margin-top:6px; padding:8px 10px; border-radius:6px; border:1px solid #b2dfdb; font-size:0.95em; background-color:#f3faf9; }
-.filters-form select:focus, .filters-form input[type="text"]:focus { outline:2px solid #80cbc4; outline-offset:2px; background-color:#ffffff; }
-.filters-actions { display:flex; justify-content:flex-end; align-items:center; }
-.filters-actions button { background:#00796b; color:#ffffff; border:none; padding:10px 18px; border-radius:6px; cursor:pointer; font-weight:600; transition: background 0.3s, transform 0.2s; }
-.filters-actions button:hover { background:#004d40; transform: translateY(-1px); }
+.filters-form {display: flex;flex-wrap: wrap;gap: 18px;justify-content: space-between;align-items: flex-end;}
+.filters-form label {flex: 1;min-width: 180px;}
+.filters-actions {width: 100%;display: flex;justify-content: center;margin-top: 15px;}
+.filters-actions button {background: #00796b;color: #ffffff;border: none;padding: 10px 18px;border-radius: 6px;cursor: pointer;font-weight: 600;transition: background 0.3s, transform 0.2s;}
+.filters-actions button:hover {background: #004d40;transform: translateY(-1px);}
 .cards-container { display:flex; flex-wrap:wrap; gap:20px; justify-content:center; padding: 20px; }
 .card { background:white; border-radius:10px; box-shadow:0 4px 8px rgba(0,0,0,0.2); width:250px; overflow:hidden; transition: transform 0.2s; }
 .card:hover { transform: scale(1.05); }
@@ -228,8 +220,7 @@ h1 { text-align:center; color:#00796b; margin:20px 0; font-family:'Great Vibes',
 <h1>Bienvenue sur BookShare</h1>
 
 <div class="filters-wrapper">
-    <button type="button" class="filters-toggle" id="filtersToggle" aria-expanded="false" aria-haspopup="true" aria-controls="filters-panel" aria-label="Afficher les filtres de recherche">Filtres</button>
-    <div id="filters-panel" class="filters-panel" role="region" aria-labelledby="filtersToggle" hidden>
+    <div id="filters-panel" class="filters-panel">
         <form method="get" action="index.php" class="filters-form">
             <label for="filter-search">Recherche
                 <input type="text" id="filter-search" name="q" value="<?= htmlspecialchars($q) ?>" placeholder="Rechercher un livre...">
@@ -268,6 +259,10 @@ h1 { text-align:center; color:#00796b; margin:20px 0; font-family:'Great Vibes',
             <div class="filters-actions">
                 <button type="submit">Appliquer</button>
             </div>
+        </form>
+    </div>
+</div>
+
         </form>
     </div>
 </div>
