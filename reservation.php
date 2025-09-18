@@ -118,7 +118,7 @@ nav button:hover { background:#00332c; transform: translateY(-2px); }
 </nav>
 
 <div class="container">
-    <h1>Mes reservations</h1>
+    <h1>Mes réservations</h1>
 
     <?php if (!empty($_GET['message'])): ?>
         <p style="color: green; text-align:center;"><?= htmlspecialchars($_GET['message']) ?></p>
@@ -126,12 +126,12 @@ nav button:hover { background:#00332c; transform: translateY(-2px); }
 
     <div class="tabs">
         <button class="tab active" data-target="encours">En cours</button>
-        <button class="tab" data-target="archivees">Archivees</button>
+        <button class="tab" data-target="archivees">Archivées</button>
     </div>
 
     <div id="encours" class="tab-content active">
         <?php if (empty($reservationsEnCours)): ?>
-            <p>Aucune reservation en cours.</p>
+            <p>Aucune réservation en cours</p>
         <?php else: ?>
             <ul class="list">
                 <?php foreach ($reservationsEnCours as $reservation): ?>
