@@ -299,11 +299,24 @@ form input, form textarea { padding:6px; margin:4px; width:200px; }
 form button { padding:6px 12px; margin:4px; cursor:pointer; border-radius:4px; border:none; background:#00796b; color:white; }
 form button:hover { background:#004d40; }
 canvas { background:white; border-radius:10px; padding:20px; margin:20px auto; display:block; max-width:90%; }
-@media(max-width:600px){ table, canvas { width:95%; } nav { flex-direction:column; gap:10px; } form input, form textarea { width:90%; } }
 button.supprimer {background: white; color: #b71c1c; border: 2px solid #b71c1c;}
 button.supprimer:hover { background:#b71c1c ;color: white;}
 button.modifier { background: white; color: #52a058ff; border: 2px solid #52a058ff;}
 button.modifier:hover { background: #52a058ff;color: white;}
+.mobile-bottom-nav { display:none; }
+.mobile-bottom-nav__link { color:#004d40; text-decoration:none; font-size:0.75rem; font-weight:600; display:flex; flex-direction:column; align-items:center; gap:6px; }
+.mobile-bottom-nav__icon { width:54px; height:54px; border-radius:50%; background:linear-gradient(135deg,#00796b,#00acc1); color:#ffffff; display:flex; align-items:center; justify-content:center; font-size:1.4rem; box-shadow:0 8px 16px rgba(0,0,0,0.15); transition:transform 0.2s ease, box-shadow 0.2s ease; }
+.mobile-bottom-nav__link:focus-visible .mobile-bottom-nav__icon,
+.mobile-bottom-nav__link:hover .mobile-bottom-nav__icon,
+.mobile-bottom-nav__link.is-active .mobile-bottom-nav__icon { transform:translateY(-2px); box-shadow:0 10px 20px rgba(0,0,0,0.2); }
+.mobile-bottom-nav__text { text-shadow:0 1px 2px rgba(255,255,255,0.6); }
+@media(max-width:600px){
+    body { padding-bottom:88px; }
+    table, canvas { width:95%; }
+    nav { flex-direction:column; gap:10px; }
+    form input, form textarea { width:90%; }
+    .mobile-bottom-nav { position:fixed; bottom:0; left:0; right:0; display:flex; justify-content:space-around; padding:12px; background:rgba(255,255,255,0.8); backdrop-filter: blur(6px); border-top:1px solid rgba(0,0,0,0.1); z-index:1000; }
+}
 </style>
 </head>
 <body>
@@ -315,8 +328,8 @@ button.modifier:hover { background: #52a058ff;color: white;}
         BookShare
     </div>
     <div class="actions">
-    <form method="get" action="index.php" style="margin:0;">
-        <input type="text" name="q" placeholder="Rechercher un livre...">
+    <form method="get" action="index.php" id="main-search-form" style="margin:0;">
+        <input type="text" id="main-search-input" name="q" placeholder="Rechercher un livre...">
     </form>
 
      <button onclick="window.location.href='index.php'">Accueil</button>
@@ -848,5 +861,8 @@ document.addEventListener('DOMContentLoaded', () => {
     openTab(targetTab, { currentTarget: button }, !window.location.hash);
 });
 </script>
+
+<?php require __DIR__ . '/php/components/mobile_bottom_nav.php'; ?>
+
 </body>
 </html>

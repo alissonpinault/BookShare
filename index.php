@@ -160,6 +160,13 @@ h1 { text-align:center; color:#00796b; margin:20px 0; font-family:'Great Vibes',
 .pagination a { padding:8px 12px; border-radius:4px; background:#ffffff; color:#00796b; text-decoration:none; box-shadow:0 2px 4px rgba(0,0,0,0.15); transition: background 0.3s, color 0.3s; }
 .pagination a:hover { background:#00796b; color:#ffffff; }
 .pagination a.active { background:#004d40; color:#ffffff; pointer-events:none; }
+.mobile-bottom-nav { display:none; }
+.mobile-bottom-nav__link { color:#004d40; text-decoration:none; font-size:0.75rem; font-weight:600; display:flex; flex-direction:column; align-items:center; gap:6px; }
+.mobile-bottom-nav__icon { width:54px; height:54px; border-radius:50%; background:linear-gradient(135deg,#00796b,#00acc1); color:#ffffff; display:flex; align-items:center; justify-content:center; font-size:1.4rem; box-shadow:0 8px 16px rgba(0,0,0,0.15); transition:transform 0.2s ease, box-shadow 0.2s ease; }
+.mobile-bottom-nav__link:focus-visible .mobile-bottom-nav__icon,
+.mobile-bottom-nav__link:hover .mobile-bottom-nav__icon,
+.mobile-bottom-nav__link.is-active .mobile-bottom-nav__icon { transform:translateY(-2px); box-shadow:0 10px 20px rgba(0,0,0,0.2); }
+.mobile-bottom-nav__text { text-shadow:0 1px 2px rgba(255,255,255,0.6); }
 @media (max-width:600px) {
     nav { flex-direction: column; gap:10px; }
     nav input[type="text"] { width:100%; }
@@ -170,6 +177,8 @@ h1 { text-align:center; color:#00796b; margin:20px 0; font-family:'Great Vibes',
     .card { width:90%; }
     .pagination { width:100%; gap:6px; margin:20px auto; }
     .pagination a { flex:1 1 48px; font-size:14px; }
+    body { padding-bottom:88px; }
+    .mobile-bottom-nav { position:fixed; bottom:0; left:0; right:0; display:flex; justify-content:space-around; padding:12px; background:rgba(255,255,255,0.8); backdrop-filter: blur(6px); border-top:1px solid rgba(0,0,0,0.1); z-index:1000; }
 }
 </style>
 </head>
@@ -181,8 +190,8 @@ h1 { text-align:center; color:#00796b; margin:20px 0; font-family:'Great Vibes',
         BookShare
     </div>
    <div class="actions">
-    <form method="get" action="index.php" style="margin:0;">
-        <input type="text" name="q" placeholder="Rechercher un livre..." value="<?= htmlspecialchars($q) ?>">
+    <form method="get" action="index.php" id="main-search-form" style="margin:0;">
+        <input type="text" id="main-search-input" name="q" placeholder="Rechercher un livre..." value="<?= htmlspecialchars($q) ?>">
         <?php if ($genre !== ''): ?>
             <input type="hidden" name="genre" value="<?= htmlspecialchars($genre) ?>">
         <?php endif; ?>
@@ -355,6 +364,8 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 </script>
+
+<?php require __DIR__ . '/php/components/mobile_bottom_nav.php'; ?>
 
 </body>
 </html>
