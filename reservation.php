@@ -137,24 +137,35 @@ nav button:hover { background:#00332c; transform: translateY(-2px); }
     </div>
 
     <div id="archivees" class="tab-content">
-        <?php if (empty($reservationsArchivees)): ?>
-            <p>Aucune reservation archivee.</p>
-        <?php else: ?>
-            <ul class="list">
-                <?php foreach ($reservationsArchivees as $reservation): ?>
-                    <li>
-                        <img src="<?= htmlspecialchars($reservation->getImageUrl() ?: 'images/livre-defaut.jpg') ?>" alt="Couverture">
-                        <div class="reservation-info">
-                            <strong><?= htmlspecialchars($reservation->getTitre()) ?></strong>
-                            <span>Auteur : <?= htmlspecialchars($reservation->getAuteur()) ?></span>
-                            <span>Reserve le : <?= htmlspecialchars($reservation->getDateReservation() ?? '') ?></span>
-                        </div>
-                    </li>
-                <?php endforeach; ?>
-            </ul>
-        <?php endif; ?>
-    </div>
+    <?php if (empty($reservationsArchivees)): ?>
+        <p>Aucune reservation archivee.</p>
+    <?php else: ?>
+        <ul class="list">
+            <?php foreach ($reservationsArchivees as $reservation): ?>
+                <li>
+                    <img src="<?= htmlspecialchars($reservation->getImageUrl() ?: 'images/livre-defaut.jpg') ?>" alt="Couverture">
+                    <div class="reservation-info">
+                        <strong><?= htmlspecialchars($reservation->getTitre()) ?></strong>
+                        <span>Auteur : <?= htmlspecialchars($reservation->getAuteur()) ?></span>
+                        <span>Reserve le : <?= htmlspecialchars($reservation->getDateReservation() ?? '') ?></span>
+
+                        <?php if ($reservation->getNote()): ?>
+                            <span>Votre note :
+                                <?php for ($i=1; $i<=5; $i++): ?>
+                                    <span style="color:<?= $i <= $reservation->getNote() ? 'gold' : '#ccc' ?>">★</span>
+                                <?php endfor; ?>
+                                (<?= $reservation->getNote() ?>/5)
+                            </span>
+                        <?php else: ?>
+                            <span>Pas encore noté</span>
+                        <?php endif; ?>
+                    </div>
+                </li>
+            <?php endforeach; ?>
+        </ul>
+    <?php endif; ?>
 </div>
+
 
 <script>
 const tabs = document.querySelectorAll('.tab');

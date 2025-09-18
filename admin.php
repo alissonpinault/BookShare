@@ -83,7 +83,7 @@ $chartUsers = $pdo->query("
     LEFT JOIN reservations r ON u.utilisateur_id = r.utilisateur_id
     GROUP BY u.utilisateur_id
 ")->fetchAll(PDO::FETCH_ASSOC);
-$utilisateurs = $pdo->query("\n    SELECT utilisateur_id, pseudo, email, role, date_inscription\n    FROM utilisateurs\n    ORDER BY pseudo\n")->fetchAll(PDO::FETCH_ASSOC);\r\n
+$utilisateurs = $pdo->query("\n    SELECT utilisateur_id, pseudo, email, role, date_inscription\n    FROM utilisateurs\n    ORDER BY pseudo\n")->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <!DOCTYPE html>
@@ -377,6 +377,18 @@ function deleteBook(livreId){
         fetch('admin.php',{method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:'action=supprimerLivre&livre_id='+livreId})
         .then(r=>r.json()).then(d=>{ if(d.success) location.reload(); else alert('Erreur'); });
     }
+}
+
+function deleteUser(utilisateurId, pseudo){
+    if(!confirm("Supprimer l'utilisateur "+pseudo+" ?")){
+        return;
+    }
+    const params = new URLSearchParams();
+    params.append('action','supprimerUtilisateur');
+    params.append('utilisateur_id', utilisateurId);
+    fetch('admin.php',{method:'POST', body:params})
+        .then(r=>r.json())
+        .then(d=>{ if(d.success) location.reload(); else alert(d.message || 'Erreur'); });
 }
 
 // Graphiques
