@@ -188,6 +188,14 @@ h1 {
 }
 
 /* === Carte filtres === */
+.filters-title {
+    text-align: center;
+    font-size: 1.4em;
+    margin-bottom: 15px;
+    color: #00796b;
+    font-weight: 700;
+}
+
 .filters-panel {
     background: rgba(255, 255, 255, 0.95);
     border-radius: 10px;
@@ -200,21 +208,23 @@ h1 {
 
 .filters-form {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: wrap;      /* permet de passer en colonne sur petit écran */
     gap: 18px;
-    justify-content: space-between;
+    justify-content: flex-start; /* aligne tous les filtres sur une ligne */
     align-items: flex-end;
 }
 
+
 .filters-form label {
-    flex: 1;
-    min-width: 180px;
+    flex: 0 0 auto;      /* chaque filtre garde sa largeur naturelle */
+    min-width: 160px;    /* réduit un peu la largeur minimale */
     display: flex;
     flex-direction: column;
     font-weight: 600;
     color: #004d40;
     font-size: 0.95em;
 }
+
 
 .filters-form select,
 .filters-form input[type="text"] {
@@ -419,41 +429,44 @@ h1 {
 
 <div class="filters-wrapper">
     <div id="filters-panel" class="filters-panel">
+        <h2 class="filters-title">🔍 Filtres de recherche</h2>
         <form method="get" action="index.php" class="filters-form">
-            <label for="filter-search">Recherche
-                <input type="text" id="filter-search" name="q" value="<?= htmlspecialchars($q) ?>" placeholder="Rechercher un livre...">
-            </label>
-            <label for="filter-genre">Genre
-                <select id="filter-genre" name="genre">
-                    <option value="">Tous les genres</option>
-                    <?php foreach ($genres as $optionGenre): ?>
-                        <option value="<?= htmlspecialchars($optionGenre) ?>" <?= $optionGenre === $genre ? 'selected' : '' ?>><?= htmlspecialchars($optionGenre) ?></option>
-                    <?php endforeach; ?>
-                </select>
-            </label>
-            <label for="filter-auteur">Auteur
-                <select id="filter-auteur" name="auteur">
-                    <option value="">Tous les auteurs</option>
-                    <?php foreach ($auteurs as $optionAuteur): ?>
-                        <option value="<?= htmlspecialchars($optionAuteur) ?>" <?= $optionAuteur === $auteur ? 'selected' : '' ?>><?= htmlspecialchars($optionAuteur) ?></option>
-                    <?php endforeach; ?>
-                </select>
-            </label>
-            <label for="filter-statut">Statut
-                <select id="filter-statut" name="statut">
-                    <option value="">Tous les statuts</option>
-                    <option value="disponible" <?= $statut === 'disponible' ? 'selected' : '' ?>>Disponible</option>
-                    <option value="indisponible" <?= $statut === 'indisponible' ? 'selected' : '' ?>>Indisponible</option>
-                </select>
-            </label>
-            <label for="filter-note">Note minimale
-                <select id="filter-note" name="note_min">
-                    <option value="">Aucune note minimale</option>
-                    <?php for ($note = 1; $note <= 5; $note++): ?>
-                        <option value="<?= $note ?>" <?= $noteMin === $note ? 'selected' : '' ?>><?= $note ?> ★ et plus</option>
-                    <?php endfor; ?>
-                </select>
-            </label>
+            <div class="filters-row">
+                <label for="filter-search">Recherche
+                    <input type="text" id="filter-search" name="q" value="<?= htmlspecialchars($q) ?>" placeholder="Rechercher un livre...">
+                </label>
+                <label for="filter-genre">Genre
+                    <select id="filter-genre" name="genre">
+                        <option value="">Tous les genres</option>
+                        <?php foreach ($genres as $optionGenre): ?>
+                            <option value="<?= htmlspecialchars($optionGenre) ?>" <?= $optionGenre === $genre ? 'selected' : '' ?>><?= htmlspecialchars($optionGenre) ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </label>
+                <label for="filter-auteur">Auteur
+                    <select id="filter-auteur" name="auteur">
+                        <option value="">Tous les auteurs</option>
+                        <?php foreach ($auteurs as $optionAuteur): ?>
+                            <option value="<?= htmlspecialchars($optionAuteur) ?>" <?= $optionAuteur === $auteur ? 'selected' : '' ?>><?= htmlspecialchars($optionAuteur) ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </label>
+                <label for="filter-statut">Statut
+                    <select id="filter-statut" name="statut">
+                        <option value="">Tous les statuts</option>
+                        <option value="disponible" <?= $statut === 'disponible' ? 'selected' : '' ?>>Disponible</option>
+                        <option value="indisponible" <?= $statut === 'indisponible' ? 'selected' : '' ?>>Indisponible</option>
+                    </select>
+                </label>
+                <label for="filter-note">Note minimale
+                    <select id="filter-note" name="note_min">
+                        <option value="">Aucune note minimale</option>
+                        <?php for ($note = 1; $note <= 5; $note++): ?>
+                            <option value="<?= $note ?>" <?= $noteMin === $note ? 'selected' : '' ?>><?= $note ?> ★ et plus</option>
+                        <?php endfor; ?>
+                    </select>
+                </label>
+            </div>
             <div class="filters-actions">
                 <button type="submit">Appliquer</button>
             </div>
