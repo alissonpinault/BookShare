@@ -14,21 +14,73 @@ if (isset($_SESSION['utilisateur_id'])) {
     );
 }
 
-// Recherche de livres
-$q = $_GET['q'] ?? '';
+// Récupération des listes de genres et d'auteurs
+$genresStmt = $pdo->query('SELECT DISTINCT genre FROM livres WHERE genre IS NOT NULL AND genre <> "" ORDER BY genre');
+$genres = $genresStmt ? $genresStmt->fetchAll(PDO::FETCH_COLUMN) : [];
+
+$auteursStmt = $pdo->query('SELECT DISTINCT auteur FROM livres WHERE auteur IS NOT NULL AND auteur <> "" ORDER BY auteur');
+$auteurs = $auteursStmt ? $auteursStmt->fetchAll(PDO::FETCH_COLUMN) : [];
+
+// Recherche de livres et filtres
+$q = trim($_GET['q'] ?? '');
+$genre = isset($_GET['genre']) ? trim($_GET['genre']) : '';
+$auteur = isset($_GET['auteur']) ? trim($_GET['auteur']) : '';
+$statut = isset($_GET['statut']) ? trim($_GET['statut']) : '';
+$noteMin = isset($_GET['note_min']) && $_GET['note_min'] !== '' ? (int)$_GET['note_min'] : null;
+
+if ($noteMin !== null && ($noteMin < 1 || $noteMin > 5)) {
+    $noteMin = null;
+}
+
 $parPage = 10;
 $page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
 $offset = ($page - 1) * $parPage;
 
-$whereSql = '';
+$conditions = [];
+$params = [];
+$joinSql = '';
+$selectColumns = 'SELECT l.*';
+
 if ($q !== '') {
-    $whereSql = ' WHERE titre LIKE :q OR auteur LIKE :q OR genre LIKE :q';
+    $conditions[] = '(l.titre LIKE :search OR l.auteur LIKE :search OR l.genre LIKE :search)';
+    $params['search'] = "%$q%";
 }
 
-$countStmt = $pdo->prepare('SELECT COUNT(*) FROM livres' . $whereSql);
-if ($q !== '') {
-    $countStmt->bindValue(':q', "%$q%");
+if ($genre !== '') {
+    $conditions[] = 'l.genre = :genre';
+    $params['genre'] = $genre;
 }
+
+if ($auteur !== '') {
+    $conditions[] = 'l.auteur = :auteur';
+    $params['auteur'] = $auteur;
+}
+
+if ($statut === 'disponible' || $statut === 'indisponible') {
+    $conditions[] = 'l.disponibilite = :statut';
+    $params['statut'] = $statut;
+} else {
+    $statut = '';
+}
+
+if ($noteMin !== null) {
+    $joinSql = ' LEFT JOIN (SELECT livre_id, AVG(note) AS moyenne_note FROM notes GROUP BY livre_id) n ON n.livre_id = l.livre_id';
+    $conditions[] = '(n.moyenne_note >= :note_min OR n.moyenne_note IS NULL)';
+    $params['note_min'] = $noteMin;
+    $selectColumns .= ', n.moyenne_note';
+}
+
+$whereSql = $conditions ? ' WHERE ' . implode(' AND ', $conditions) : '';
+$baseFromSql = ' FROM livres l' . $joinSql;
+
+$countSql = 'SELECT COUNT(DISTINCT l.livre_id)' . $baseFromSql . $whereSql;
+$countStmt = $pdo->prepare($countSql);
+
+foreach ($params as $key => $value) {
+    $paramType = is_int($value) ? PDO::PARAM_INT : PDO::PARAM_STR;
+    $countStmt->bindValue(':' . $key, $value, $paramType);
+}
+
 $countStmt->execute();
 $totalLivres = (int)$countStmt->fetchColumn();
 
@@ -41,10 +93,14 @@ if ($totalPages === 0) {
     $offset = ($page - 1) * $parPage;
 }
 
-$stmt = $pdo->prepare('SELECT * FROM livres' . $whereSql . ' LIMIT :limit OFFSET :offset');
-if ($q !== '') {
-    $stmt->bindValue(':q', "%$q%");
+$selectSql = $selectColumns . $baseFromSql . $whereSql . ' ORDER BY l.titre ASC LIMIT :limit OFFSET :offset';
+$stmt = $pdo->prepare($selectSql);
+
+foreach ($params as $key => $value) {
+    $paramType = is_int($value) ? PDO::PARAM_INT : PDO::PARAM_STR;
+    $stmt->bindValue(':' . $key, $value, $paramType);
 }
+
 $stmt->bindValue(':limit', $parPage, PDO::PARAM_INT);
 $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
 $stmt->execute();
@@ -53,6 +109,18 @@ $livres = $stmt->fetchAll(PDO::FETCH_ASSOC);
 $queryParams = [];
 if ($q !== '') {
     $queryParams['q'] = $q;
+}
+if ($genre !== '') {
+    $queryParams['genre'] = $genre;
+}
+if ($auteur !== '') {
+    $queryParams['auteur'] = $auteur;
+}
+if ($statut !== '') {
+    $queryParams['statut'] = $statut;
+}
+if ($noteMin !== null) {
+    $queryParams['note_min'] = $noteMin;
 }
 ?>
 
@@ -74,6 +142,19 @@ nav input[type="text"] { padding:6px 10px; border:none; border-radius:4px; width
 nav button { background:#004d40; border:none; color:white; padding:6px 12px; border-radius:4px; cursor:pointer; transition: all 0.3s; }
 nav button:hover { background:#00332c; transform: translateY(-2px); }
 h1 { text-align:center; color:#00796b; margin:20px 0; font-family:'Great Vibes', cursive; font-size:3em; }
+.filters-wrapper { max-width:960px; margin:0 auto 20px; padding:0 20px; }
+.filters-toggle { background:#004d40; border:none; color:#ffffff; padding:10px 16px; border-radius:6px; cursor:pointer; font-weight:600; box-shadow:0 3px 6px rgba(0,0,0,0.2); transition: background 0.3s, transform 0.2s; }
+.filters-toggle:hover { background:#00332c; transform: translateY(-2px); }
+.filters-toggle:focus { outline:2px solid #80cbc4; outline-offset:2px; }
+.filters-panel { background:rgba(255,255,255,0.95); border-radius:10px; padding:20px; margin-top:15px; box-shadow:0 8px 16px rgba(0,0,0,0.15); border:1px solid #c8e6c9; }
+.filters-panel[hidden] { display:none; }
+.filters-form { display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:18px; align-items:end; }
+.filters-form label { display:flex; flex-direction:column; font-weight:600; color:#004d40; font-size:0.95em; }
+.filters-form select, .filters-form input[type="text"] { margin-top:6px; padding:8px 10px; border-radius:6px; border:1px solid #b2dfdb; font-size:0.95em; background-color:#f3faf9; }
+.filters-form select:focus, .filters-form input[type="text"]:focus { outline:2px solid #80cbc4; outline-offset:2px; background-color:#ffffff; }
+.filters-actions { display:flex; justify-content:flex-end; align-items:center; }
+.filters-actions button { background:#00796b; color:#ffffff; border:none; padding:10px 18px; border-radius:6px; cursor:pointer; font-weight:600; transition: background 0.3s, transform 0.2s; }
+.filters-actions button:hover { background:#004d40; transform: translateY(-1px); }
 .cards-container { display:flex; flex-wrap:wrap; gap:20px; justify-content:center; padding: 20px; }
 .card { background:white; border-radius:10px; box-shadow:0 4px 8px rgba(0,0,0,0.2); width:250px; overflow:hidden; transition: transform 0.2s; }
 .card:hover { transform: scale(1.05); }
@@ -90,6 +171,9 @@ h1 { text-align:center; color:#00796b; margin:20px 0; font-family:'Great Vibes',
 @media (max-width:600px) {
     nav { flex-direction: column; gap:10px; }
     nav input[type="text"] { width:100%; }
+    .filters-form { grid-template-columns: 1fr; }
+    .filters-actions { justify-content:stretch; }
+    .filters-actions button { width:100%; }
     .cards-container { flex-direction:column; align-items:center; }
     .card { width:90%; }
     .pagination { width:100%; gap:6px; margin:20px auto; }
@@ -107,6 +191,18 @@ h1 { text-align:center; color:#00796b; margin:20px 0; font-family:'Great Vibes',
    <div class="actions">
     <form method="get" action="index.php" style="margin:0;">
         <input type="text" name="q" placeholder="Rechercher un livre..." value="<?= htmlspecialchars($q) ?>">
+        <?php if ($genre !== ''): ?>
+            <input type="hidden" name="genre" value="<?= htmlspecialchars($genre) ?>">
+        <?php endif; ?>
+        <?php if ($auteur !== ''): ?>
+            <input type="hidden" name="auteur" value="<?= htmlspecialchars($auteur) ?>">
+        <?php endif; ?>
+        <?php if ($statut !== ''): ?>
+            <input type="hidden" name="statut" value="<?= htmlspecialchars($statut) ?>">
+        <?php endif; ?>
+        <?php if ($noteMin !== null): ?>
+            <input type="hidden" name="note_min" value="<?= htmlspecialchars((string)$noteMin) ?>">
+        <?php endif; ?>
     </form>
 
     <button onclick="window.location.href='index.php'">Accueil</button>
@@ -130,6 +226,51 @@ h1 { text-align:center; color:#00796b; margin:20px 0; font-family:'Great Vibes',
 </nav>
 
 <h1>Bienvenue sur BookShare</h1>
+
+<div class="filters-wrapper">
+    <button type="button" class="filters-toggle" id="filtersToggle" aria-expanded="false" aria-haspopup="true" aria-controls="filters-panel" aria-label="Afficher les filtres de recherche">Filtres</button>
+    <div id="filters-panel" class="filters-panel" role="region" aria-labelledby="filtersToggle" hidden>
+        <form method="get" action="index.php" class="filters-form">
+            <label for="filter-search">Recherche
+                <input type="text" id="filter-search" name="q" value="<?= htmlspecialchars($q) ?>" placeholder="Rechercher un livre...">
+            </label>
+            <label for="filter-genre">Genre
+                <select id="filter-genre" name="genre">
+                    <option value="">Tous les genres</option>
+                    <?php foreach ($genres as $optionGenre): ?>
+                        <option value="<?= htmlspecialchars($optionGenre) ?>" <?= $optionGenre === $genre ? 'selected' : '' ?>><?= htmlspecialchars($optionGenre) ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </label>
+            <label for="filter-auteur">Auteur
+                <select id="filter-auteur" name="auteur">
+                    <option value="">Tous les auteurs</option>
+                    <?php foreach ($auteurs as $optionAuteur): ?>
+                        <option value="<?= htmlspecialchars($optionAuteur) ?>" <?= $optionAuteur === $auteur ? 'selected' : '' ?>><?= htmlspecialchars($optionAuteur) ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </label>
+            <label for="filter-statut">Statut
+                <select id="filter-statut" name="statut">
+                    <option value="">Tous les statuts</option>
+                    <option value="disponible" <?= $statut === 'disponible' ? 'selected' : '' ?>>Disponible</option>
+                    <option value="indisponible" <?= $statut === 'indisponible' ? 'selected' : '' ?>>Indisponible</option>
+                </select>
+            </label>
+            <label for="filter-note">Note minimale
+                <select id="filter-note" name="note_min">
+                    <option value="">Aucune note minimale</option>
+                    <?php for ($note = 1; $note <= 5; $note++): ?>
+                        <option value="<?= $note ?>" <?= $noteMin === $note ? 'selected' : '' ?>><?= $note ?> ★ et plus</option>
+                    <?php endfor; ?>
+                </select>
+            </label>
+            <div class="filters-actions">
+                <button type="submit">Appliquer</button>
+            </div>
+        </form>
+    </div>
+</div>
 
 <div class="cards-container">
 <?php foreach ($livres as $livre): ?>
@@ -185,6 +326,39 @@ function reserverLivre(livreId, btn) {
     })
     .catch(err=>console.error(err));
 }
+
+document.addEventListener('DOMContentLoaded', function () {
+    const toggleButton = document.getElementById('filtersToggle');
+    const panel = document.getElementById('filters-panel');
+    const focusableSelector = 'input, select, button';
+
+    if (toggleButton && panel) {
+        toggleButton.addEventListener('click', function () {
+            const isHidden = panel.hasAttribute('hidden');
+
+            if (isHidden) {
+                panel.removeAttribute('hidden');
+                toggleButton.setAttribute('aria-expanded', 'true');
+                const focusableElement = panel.querySelector(focusableSelector);
+                if (focusableElement) {
+                    focusableElement.focus();
+                }
+            } else {
+                panel.setAttribute('hidden', '');
+                toggleButton.setAttribute('aria-expanded', 'false');
+                toggleButton.focus();
+            }
+        });
+
+        panel.addEventListener('keydown', function (event) {
+            if (event.key === 'Escape') {
+                panel.setAttribute('hidden', '');
+                toggleButton.setAttribute('aria-expanded', 'false');
+                toggleButton.focus();
+            }
+        });
+    }
+});
 </script>
 
 </body>
