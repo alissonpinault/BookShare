@@ -16,13 +16,44 @@ if (isset($_SESSION['utilisateur_id'])) {
 
 // Recherche de livres
 $q = $_GET['q'] ?? '';
+$parPage = 10;
+$page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
+$offset = ($page - 1) * $parPage;
+
+$whereSql = '';
 if ($q !== '') {
-    $stmt = $pdo->prepare("SELECT * FROM livres WHERE titre LIKE :q OR auteur LIKE :q OR genre LIKE :q");
-    $stmt->execute([':q' => "%$q%"]);
-} else {
-    $stmt = $pdo->query("SELECT * FROM livres");
+    $whereSql = ' WHERE titre LIKE :q OR auteur LIKE :q OR genre LIKE :q';
 }
+
+$countStmt = $pdo->prepare('SELECT COUNT(*) FROM livres' . $whereSql);
+if ($q !== '') {
+    $countStmt->bindValue(':q', "%$q%");
+}
+$countStmt->execute();
+$totalLivres = (int)$countStmt->fetchColumn();
+
+$totalPages = (int)ceil($totalLivres / $parPage);
+if ($totalPages === 0) {
+    $page = 1;
+    $offset = 0;
+} elseif ($page > $totalPages) {
+    $page = $totalPages;
+    $offset = ($page - 1) * $parPage;
+}
+
+$stmt = $pdo->prepare('SELECT * FROM livres' . $whereSql . ' LIMIT :limit OFFSET :offset');
+if ($q !== '') {
+    $stmt->bindValue(':q', "%$q%");
+}
+$stmt->bindValue(':limit', $parPage, PDO::PARAM_INT);
+$stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+$stmt->execute();
 $livres = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+$queryParams = [];
+if ($q !== '') {
+    $queryParams['q'] = $q;
+}
 ?>
 
 <!DOCTYPE html>
@@ -52,7 +83,18 @@ h1 { text-align:center; color:#00796b; margin:20px 0; font-family:'Great Vibes',
 .card-content p { margin:5px 0; font-size:14px; }
 .card-content button { padding:8px 12px; background:#00796b; color:white; border:none; border-radius:5px; cursor:pointer; margin-top:10px; }
 .card-content button:disabled { background:#ccc; cursor:default; }
-@media (max-width:600px) { nav { flex-direction: column; gap:10px; } nav input[type="text"] { width:100%; } .cards-container { flex-direction:column; align-items:center; } .card { width:90%; } }
+.pagination { margin:20px auto 40px; display:flex; flex-wrap:wrap; justify-content:center; gap:10px; }
+.pagination a { padding:8px 12px; border-radius:4px; background:#ffffff; color:#00796b; text-decoration:none; box-shadow:0 2px 4px rgba(0,0,0,0.15); transition: background 0.3s, color 0.3s; }
+.pagination a:hover { background:#00796b; color:#ffffff; }
+.pagination a.active { background:#004d40; color:#ffffff; pointer-events:none; }
+@media (max-width:600px) {
+    nav { flex-direction: column; gap:10px; }
+    nav input[type="text"] { width:100%; }
+    .cards-container { flex-direction:column; align-items:center; }
+    .card { width:90%; }
+    .pagination { width:100%; gap:6px; margin:20px auto; }
+    .pagination a { flex:1 1 48px; font-size:14px; }
+}
 </style>
 </head>
 <body>
@@ -64,7 +106,7 @@ h1 { text-align:center; color:#00796b; margin:20px 0; font-family:'Great Vibes',
     </div>
    <div class="actions">
     <form method="get" action="index.php" style="margin:0;">
-        <input type="text" name="q" placeholder="Rechercher un livre...">
+        <input type="text" name="q" placeholder="Rechercher un livre..." value="<?= htmlspecialchars($q) ?>">
     </form>
 
     <button onclick="window.location.href='index.php'">Accueil</button>
@@ -104,6 +146,25 @@ h1 { text-align:center; color:#00796b; margin:20px 0; font-family:'Great Vibes',
     </a>
 <?php endforeach; ?>
 </div>
+
+<?php if ($totalLivres > 0): ?>
+    <nav class="pagination">
+        <?php if ($page > 1): ?>
+            <?php $prevParams = $queryParams; $prevParams['page'] = $page - 1; $prevQuery = http_build_query($prevParams); ?>
+            <a href="index.php<?= $prevQuery ? '?' . $prevQuery : '' ?>" class="prev">Précédent</a>
+        <?php endif; ?>
+
+        <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+            <?php $pageParams = $queryParams; $pageParams['page'] = $i; $pageQuery = http_build_query($pageParams); ?>
+            <a href="index.php<?= $pageQuery ? '?' . $pageQuery : '' ?>" class="<?= $i === $page ? 'active' : '' ?>"><?= $i ?></a>
+        <?php endfor; ?>
+
+        <?php if ($page < $totalPages): ?>
+            <?php $nextParams = $queryParams; $nextParams['page'] = $page + 1; $nextQuery = http_build_query($nextParams); ?>
+            <a href="index.php<?= $nextQuery ? '?' . $nextQuery : '' ?>" class="next">Suivant</a>
+        <?php endif; ?>
+    </nav>
+<?php endif; ?>
 
 
 <script>
