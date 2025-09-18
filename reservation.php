@@ -19,6 +19,20 @@ try {
 
     $reservationService = new Reservation($pdo);
 
+    $pageSize = 5;
+    $allowedTabs = ['encours', 'archivees'];
+    $sanitizePage = static function (?string $value): int {
+        $page = filter_var($value, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+        return $page ?: 1;
+    };
+
+    $pageEncours = $sanitizePage($_GET['page_encours'] ?? null);
+    $pageArchivees = $sanitizePage($_GET['page_archivees'] ?? null);
+
+    $requestedTab = $_GET['tab'] ?? '';
+    $hasExplicitTab = in_array($requestedTab, $allowedTabs, true);
+    $activeTab = $hasExplicitTab ? $requestedTab : 'encours';
+
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['annuler'], $_POST['reservation_id'])) {
         $reservationId = (int) $_POST['reservation_id'];
         $annulee = $reservationService->annulerReservation($reservationId, $utilisateur->getId());
@@ -27,12 +41,71 @@ try {
             ? 'Réservation annulée avec succès.'
             : "Impossible d'annuler cette réservation.";
 
-        header('Location: reservation.php?message=' . urlencode($message));
+        $redirectParams = ['message' => $message];
+
+        if (isset($_POST['page_encours'])) {
+            $redirectParams['page_encours'] = $sanitizePage($_POST['page_encours']);
+        }
+        if (isset($_POST['page_archivees'])) {
+            $redirectParams['page_archivees'] = $sanitizePage($_POST['page_archivees']);
+        }
+        if (!empty($_POST['tab']) && in_array($_POST['tab'], $allowedTabs, true)) {
+            $redirectParams['tab'] = $_POST['tab'];
+        }
+
+        $redirectUrl = 'reservation.php';
+        $queryString = http_build_query($redirectParams);
+        if ($queryString !== '') {
+            $redirectUrl .= '?' . $queryString;
+        }
+
+        header('Location: ' . $redirectUrl);
         exit;
     }
 
-    $reservationsEnCours = $reservationService->getReservationsEnCours($utilisateur->getId());
-    $reservationsArchivees = $reservationService->getReservationsArchivees($utilisateur->getId());
+    $totalEncours = $reservationService->countReservationsEnCours($utilisateur->getId());
+    $totalArchivees = $reservationService->countReservationsArchivees($utilisateur->getId());
+
+    $totalPagesEncours = max(1, (int) ceil($totalEncours / $pageSize));
+    $totalPagesArchivees = max(1, (int) ceil($totalArchivees / $pageSize));
+
+    $pageEncours = min($pageEncours, $totalPagesEncours);
+    $pageArchivees = min($pageArchivees, $totalPagesArchivees);
+
+    if (!$hasExplicitTab && isset($_GET['page_archivees']) && (!isset($_GET['page_encours']) || $pageArchivees > 1)) {
+        $activeTab = 'archivees';
+    }
+
+    $offsetEncours = ($pageEncours - 1) * $pageSize;
+    $offsetArchivees = ($pageArchivees - 1) * $pageSize;
+
+    $reservationsEnCours = $reservationService->getReservationsEnCours(
+        $utilisateur->getId(),
+        $pageSize,
+        $offsetEncours
+    );
+    $reservationsArchivees = $reservationService->getReservationsArchivees(
+        $utilisateur->getId(),
+        $pageSize,
+        $offsetArchivees
+    );
+
+    $baseQueryParams = $_GET;
+    $baseQueryParams['page_encours'] = $pageEncours;
+    $baseQueryParams['page_archivees'] = $pageArchivees;
+    $baseQueryParams['tab'] = $activeTab;
+
+    $reservationBuildQuery = static function (array $overrides = []) use ($baseQueryParams): string {
+        $params = array_merge($baseQueryParams, $overrides);
+
+        foreach ($params as $key => $value) {
+            if ($value === null || $value === '') {
+                unset($params[$key]);
+            }
+        }
+
+        return http_build_query($params);
+    };
 } catch (Throwable $e) {
     echo "<h2 style='color:red; text-align:center;'>Erreur : " . htmlspecialchars($e->getMessage()) . '</h2>';
     error_log('reservation.php ERROR: ' . $e->getMessage());
@@ -90,6 +163,39 @@ nav button:hover { background:#00332c; transform: translateY(-2px); }
     color: gold; /* survolée ou validée */
 }
 
+.pagination {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 15px;
+    flex-wrap: wrap;
+}
+
+.pagination .page-link {
+    padding: 6px 12px;
+    border-radius: 4px;
+    background: #eee;
+    color: #333;
+    text-decoration: none;
+    transition: background 0.3s, color 0.3s;
+}
+
+.pagination .page-link:hover {
+    background: #d4d4d4;
+}
+
+.pagination .page-link.active {
+    background: #00796b;
+    color: #fff;
+}
+
+.pagination .page-link.disabled {
+    pointer-events: none;
+    opacity: 0.5;
+    background: #ccc;
+    color: #666;
+}
+
 </style>
 </head>
 <body>
@@ -125,11 +231,11 @@ nav button:hover { background:#00332c; transform: translateY(-2px); }
     <?php endif; ?>
 
     <div class="tabs">
-        <button class="tab active" data-target="encours">En cours</button>
-        <button class="tab" data-target="archivees">Archivées</button>
+        <button class="tab<?= $activeTab === 'encours' ? ' active' : '' ?>" data-target="encours">En cours</button>
+        <button class="tab<?= $activeTab === 'archivees' ? ' active' : '' ?>" data-target="archivees">Archivées</button>
     </div>
 
-    <div id="encours" class="tab-content active">
+    <div id="encours" class="tab-content<?= $activeTab === 'encours' ? ' active' : '' ?>">
         <?php if (empty($reservationsEnCours)): ?>
             <p>Aucune réservation en cours</p>
         <?php else: ?>
@@ -144,15 +250,49 @@ nav button:hover { background:#00332c; transform: translateY(-2px); }
                         </div>
                         <form method="post" class="reservation-actions">
                             <input type="hidden" name="reservation_id" value="<?= (int) $reservation->getId() ?>">
+                            <input type="hidden" name="page_encours" value="<?= $pageEncours ?>">
+                            <input type="hidden" name="page_archivees" value="<?= $pageArchivees ?>">
+                            <input type="hidden" name="tab" value="encours">
                             <button type="submit" name="annuler">Annuler</button>
                         </form>
                     </li>
                 <?php endforeach; ?>
             </ul>
+            <?php if ($totalPagesEncours > 1): ?>
+                <div class="pagination">
+                    <?php if ($pageEncours > 1): ?>
+                        <?php $query = $reservationBuildQuery([
+                            'page_encours' => $pageEncours - 1,
+                            'tab' => 'encours',
+                        ]); ?>
+                        <a class="page-link" href="reservation.php?<?= htmlspecialchars($query) ?>">Précédent</a>
+                    <?php else: ?>
+                        <span class="page-link disabled">Précédent</span>
+                    <?php endif; ?>
+
+                    <?php for ($i = 1; $i <= $totalPagesEncours; $i++): ?>
+                        <?php $query = $reservationBuildQuery([
+                            'page_encours' => $i,
+                            'tab' => 'encours',
+                        ]); ?>
+                        <a class="page-link<?= $i === $pageEncours ? ' active' : '' ?>" href="reservation.php?<?= htmlspecialchars($query) ?>"><?= $i ?></a>
+                    <?php endfor; ?>
+
+                    <?php if ($pageEncours < $totalPagesEncours): ?>
+                        <?php $query = $reservationBuildQuery([
+                            'page_encours' => $pageEncours + 1,
+                            'tab' => 'encours',
+                        ]); ?>
+                        <a class="page-link" href="reservation.php?<?= htmlspecialchars($query) ?>">Suivant</a>
+                    <?php else: ?>
+                        <span class="page-link disabled">Suivant</span>
+                    <?php endif; ?>
+                </div>
+            <?php endif; ?>
         <?php endif; ?>
     </div>
 
-    <div id="archivees" class="tab-content">
+    <div id="archivees" class="tab-content<?= $activeTab === 'archivees' ? ' active' : '' ?>">
     <?php if (empty($reservationsArchivees)): ?>
         <p>Aucune réservation archivée.</p>
     <?php else: ?>
@@ -182,6 +322,37 @@ nav button:hover { background:#00332c; transform: translateY(-2px); }
                 </li>
             <?php endforeach; ?>
         </ul>
+        <?php if ($totalPagesArchivees > 1): ?>
+            <div class="pagination">
+                <?php if ($pageArchivees > 1): ?>
+                    <?php $query = $reservationBuildQuery([
+                        'page_archivees' => $pageArchivees - 1,
+                        'tab' => 'archivees',
+                    ]); ?>
+                    <a class="page-link" href="reservation.php?<?= htmlspecialchars($query) ?>">Précédent</a>
+                <?php else: ?>
+                    <span class="page-link disabled">Précédent</span>
+                <?php endif; ?>
+
+                <?php for ($i = 1; $i <= $totalPagesArchivees; $i++): ?>
+                    <?php $query = $reservationBuildQuery([
+                        'page_archivees' => $i,
+                        'tab' => 'archivees',
+                    ]); ?>
+                    <a class="page-link<?= $i === $pageArchivees ? ' active' : '' ?>" href="reservation.php?<?= htmlspecialchars($query) ?>"><?= $i ?></a>
+                <?php endfor; ?>
+
+                <?php if ($pageArchivees < $totalPagesArchivees): ?>
+                    <?php $query = $reservationBuildQuery([
+                        'page_archivees' => $pageArchivees + 1,
+                        'tab' => 'archivees',
+                    ]); ?>
+                    <a class="page-link" href="reservation.php?<?= htmlspecialchars($query) ?>">Suivant</a>
+                <?php else: ?>
+                    <span class="page-link disabled">Suivant</span>
+                <?php endif; ?>
+            </div>
+        <?php endif; ?>
     <?php endif; ?>
 </div>
 
@@ -189,13 +360,59 @@ nav button:hover { background:#00332c; transform: translateY(-2px); }
 const tabs = document.querySelectorAll('.tab');
 const contents = document.querySelectorAll('.tab-content');
 
+const setActiveTab = targetId => {
+    tabs.forEach(tab => {
+        const isActive = tab.dataset.target === targetId;
+        tab.classList.toggle('active', isActive);
+    });
+
+    contents.forEach(content => {
+        const isActive = content.id === targetId;
+        content.classList.toggle('active', isActive);
+    });
+};
+
+const updateTabParam = targetId => {
+    const url = new URL(window.location);
+    url.searchParams.set('tab', targetId);
+    window.history.replaceState({}, '', url);
+};
+
+const resolveInitialTab = () => {
+    const params = new URLSearchParams(window.location.search);
+    const explicit = params.get('tab');
+    if (explicit === 'encours' || explicit === 'archivees') {
+        return explicit;
+    }
+
+    const pageEncours = parseInt(params.get('page_encours') || '1', 10);
+    const pageArchivees = parseInt(params.get('page_archivees') || '1', 10);
+
+    if (params.has('page_archivees') && (!params.has('page_encours') || pageArchivees > 1)) {
+        return 'archivees';
+    }
+
+    if (!Number.isNaN(pageArchivees) && pageArchivees > Math.max(pageEncours, 1)) {
+        return 'archivees';
+    }
+
+    return 'encours';
+};
+
+const initialTab = resolveInitialTab();
+setActiveTab(initialTab);
+
+const currentUrl = new URL(window.location);
+if (currentUrl.searchParams.get('tab') !== initialTab) {
+    currentUrl.searchParams.set('tab', initialTab);
+    window.history.replaceState({}, '', currentUrl);
+}
+
 tabs.forEach(tab => {
     tab.addEventListener('click', () => {
-        tabs.forEach(t => t.classList.remove('active'));
-        contents.forEach(c => c.classList.remove('active'));
-
-        tab.classList.add('active');
-        document.getElementById(tab.dataset.target).classList.add('active');
+        const target = tab.dataset.target;
+        setActiveTab(target);
+        updateTabParam(target);
     });
 });
 

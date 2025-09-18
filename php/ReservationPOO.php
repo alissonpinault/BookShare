@@ -39,37 +39,29 @@ class Reservation
         return $this->fetchReservations($sql, [$utilisateurId]);
     }
 
-    public function getReservationsEnCours(int $utilisateurId): array
+    public function getReservationsEnCours(int $utilisateurId, ?int $limit = null, ?int $offset = null): array
     {
-        $sql = <<<'SQL'
-            SELECT r.*, l.titre, l.auteur, l.genre, l.image_url, n.note
-            FROM reservations r
-            INNER JOIN livres l ON r.livre_id = l.livre_id
-            LEFT JOIN notes n ON r.livre_id = n.livre_id AND r.utilisateur_id = n.utilisateur_id
-            WHERE r.utilisateur_id = ? AND r.statut = 'en cours'
-            ORDER BY r.date_reservation DESC
-        SQL;
-
-        return $this->fetchReservations($sql, [$utilisateurId]);
+        return $this->getReservationsByStatut($utilisateurId, 'en cours', $limit, $offset);
     }
 
-    public function getReservationsTerminees(int $utilisateurId): array
+    public function getReservationsTerminees(int $utilisateurId, ?int $limit = null, ?int $offset = null): array
     {
-        $sql = <<<'SQL'
-            SELECT r.*, l.titre, l.auteur, l.genre, l.image_url, n.note
-            FROM reservations r
-            INNER JOIN livres l ON r.livre_id = l.livre_id
-            LEFT JOIN notes n ON r.livre_id = n.livre_id AND r.utilisateur_id = n.utilisateur_id
-            WHERE r.utilisateur_id = ? AND r.statut = 'terminer'
-            ORDER BY r.date_reservation DESC
-        SQL;
-
-        return $this->fetchReservations($sql, [$utilisateurId]);
+        return $this->getReservationsByStatut($utilisateurId, 'terminer', $limit, $offset);
     }
 
-    public function getReservationsArchivees(int $utilisateurId): array
+    public function getReservationsArchivees(int $utilisateurId, ?int $limit = null, ?int $offset = null): array
     {
-        return $this->getReservationsTerminees($utilisateurId);
+        return $this->getReservationsTerminees($utilisateurId, $limit, $offset);
+    }
+
+    public function countReservationsEnCours(int $utilisateurId): int
+    {
+        return $this->countReservationsByStatut($utilisateurId, 'en cours');
+    }
+
+    public function countReservationsArchivees(int $utilisateurId): int
+    {
+        return $this->countReservationsByStatut($utilisateurId, 'terminer');
     }
 
     /**
@@ -108,6 +100,23 @@ class Reservation
         }
     }
 
+    private function getReservationsByStatut(int $utilisateurId, string $statut, ?int $limit, ?int $offset): array
+    {
+        $sql = <<<'SQL'
+            SELECT r.*, l.titre, l.auteur, l.genre, l.image_url, n.note
+            FROM reservations r
+            INNER JOIN livres l ON r.livre_id = l.livre_id
+            LEFT JOIN notes n ON r.livre_id = n.livre_id AND r.utilisateur_id = n.utilisateur_id
+            WHERE r.utilisateur_id = ? AND r.statut = ?
+            ORDER BY r.date_reservation DESC
+        SQL;
+
+        $params = [$utilisateurId, $statut];
+        $sql = $this->applyLimitOffset($sql, $params, $limit, $offset);
+
+        return $this->fetchReservations($sql, $params);
+    }
+
     private function fetchReservations(string $sql, array $params): array
     {
         $stmt = $this->pdo->prepare($sql);
@@ -115,6 +124,34 @@ class Reservation
         $rows = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
 
         return array_map(fn(array $row) => new self($this->pdo, $row), $rows);
+    }
+
+    private function applyLimitOffset(string $sql, array &$params, ?int $limit, ?int $offset): string
+    {
+        if ($limit !== null) {
+            $sql .= ' LIMIT ?';
+            $params[] = $limit;
+
+            if ($offset !== null) {
+                $sql .= ' OFFSET ?';
+                $params[] = $offset;
+            }
+        } elseif ($offset !== null) {
+            $sql .= ' LIMIT 18446744073709551615 OFFSET ?';
+            $params[] = $offset;
+        }
+
+        return $sql;
+    }
+
+    private function countReservationsByStatut(int $utilisateurId, string $statut): int
+    {
+        $stmt = $this->pdo->prepare(
+            'SELECT COUNT(*) FROM reservations WHERE utilisateur_id = ? AND statut = ?'
+        );
+        $stmt->execute([$utilisateurId, $statut]);
+
+        return (int) $stmt->fetchColumn();
     }
 }
 ?>

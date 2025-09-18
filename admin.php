@@ -11,6 +11,92 @@ $pseudo = $_SESSION['pseudo'];
 $utilisateur_id = $_SESSION['utilisateur_id'] ?? null;
 $role = $_SESSION['role'];
 
+function readPageParam($name){
+    if(isset($_GET[$name])){
+        $value = filter_var($_GET[$name], FILTER_VALIDATE_INT, ['options'=>['min_range'=>1]]);
+        if($value !== false){
+            return $value;
+        }
+    }
+    return 1;
+}
+
+function computePagination($total, $perPage, $page){
+    $total = max(0, (int) $total);
+    $perPage = max(1, (int) $perPage);
+    $page = max(1, (int) $page);
+
+    $totalPages = (int) ceil($total / $perPage);
+    if($totalPages < 1){
+        $totalPages = 1;
+    }
+    if($page > $totalPages){
+        $page = $totalPages;
+    }
+
+    $offset = ($page - 1) * $perPage;
+    if($offset < 0){
+        $offset = 0;
+    }
+
+    return [
+        'page'=>$page,
+        'per_page'=>$perPage,
+        'total_items'=>$total,
+        'total_pages'=>$totalPages,
+        'offset'=>$offset,
+    ];
+}
+
+function buildPaginationUrl(array $updates, $anchor = ''){
+    $params = $_GET;
+    foreach($updates as $key=>$value){
+        if($value === null){
+            unset($params[$key]);
+        }else{
+            $params[$key] = $value;
+        }
+    }
+
+    $query = http_build_query($params);
+    $url = 'admin.php';
+    if($query !== ''){
+        $url .= '?' . $query;
+    }
+    if($anchor !== ''){
+        $url .= '#' . $anchor;
+    }
+    return $url;
+}
+
+function renderPagination($param, array $pagination, $anchor){
+    $totalPages = isset($pagination['total_pages']) ? (int) $pagination['total_pages'] : 1;
+    $currentPage = isset($pagination['page']) ? (int) $pagination['page'] : 1;
+    if($totalPages <= 1){
+        return '';
+    }
+
+    $html = '<div class="pagination">';
+    if($currentPage > 1){
+        $html .= '<a class="page prev" href="' . htmlspecialchars(buildPaginationUrl([$param => $currentPage - 1], $anchor), ENT_QUOTES, 'UTF-8') . '">&laquo; Précédent</a>';
+    }
+
+    for($i = 1; $i <= $totalPages; $i++){
+        if($i === $currentPage){
+            $html .= '<span class="page current">' . $i . '</span>';
+        }else{
+            $html .= '<a class="page" href="' . htmlspecialchars(buildPaginationUrl([$param => $i], $anchor), ENT_QUOTES, 'UTF-8') . '">' . $i . '</a>';
+        }
+    }
+
+    if($currentPage < $totalPages){
+        $html .= '<a class="page next" href="' . htmlspecialchars(buildPaginationUrl([$param => $currentPage + 1], $anchor), ENT_QUOTES, 'UTF-8') . '">Suivant &raquo;</a>';
+    }
+
+    $html .= '</div>';
+    return $html;
+}
+
 // --- Gestion du POST pour actions AJAX ---
 if($_SERVER['REQUEST_METHOD']==='POST' && isset($_POST['action'])){
     if($_POST['action']==='terminer'){
@@ -119,30 +205,59 @@ if($_SERVER['REQUEST_METHOD']==='POST' && isset($_POST['action'])){
 }
 
 // --- Récupération des données ---
-$reservations = $pdo->query("
-    SELECT r.*, u.pseudo, l.titre, l.livre_id 
+$reservationsPerPage = 10;
+$livresPerPage = 10;
+$utilisateursPerPage = 10;
+
+$reservationsPage = readPageParam('reservations_page');
+$livresPage = readPageParam('livres_page');
+$utilisateursPage = readPageParam('utilisateurs_page');
+
+$totalReservations = (int) $pdo->query("SELECT COUNT(*) FROM reservations")->fetchColumn();
+$totalLivres = (int) $pdo->query("SELECT COUNT(*) FROM livres")->fetchColumn();
+$totalUtilisateurs = (int) $pdo->query("SELECT COUNT(*) FROM utilisateurs")->fetchColumn();
+
+$reservationsPagination = computePagination($totalReservations, $reservationsPerPage, $reservationsPage);
+$livresPagination = computePagination($totalLivres, $livresPerPage, $livresPage);
+$utilisateursPagination = computePagination($totalUtilisateurs, $utilisateursPerPage, $utilisateursPage);
+
+$reservationsStmt = $pdo->prepare("
+    SELECT r.*, u.pseudo, l.titre, l.livre_id
     FROM reservations r
     JOIN utilisateurs u ON r.utilisateur_id=u.utilisateur_id
     JOIN livres l ON r.livre_id=l.livre_id
     ORDER BY r.date_reservation DESC
-")->fetchAll(PDO::FETCH_ASSOC);
+    LIMIT :limit OFFSET :offset
+");
+$reservationsStmt->bindValue(':limit', $reservationsPagination['per_page'], PDO::PARAM_INT);
+$reservationsStmt->bindValue(':offset', $reservationsPagination['offset'], PDO::PARAM_INT);
+$reservationsStmt->execute();
+$reservations = $reservationsStmt->fetchAll(PDO::FETCH_ASSOC);
 
-$livres = $pdo->query("SELECT * FROM livres ORDER BY titre")->fetchAll(PDO::FETCH_ASSOC);
+$livresStmt = $pdo->prepare("SELECT * FROM livres ORDER BY titre LIMIT :limit OFFSET :offset");
+$livresStmt->bindValue(':limit', $livresPagination['per_page'], PDO::PARAM_INT);
+$livresStmt->bindValue(':offset', $livresPagination['offset'], PDO::PARAM_INT);
+$livresStmt->execute();
+$livres = $livresStmt->fetchAll(PDO::FETCH_ASSOC);
 
 $chartLivres = $pdo->query("
-    SELECT l.titre, COUNT(r.reservation_id) as total 
-    FROM livres l 
+    SELECT l.titre, COUNT(r.reservation_id) as total
+    FROM livres l
     LEFT JOIN reservations r ON l.livre_id = r.livre_id
     GROUP BY l.livre_id
 ")->fetchAll(PDO::FETCH_ASSOC);
 
 $chartUsers = $pdo->query("
-    SELECT u.pseudo, COUNT(r.reservation_id) as total 
-    FROM utilisateurs u 
+    SELECT u.pseudo, COUNT(r.reservation_id) as total
+    FROM utilisateurs u
     LEFT JOIN reservations r ON u.utilisateur_id = r.utilisateur_id
     GROUP BY u.utilisateur_id
 ")->fetchAll(PDO::FETCH_ASSOC);
-$utilisateurs = $pdo->query("\n    SELECT utilisateur_id, pseudo, email, role, date_inscription\n    FROM utilisateurs\n    ORDER BY pseudo\n")->fetchAll(PDO::FETCH_ASSOC);
+$utilisateursStmt = $pdo->prepare("\n    SELECT utilisateur_id, pseudo, email, role, date_inscription\n    FROM utilisateurs\n    ORDER BY pseudo\n    LIMIT :limit OFFSET :offset\n");
+$utilisateursStmt->bindValue(':limit', $utilisateursPagination['per_page'], PDO::PARAM_INT);
+$utilisateursStmt->bindValue(':offset', $utilisateursPagination['offset'], PDO::PARAM_INT);
+$utilisateursStmt->execute();
+$utilisateurs = $utilisateursStmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <!DOCTYPE html>
@@ -172,6 +287,11 @@ h1 { text-align:center; color:#00796b; margin:20px 0; font-family:'Great Vibes',
 table { border-collapse: collapse; width:100%; margin-bottom:30px; background:white; border-radius:10px; overflow:hidden; }
 th, td { border:1px solid #00796b; padding:8px; text-align:center; }
 th { background:#00796b; color:white; }
+.pagination { display:flex; justify-content:center; align-items:center; gap:8px; flex-wrap:wrap; margin:10px 0 30px; }
+.pagination .page { display:inline-flex; align-items:center; justify-content:center; padding:6px 12px; border-radius:4px; border:1px solid #00796b; color:#00796b; text-decoration:none; background:white; min-width:36px; transition:all 0.3s; font-weight:500; }
+.pagination .page:hover { background:#00796b; color:white; }
+.pagination .current { background:#00796b; color:white; border-color:#00796b; font-weight:700; cursor:default; }
+.pagination-info { text-align:center; margin-bottom:10px; color:#004d40; font-weight:500; }
 button.action { padding:5px 10px; margin:2px; cursor:pointer; border-radius:4px; border:none; color:white; }
 button.terminer { background: white; color: #f57c00; border: 2px solid #f57c00; }
 button.terminer:hover { background:#f57c00;color: white; }
@@ -219,14 +339,14 @@ button.modifier:hover { background: #52a058ff;color: white;}
 <h1>Panneau Administrateur</h1>
 
 <div class="tab-buttons">
-    <button class="tabBtn active" onclick="openTab('reservations', event)">Réservations</button>
-    <button class="tabBtn" onclick="openTab('gererLivres', event)">Gérer les livres</button>
-    <button class="tabBtn" onclick="openTab('utilisateurs', event)">Gestion utilisateurs</button>
-    <button class="tabBtn" onclick="openTab('statistiques', event)">Statistiques</button>
+    <button class="tabBtn active" data-tab="reservations" onclick="openTab('reservations', event)">Réservations</button>
+    <button class="tabBtn" data-tab="gererLivres" onclick="openTab('gererLivres', event)">Gérer les livres</button>
+    <button class="tabBtn" data-tab="utilisateurs" onclick="openTab('utilisateurs', event)">Gestion utilisateurs</button>
+    <button class="tabBtn" data-tab="statistiques" onclick="openTab('statistiques', event)">Statistiques</button>
 </div>
 
 <!-- Onglet Réservations -->
-<div id="reservations" class="tabContent" style="display:block;">
+<div id="reservations" class="tabContent" data-page-param="reservations_page" data-current-page="<?= (int) $reservationsPagination['page'] ?>" data-total-pages="<?= (int) $reservationsPagination['total_pages'] ?>" style="display:block;">
     <table>
         <tr>
             <th>Utilisateur</th><th>Livre</th><th>Date</th><th>Statut</th><th>Actions</th>
@@ -245,10 +365,23 @@ button.modifier:hover { background: #52a058ff;color: white;}
         </tr>
         <?php endforeach; ?>
     </table>
+    <?php
+        $reservationsCount = count($reservations);
+        $reservationsStart = $reservationsCount ? $reservationsPagination['offset'] + 1 : 0;
+        $reservationsEnd = $reservationsCount ? $reservationsPagination['offset'] + $reservationsCount : 0;
+    ?>
+    <div class="pagination-info">
+        <?php if($reservationsCount): ?>
+            Affichage de <?= htmlspecialchars($reservationsStart, ENT_QUOTES, 'UTF-8') ?> à <?= htmlspecialchars($reservationsEnd, ENT_QUOTES, 'UTF-8') ?> sur <?= htmlspecialchars($reservationsPagination['total_items'], ENT_QUOTES, 'UTF-8') ?> réservations.
+        <?php else: ?>
+            Aucune réservation trouvée.
+        <?php endif; ?>
+    </div>
+    <?= renderPagination('reservations_page', $reservationsPagination, 'reservations'); ?>
 </div>
 
 <!-- Onglet Gérer les livres -->
-<div id="gererLivres" class="tabContent">
+<div id="gererLivres" class="tabContent" data-page-param="livres_page" data-current-page="<?= (int) $livresPagination['page'] ?>" data-total-pages="<?= (int) $livresPagination['total_pages'] ?>">
 
 <div style="text-align:center; margin-bottom:20px;">
     <button onclick="openAddModal()" style=" 
@@ -297,6 +430,19 @@ button.modifier:hover { background: #52a058ff;color: white;}
     </tr>
     <?php endforeach; ?>
 </table>
+<?php
+    $livresCount = count($livres);
+    $livresStart = $livresCount ? $livresPagination['offset'] + 1 : 0;
+    $livresEnd = $livresCount ? $livresPagination['offset'] + $livresCount : 0;
+?>
+<div class="pagination-info">
+    <?php if($livresCount): ?>
+        Affichage de <?= htmlspecialchars($livresStart, ENT_QUOTES, 'UTF-8') ?> à <?= htmlspecialchars($livresEnd, ENT_QUOTES, 'UTF-8') ?> sur <?= htmlspecialchars($livresPagination['total_items'], ENT_QUOTES, 'UTF-8') ?> livres.
+    <?php else: ?>
+        Aucun livre trouvé.
+    <?php endif; ?>
+</div>
+<?= renderPagination('livres_page', $livresPagination, 'gererLivres'); ?>
 </div>
 
 <!-- Modal Modifier -->
@@ -317,9 +463,14 @@ button.modifier:hover { background: #52a058ff;color: white;}
 </div>
 
 <!-- Onglet Gestion utilisateurs -->
-<div id="utilisateurs" class="tabContent">
-    <?php if (empty($utilisateurs)): ?>
-        <p style="text-align:center;">Aucun utilisateur enregistre.</p>
+<div id="utilisateurs" class="tabContent" data-page-param="utilisateurs_page" data-current-page="<?= (int) $utilisateursPagination['page'] ?>" data-total-pages="<?= (int) $utilisateursPagination['total_pages'] ?>">
+    <?php
+        $utilisateursCount = count($utilisateurs);
+        $utilisateursStart = $utilisateursCount ? $utilisateursPagination['offset'] + 1 : 0;
+        $utilisateursEnd = $utilisateursCount ? $utilisateursPagination['offset'] + $utilisateursCount : 0;
+    ?>
+    <?php if ($utilisateursCount === 0): ?>
+        <p style="text-align:center;">Aucun utilisateur enregistré.</p>
     <?php else: ?>
         <table>
             <tr><th>Pseudo</th><th>Email</th><th>Role</th><th>Inscription</th><th>Actions</th></tr>
@@ -348,6 +499,14 @@ button.modifier:hover { background: #52a058ff;color: white;}
             <?php endforeach; ?>
         </table>
     <?php endif; ?>
+    <div class="pagination-info">
+        <?php if($utilisateursCount): ?>
+            Affichage de <?= htmlspecialchars($utilisateursStart, ENT_QUOTES, 'UTF-8') ?> à <?= htmlspecialchars($utilisateursEnd, ENT_QUOTES, 'UTF-8') ?> sur <?= htmlspecialchars($utilisateursPagination['total_items'], ENT_QUOTES, 'UTF-8') ?> utilisateurs.
+        <?php else: ?>
+            Aucun utilisateur à afficher.
+        <?php endif; ?>
+    </div>
+    <?= renderPagination('utilisateurs_page', $utilisateursPagination, 'utilisateurs'); ?>
 </div>
 <!-- Onglet Statistiques -->
 <div id="statistiques" class="tabContent">
@@ -378,40 +537,31 @@ function handleRequestError(error){
     showError("La requête a échoué. Veuillez réessayer.");
 }
 
-function createBookRow(book){
-    const row = document.createElement('tr');
-    row.dataset.id = book.livre_id;
+function getSectionMeta(sectionId){
+    const section = document.getElementById(sectionId);
+    if(!section){
+        return null;
+    }
+    let page = parseInt(section.dataset.currentPage || '1', 10);
+    if(!page || page < 1){
+        page = 1;
+    }
+    const param = section.dataset.pageParam || '';
+    return { section, page, param };
+}
 
-    const titreCell = document.createElement('td');
-    titreCell.textContent = book.titre || '';
-    row.appendChild(titreCell);
-
-    const auteurCell = document.createElement('td');
-    auteurCell.textContent = book.auteur || '';
-    row.appendChild(auteurCell);
-
-    const genreCell = document.createElement('td');
-    genreCell.textContent = book.genre || '';
-    row.appendChild(genreCell);
-
-    const actionsCell = document.createElement('td');
-
-    const editButton = document.createElement('button');
-    editButton.className = 'action modifier';
-    editButton.textContent = 'Modifier';
-    editButton.dataset.livre = JSON.stringify(book);
-    editButton.addEventListener('click', function(){ openEditModal(this); });
-    actionsCell.appendChild(editButton);
-
-    const deleteButton = document.createElement('button');
-    deleteButton.className = 'action supprimer';
-    deleteButton.textContent = 'Supprimer';
-    deleteButton.addEventListener('click', function(){ deleteBook(this, book.livre_id); });
-    actionsCell.appendChild(deleteButton);
-
-    row.appendChild(actionsCell);
-
-    return row;
+function refreshSection(sectionId){
+    const meta = getSectionMeta(sectionId);
+    const url = new URL(window.location.href);
+    if(meta && meta.param){
+        if(meta.page > 1){
+            url.searchParams.set(meta.param, meta.page);
+        }else{
+            url.searchParams.delete(meta.param);
+        }
+    }
+    url.hash = sectionId;
+    window.location.href = url.toString();
 }
 
 // Réservations
@@ -474,13 +624,10 @@ document.getElementById('formAddBook').addEventListener('submit', e=>{
     fetch('admin.php',{method:'POST', body:data})
         .then(toJson)
         .then(d=>{
-            if(d.success && d.book){
-                const table = document.getElementById('booksTable');
-                const tbody = table.tBodies.length ? table.tBodies[0] : table;
-                const newRow = createBookRow(d.book);
-                tbody.appendChild(newRow);
+            if(d.success){
                 e.target.reset();
                 closeAddModal();
+                refreshSection('gererLivres');
             }else{
                 showError(d.message);
             }
@@ -549,14 +696,14 @@ function deleteBook(button, livreId){
         .then(toJson)
         .then(d=>{
             if(d.success){
-                const row = button.closest('tr');
-                if(row){
-                    row.remove();
+                const editInput = document.getElementById('modal_edit_livre_id');
+                if(editInput){
+                    const editModalId = parseInt(editInput.value, 10);
+                    if(editModalId === Number(livreId)){
+                        closeEditModal();
+                    }
                 }
-                const editModalId = parseInt(document.getElementById('modal_edit_livre_id').value, 10);
-                if(editModalId === Number(livreId)){
-                    closeEditModal();
-                }
+                refreshSection('gererLivres');
             }else{
                 showError(d.message);
             }
@@ -575,10 +722,7 @@ function deleteUser(button, utilisateurId, pseudo){
         .then(toJson)
         .then(d=>{
             if(d.success){
-                const row = button.closest('tr');
-                if(row){
-                    row.remove();
-                }
+                refreshSection('utilisateurs');
             }else{
                 showError(d.message);
             }
@@ -589,15 +733,36 @@ function deleteUser(button, utilisateurId, pseudo){
 // Graphiques
 let chartsCreated = false;
 
-function openTab(tabName, evt){
+function openTab(tabName, evt, skipHashUpdate){
     document.querySelectorAll('.tabContent').forEach(c=>c.style.display='none');
-    document.getElementById(tabName).style.display='block';
+    const target = document.getElementById(tabName);
+    if(target){
+        target.style.display = 'block';
+    }
+
     document.querySelectorAll('.tabBtn').forEach(b=>b.classList.remove('active'));
-    evt.currentTarget.classList.add('active');
+    if(evt && evt.currentTarget){
+        evt.currentTarget.classList.add('active');
+    }else{
+        const button = document.querySelector(`.tabBtn[data-tab="${tabName}"]`);
+        if(button){
+            button.classList.add('active');
+        }
+    }
 
     if(tabName === 'statistiques' && !chartsCreated){
         createCharts();
         chartsCreated = true;
+    }
+
+    if(!skipHashUpdate){
+        try{
+            const url = new URL(window.location.href);
+            url.hash = tabName;
+            history.replaceState(null, '', url);
+        }catch(error){
+            window.location.hash = tabName;
+        }
     }
 }
 
@@ -675,6 +840,13 @@ function createCharts(){
 function toggleMenu(){
   document.getElementById('navMenu').classList.toggle('show');
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+    const initialHash = window.location.hash ? window.location.hash.substring(1) : 'reservations';
+    const targetTab = document.getElementById(initialHash) ? initialHash : 'reservations';
+    const button = document.querySelector(`.tabBtn[data-tab="${targetTab}"]`);
+    openTab(targetTab, { currentTarget: button }, !window.location.hash);
+});
 </script>
 </body>
 </html>
