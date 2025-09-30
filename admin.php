@@ -299,10 +299,13 @@ form input, form textarea { padding:6px; margin:4px; width:200px; }
 form button { padding:6px 12px; margin:4px; cursor:pointer; border-radius:4px; border:none; background:#00796b; color:white; }
 form button:hover { background:#004d40; }
 canvas { background:white; border-radius:10px; padding:20px; margin:20px auto; display:block; max-width:90%; }
+@media(max-width:600px){ table, canvas { width:95%; } nav { flex-direction:column; gap:10px; } form input, form textarea { width:90%; } }
 button.supprimer {background: white; color: #b71c1c; border: 2px solid #b71c1c;}
 button.supprimer:hover { background:#b71c1c ;color: white;}
 button.modifier { background: white; color: #52a058ff; border: 2px solid #52a058ff;}
 button.modifier:hover { background: #52a058ff;color: white;}
+<<<<<<< ours
+<<<<<<< ours
 .mobile-bottom-nav { display:none; }
 .mobile-bottom-nav__link { color:#004d40; text-decoration:none; font-size:0.75rem; font-weight:600; display:flex; flex-direction:column; align-items:center; gap:6px; }
 .mobile-bottom-nav__icon { width:54px; height:54px; border-radius:50%; background:linear-gradient(135deg,#00796b,#00acc1); color:#ffffff; display:flex; align-items:center; justify-content:center; font-size:1.4rem; box-shadow:0 8px 16px rgba(0,0,0,0.15); transition:transform 0.2s ease, box-shadow 0.2s ease; }
@@ -317,19 +320,33 @@ button.modifier:hover { background: #52a058ff;color: white;}
     form input, form textarea { width:90%; }
     .mobile-bottom-nav { position:fixed; bottom:0; left:0; right:0; display:flex; justify-content:space-around; padding:12px; background:rgba(255,255,255,0.8); backdrop-filter: blur(6px); border-top:1px solid rgba(0,0,0,0.1); z-index:1000; }
 }
+=======
+@media(max-width:600px){ table, canvas { width:95%; } nav { flex-wrap:nowrap; gap:12px; } nav .logo { font-size:1.3em; } .mobile-menu-toggle { display:inline-flex; align-items:center; justify-content:center; } nav .actions { display:none; } form input, form textarea { width:90%; } }
+>>>>>>> theirs
+=======
+>>>>>>> theirs
 </style>
 </head>
 <body>
 
 <!-- BARRE DE NAVIGATION -->
+<<<<<<< ours
+<<<<<<< ours
+=======
+>>>>>>> theirs
 <nav>
     <div class="logo">
         <img src="https://img.freepik.com/vecteurs-premium/lire-logo-du-livre_7888-13.jpg" alt="Logo BookShare">
         BookShare
     </div>
     <div class="actions">
+<<<<<<< ours
     <form method="get" action="index.php" id="main-search-form" style="margin:0;">
         <input type="text" id="main-search-input" name="q" placeholder="Rechercher un livre...">
+=======
+    <form method="get" action="index.php" style="margin:0;">
+        <input type="text" name="q" placeholder="Rechercher un livre...">
+>>>>>>> theirs
     </form>
 
      <button onclick="window.location.href='index.php'">Accueil</button>
@@ -348,6 +365,12 @@ button.modifier:hover { background: #52a058ff;color: white;}
     <?php endif; ?>
 </div>
 </nav>
+<<<<<<< ours
+=======
+<?php include __DIR__ . '/php/partials/header.php'; ?>
+>>>>>>> theirs
+=======
+>>>>>>> theirs
 
 <h1>Panneau Administrateur</h1>
 

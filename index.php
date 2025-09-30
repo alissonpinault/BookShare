@@ -133,6 +133,7 @@ if ($noteMin !== null) {
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Great+Vibes&display=swap" rel="stylesheet">
 <link rel="icon" type="image/jpg" href="https://img.freepik.com/vecteurs-premium/lire-logo-du-livre_7888-13.jpg">
 <style>
+<<<<<<< ours
 body {
     margin: 0;
     font-family: 'Roboto', sans-serif;
@@ -276,6 +277,32 @@ h1 {
     overflow: hidden;
     transition: transform 0.2s;
 }
+=======
+body { margin:0; font-family:'Roboto', sans-serif; background: linear-gradient(135deg, #a8edea, #fed6e3); }
+nav { display:flex; justify-content:space-between; align-items:center; padding:10px 20px; background:#00796b; color:white; flex-wrap:wrap; }
+nav .logo { display:flex; align-items:center; gap:10px; font-weight:bold; font-size:1.5em; }
+nav .logo img { height:40px; }
+nav .actions { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+nav input[type="text"] { padding:6px 10px; border:none; border-radius:4px; width:200px; }
+nav button { background:#004d40; border:none; color:white; padding:6px 12px; border-radius:4px; cursor:pointer; transition: all 0.3s; }
+nav button:hover { background:#00332c; transform: translateY(-2px); }
+h1 { text-align:center; color:#00796b; margin:20px 0; font-family:'Great Vibes', cursive; font-size:3em; }
+.filters-wrapper { max-width:960px; margin:0 auto 20px; padding:0 20px; }
+.filters-toggle { background:#004d40; border:none; color:#ffffff; padding:10px 16px; border-radius:6px; cursor:pointer; font-weight:600; box-shadow:0 3px 6px rgba(0,0,0,0.2); transition: background 0.3s, transform 0.2s; }
+.filters-toggle:hover { background:#00332c; transform: translateY(-2px); }
+.filters-toggle:focus { outline:2px solid #80cbc4; outline-offset:2px; }
+.filters-panel { background:rgba(255,255,255,0.95); border-radius:10px; padding:20px; margin-top:15px; box-shadow:0 8px 16px rgba(0,0,0,0.15); border:1px solid #c8e6c9; }
+.filters-panel[hidden] { display:none; }
+.filters-form { display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:18px; align-items:end; }
+.filters-form label { display:flex; flex-direction:column; font-weight:600; color:#004d40; font-size:0.95em; }
+.filters-form select, .filters-form input[type="text"] { margin-top:6px; padding:8px 10px; border-radius:6px; border:1px solid #b2dfdb; font-size:0.95em; background-color:#f3faf9; }
+.filters-form select:focus, .filters-form input[type="text"]:focus { outline:2px solid #80cbc4; outline-offset:2px; background-color:#ffffff; }
+.filters-actions { display:flex; justify-content:flex-end; align-items:center; }
+.filters-actions button { background:#00796b; color:#ffffff; border:none; padding:10px 18px; border-radius:6px; cursor:pointer; font-weight:600; transition: background 0.3s, transform 0.2s; }
+.filters-actions button:hover { background:#004d40; transform: translateY(-1px); }
+.cards-container { display:flex; flex-wrap:wrap; gap:20px; justify-content:center; padding: 20px; }
+.card { background:white; border-radius:10px; box-shadow:0 4px 8px rgba(0,0,0,0.2); width:250px; overflow:hidden; transition: transform 0.2s; }
+>>>>>>> theirs
 .card:hover { transform: scale(1.05); }
 .card img { width: 100%; height: 150px; object-fit: cover; }
 .card-content { padding: 15px; text-align: center; }
@@ -354,6 +381,8 @@ h1 {
 
 /* === Responsive === */
 @media (max-width:600px) {
+<<<<<<< ours
+<<<<<<< ours
     nav { flex-direction: column; gap: 10px; }
     nav input[type="text"] { width: 100%; }
 
@@ -379,20 +408,46 @@ h1 {
         border-top: 1px solid rgba(0,0,0,0.1);
         z-index: 1000;
     }
+=======
+    nav { flex-wrap:nowrap; gap:12px; }
+    nav .logo { font-size:1.3em; }
+    .mobile-menu-toggle { display:inline-flex; align-items:center; justify-content:center; }
+    nav .actions { display:none; }
+=======
+    nav { flex-direction: column; gap:10px; }
+>>>>>>> theirs
+    nav input[type="text"] { width:100%; }
+    .filters-form { grid-template-columns: 1fr; }
+    .filters-actions { justify-content:stretch; }
+    .filters-actions button { width:100%; }
+    .cards-container { flex-direction:column; align-items:center; }
+    .card { width:90%; }
+    .pagination { width:100%; gap:6px; margin:20px auto; }
+    .pagination a { flex:1 1 48px; font-size:14px; }
+>>>>>>> theirs
 }
 </style>
 
 </head>
 <body>
 
+<<<<<<< ours
+<<<<<<< ours
+=======
+>>>>>>> theirs
 <nav>
     <div class="logo">
         <img src="images\logo.jpg" alt="Logo BookShare">
         BookShare
     </div>
    <div class="actions">
+<<<<<<< ours
     <form method="get" action="index.php" id="main-search-form" style="margin:0;">
         <input type="text" id="main-search-input" name="q" placeholder="Rechercher un livre..." value="<?= htmlspecialchars($q) ?>">
+=======
+    <form method="get" action="index.php" style="margin:0;">
+        <input type="text" name="q" placeholder="Rechercher un livre..." value="<?= htmlspecialchars($q) ?>">
+>>>>>>> theirs
         <?php if ($genre !== ''): ?>
             <input type="hidden" name="genre" value="<?= htmlspecialchars($genre) ?>">
         <?php endif; ?>
@@ -426,6 +481,12 @@ h1 {
 </div>
 
 </nav>
+<<<<<<< ours
+=======
+<?php include __DIR__ . '/php/partials/header.php'; ?>
+>>>>>>> theirs
+=======
+>>>>>>> theirs
 
 <h1>Bienvenue sur BookShare</h1>
 
