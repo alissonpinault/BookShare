@@ -22,9 +22,8 @@ class Reservation
     public function getGenre(): string { return $this->data['genre'] ?? ''; }
     public function getImageUrl(): string { return $this->data['image_url'] ?? ''; }
 
-    /**
-     * Retourne toutes les reservations pour un utilisateur donne.
-     */
+    // Retourne toutes les reservations pour un utilisateur //
+
     public function getReservationsByUtilisateur(int $utilisateurId): array
     {
         $sql = <<<'SQL'
@@ -41,32 +40,22 @@ class Reservation
 
     public function getReservationsEnCours(int $utilisateurId, ?int $limit = null, ?int $offset = null): array
     {
-        return $this->getReservationsByStatut($utilisateurId, 'en cours', $limit, $offset);
-    }
-
+        return $this->getReservationsByStatut($utilisateurId, 'en cours', $limit, $offset);  }
     public function getReservationsTerminees(int $utilisateurId, ?int $limit = null, ?int $offset = null): array
     {
-        return $this->getReservationsByStatut($utilisateurId, 'terminer', $limit, $offset);
-    }
-
+        return $this->getReservationsByStatut($utilisateurId, 'terminer', $limit, $offset);  }
     public function getReservationsArchivees(int $utilisateurId, ?int $limit = null, ?int $offset = null): array
     {
-        return $this->getReservationsTerminees($utilisateurId, $limit, $offset);
-    }
-
+        return $this->getReservationsTerminees($utilisateurId, $limit, $offset);  }
     public function countReservationsEnCours(int $utilisateurId): int
     {
-        return $this->countReservationsByStatut($utilisateurId, 'en cours');
-    }
-
+        return $this->countReservationsByStatut($utilisateurId, 'en cours'); }
     public function countReservationsArchivees(int $utilisateurId): int
     {
-        return $this->countReservationsByStatut($utilisateurId, 'terminer');
-    }
+        return $this->countReservationsByStatut($utilisateurId, 'terminer'); }
 
-    /**
-     * Annule une reservation et remet le livre a disposition.
-     */
+    //Annule une reservation et remet le livre a disposition//
+
     public function annulerReservation(int $reservationId, int $utilisateurId): bool
     {
         $stmt = $this->pdo->prepare(

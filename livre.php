@@ -53,7 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reserver'])) {
 body { font-family:'Roboto', sans-serif; background: linear-gradient(135deg, #a8edea, #fed6e3); margin:0; }
 nav { display:flex; justify-content:space-between; align-items:center; padding:10px 20px; background:#00796b; color:white; flex-wrap:wrap; }
 nav .logo { display:flex; align-items:center; gap:10px; font-weight:bold; font-size:1.5em; }
-nav .logo img { height:40px; }
+nav .logo img { height:40px; width: auto; }
 nav .actions { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
 nav input[type="text"] { padding:6px 10px; border:none; border-radius:4px; width:200px; }
 nav button { background:#004d40; border:none; color:white; padding:6px 12px; border-radius:4px; cursor:pointer; transition: all 0.3s; }
@@ -66,8 +66,6 @@ button:disabled { background:#ccc; cursor:default; }
 .moyenne-notes { margin-top:10px; font-size:1.2em; color:#444; display:flex; align-items:center; gap:8px; justify-content:center; }
 .moyenne-notes .star { font-size:1.5em; color:#ccc; }
 .moyenne-notes .star.filled { color: gold; }
-<<<<<<< ours
-<<<<<<< ours
 .mobile-bottom-nav { display:none; }
 .mobile-bottom-nav__link { color:#004d40; text-decoration:none; font-size:0.75rem; font-weight:600; display:flex; flex-direction:column; align-items:center; gap:6px; }
 .mobile-bottom-nav__icon { width:54px; height:54px; border-radius:50%; background:linear-gradient(135deg,#00796b,#00acc1); color:#ffffff; display:flex; align-items:center; justify-content:center; font-size:1.4rem; box-shadow:0 8px 16px rgba(0,0,0,0.15); transition:transform 0.2s ease, box-shadow 0.2s ease; }
@@ -81,37 +79,27 @@ button:disabled { background:#ccc; cursor:default; }
     nav input[type="text"] { width:100%; }
     .container { margin:10px auto 100px; width:92%; }
     .mobile-bottom-nav { position:fixed; bottom:0; left:0; right:0; display:flex; justify-content:space-around; padding:12px; background:rgba(255,255,255,0.8); backdrop-filter: blur(6px); border-top:1px solid rgba(0,0,0,0.1); z-index:1000; }
-=======
+
 @media (max-width:600px) {
     nav { flex-wrap:nowrap; gap:12px; }
     nav .logo { font-size:1.3em; }
     .mobile-menu-toggle { display:inline-flex; align-items:center; justify-content:center; }
     nav .actions { display:none; }
->>>>>>> theirs
+
 }
-=======
->>>>>>> theirs
+}
 </style>
 </head>
 <body>
 
-<<<<<<< ours
-<<<<<<< ours
-=======
->>>>>>> theirs
 <nav>
     <div class="logo">
         <img src="images/logo.jpg" alt="Logo BookShare">
         BookShare
     </div>
     <div class="actions">
-<<<<<<< ours
-        <form method="get" action="index.php" id="main-search-form" style="margin:0;">
-            <input type="text" id="main-search-input" name="q" placeholder="Rechercher un livre...">
-=======
         <form method="get" action="index.php" style="margin:0;">
             <input type="text" name="q" placeholder="Rechercher un livre...">
->>>>>>> theirs
         </form>
 
         <button onclick="window.location.href='index.php'">Accueil</button>
@@ -132,12 +120,7 @@ button:disabled { background:#ccc; cursor:default; }
         <?php endif; ?>
     </div>
 </nav>
-<<<<<<< ours
-=======
 <?php include __DIR__ . '/php/partials/header.php'; ?>
->>>>>>> theirs
-=======
->>>>>>> theirs
 
 <div class="container">
     <h1><?= htmlspecialchars($livre->getTitre()) ?></h1>
@@ -175,14 +158,9 @@ button:disabled { background:#ccc; cursor:default; }
     <?php endif; ?>
 </div>
 
-<<<<<<< ours
-<<<<<<< ours
 <?php require __DIR__ . '/php/components/mobile_bottom_nav.php'; ?>
-=======
-<script src="js/navigation.js"></script>
->>>>>>> theirs
 
-=======
->>>>>>> theirs
+<script src="js/navigation.js"></script>
+</div>
 </body>
 </html>

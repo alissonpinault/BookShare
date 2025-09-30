@@ -1,9 +1,9 @@
-<?php
+﻿<?php
 require_once 'db.php';
 require_once __DIR__ . '/php/UtilisateurPOO.php';
 session_start();
 
-// Session utilisateur → objet Utilisateur
+// Session utilisateur â†’ objet Utilisateur
 $utilisateur = null;
 if (isset($_SESSION['utilisateur_id'])) {
     $utilisateur = new Utilisateur(
@@ -14,7 +14,7 @@ if (isset($_SESSION['utilisateur_id'])) {
     );
 }
 
-// Récupération des listes de genres et d'auteurs
+// RÃ©cupÃ©ration des listes de genres et d'auteurs
 $genresStmt = $pdo->query('SELECT DISTINCT genre FROM livres WHERE genre IS NOT NULL AND genre <> "" ORDER BY genre');
 $genres = $genresStmt ? $genresStmt->fetchAll(PDO::FETCH_COLUMN) : [];
 
@@ -133,7 +133,6 @@ if ($noteMin !== null) {
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Great+Vibes&display=swap" rel="stylesheet">
 <link rel="icon" type="image/jpg" href="https://img.freepik.com/vecteurs-premium/lire-logo-du-livre_7888-13.jpg">
 <style>
-<<<<<<< ours
 body {
     margin: 0;
     font-family: 'Roboto', sans-serif;
@@ -215,19 +214,22 @@ h1 {
     align-items: flex-end;
 }
 
-
+.filters-row {
+    flex: 1 1 auto;
+    display: flex;
+    gap: 18px;
+    align-items: flex-end;
+}
 
 .filters-form label {
-    flex: 0 0 auto;           
-    min-width: 150px;         
+    flex: 1 1 160px;
+    min-width: 150px;
     display: flex;
     flex-direction: column;
     font-weight: 600;
     color: #004d40;
     font-size: 0.95em;
 }
-
-
 
 .filters-form select,
 .filters-form input[type="text"] {
@@ -240,10 +242,11 @@ h1 {
 }
 
 .filters-actions {
-    width: 100%;
     display: flex;
-    justify-content: center;
-    margin-top: 15px;
+    align-items: flex-end;
+    justify-content: flex-end;
+    margin-top: 0;
+    flex: 0 0 auto;
 }
 
 .filters-actions button {
@@ -277,32 +280,6 @@ h1 {
     overflow: hidden;
     transition: transform 0.2s;
 }
-=======
-body { margin:0; font-family:'Roboto', sans-serif; background: linear-gradient(135deg, #a8edea, #fed6e3); }
-nav { display:flex; justify-content:space-between; align-items:center; padding:10px 20px; background:#00796b; color:white; flex-wrap:wrap; }
-nav .logo { display:flex; align-items:center; gap:10px; font-weight:bold; font-size:1.5em; }
-nav .logo img { height:40px; }
-nav .actions { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
-nav input[type="text"] { padding:6px 10px; border:none; border-radius:4px; width:200px; }
-nav button { background:#004d40; border:none; color:white; padding:6px 12px; border-radius:4px; cursor:pointer; transition: all 0.3s; }
-nav button:hover { background:#00332c; transform: translateY(-2px); }
-h1 { text-align:center; color:#00796b; margin:20px 0; font-family:'Great Vibes', cursive; font-size:3em; }
-.filters-wrapper { max-width:960px; margin:0 auto 20px; padding:0 20px; }
-.filters-toggle { background:#004d40; border:none; color:#ffffff; padding:10px 16px; border-radius:6px; cursor:pointer; font-weight:600; box-shadow:0 3px 6px rgba(0,0,0,0.2); transition: background 0.3s, transform 0.2s; }
-.filters-toggle:hover { background:#00332c; transform: translateY(-2px); }
-.filters-toggle:focus { outline:2px solid #80cbc4; outline-offset:2px; }
-.filters-panel { background:rgba(255,255,255,0.95); border-radius:10px; padding:20px; margin-top:15px; box-shadow:0 8px 16px rgba(0,0,0,0.15); border:1px solid #c8e6c9; }
-.filters-panel[hidden] { display:none; }
-.filters-form { display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:18px; align-items:end; }
-.filters-form label { display:flex; flex-direction:column; font-weight:600; color:#004d40; font-size:0.95em; }
-.filters-form select, .filters-form input[type="text"] { margin-top:6px; padding:8px 10px; border-radius:6px; border:1px solid #b2dfdb; font-size:0.95em; background-color:#f3faf9; }
-.filters-form select:focus, .filters-form input[type="text"]:focus { outline:2px solid #80cbc4; outline-offset:2px; background-color:#ffffff; }
-.filters-actions { display:flex; justify-content:flex-end; align-items:center; }
-.filters-actions button { background:#00796b; color:#ffffff; border:none; padding:10px 18px; border-radius:6px; cursor:pointer; font-weight:600; transition: background 0.3s, transform 0.2s; }
-.filters-actions button:hover { background:#004d40; transform: translateY(-1px); }
-.cards-container { display:flex; flex-wrap:wrap; gap:20px; justify-content:center; padding: 20px; }
-.card { background:white; border-radius:10px; box-shadow:0 4px 8px rgba(0,0,0,0.2); width:250px; overflow:hidden; transition: transform 0.2s; }
->>>>>>> theirs
 .card:hover { transform: scale(1.05); }
 .card img { width: 100%; height: 150px; object-fit: cover; }
 .card-content { padding: 15px; text-align: center; }
@@ -381,13 +358,12 @@ h1 { text-align:center; color:#00796b; margin:20px 0; font-family:'Great Vibes',
 
 /* === Responsive === */
 @media (max-width:600px) {
-<<<<<<< ours
-<<<<<<< ours
     nav { flex-direction: column; gap: 10px; }
     nav input[type="text"] { width: 100%; }
 
-    .filters-form { flex-direction: column; }
-    .filters-actions { justify-content: stretch; }
+    .filters-form { flex-direction: column; align-items: stretch; gap: 12px; }
+    .filters-row { flex-direction: column; width: 100%; gap: 12px; }
+    .filters-actions { width: 100%; margin-top: 15px; justify-content: stretch; align-items: stretch; }
     .filters-actions button { width: 100%; }
 
     .cards-container { flex-direction: column; align-items: center; }
@@ -408,46 +384,20 @@ h1 { text-align:center; color:#00796b; margin:20px 0; font-family:'Great Vibes',
         border-top: 1px solid rgba(0,0,0,0.1);
         z-index: 1000;
     }
-=======
-    nav { flex-wrap:nowrap; gap:12px; }
-    nav .logo { font-size:1.3em; }
-    .mobile-menu-toggle { display:inline-flex; align-items:center; justify-content:center; }
-    nav .actions { display:none; }
-=======
-    nav { flex-direction: column; gap:10px; }
->>>>>>> theirs
-    nav input[type="text"] { width:100%; }
-    .filters-form { grid-template-columns: 1fr; }
-    .filters-actions { justify-content:stretch; }
-    .filters-actions button { width:100%; }
-    .cards-container { flex-direction:column; align-items:center; }
-    .card { width:90%; }
-    .pagination { width:100%; gap:6px; margin:20px auto; }
-    .pagination a { flex:1 1 48px; font-size:14px; }
->>>>>>> theirs
 }
 </style>
 
 </head>
 <body>
 
-<<<<<<< ours
-<<<<<<< ours
-=======
->>>>>>> theirs
 <nav>
     <div class="logo">
         <img src="images\logo.jpg" alt="Logo BookShare">
         BookShare
     </div>
    <div class="actions">
-<<<<<<< ours
     <form method="get" action="index.php" id="main-search-form" style="margin:0;">
         <input type="text" id="main-search-input" name="q" placeholder="Rechercher un livre..." value="<?= htmlspecialchars($q) ?>">
-=======
-    <form method="get" action="index.php" style="margin:0;">
-        <input type="text" name="q" placeholder="Rechercher un livre..." value="<?= htmlspecialchars($q) ?>">
->>>>>>> theirs
         <?php if ($genre !== ''): ?>
             <input type="hidden" name="genre" value="<?= htmlspecialchars($genre) ?>">
         <?php endif; ?>
@@ -472,7 +422,7 @@ h1 { text-align:center; color:#00796b; margin:20px 0; font-family:'Great Vibes',
         <button onclick="window.location.href='reservation.php'">Mes Réservations</button>
 
         <button onclick="window.location.href='deconnexion.php'">
-            Déconnexion (<?= htmlspecialchars($utilisateur->getPseudo()) ?>)
+            DÃ©connexion (<?= htmlspecialchars($utilisateur->getPseudo()) ?>)
         </button>
     <?php else: ?>
         <button onclick="window.location.href='connexion.php'">Connexion</button>
@@ -481,20 +431,17 @@ h1 { text-align:center; color:#00796b; margin:20px 0; font-family:'Great Vibes',
 </div>
 
 </nav>
-<<<<<<< ours
-=======
-<?php include __DIR__ . '/php/partials/header.php'; ?>
->>>>>>> theirs
-=======
->>>>>>> theirs
 
 <h1>Bienvenue sur BookShare</h1>
 
 <div class="filters-wrapper">
     <div id="filters-panel" class="filters-panel">
-        <h2 class="filters-title">🔍 Filtres de recherche</h2>
+        <h2 class="filters-title">ðŸ” Filtres de recherche</h2>
         <form method="get" action="index.php" class="filters-form">
             <div class="filters-row">
+                <label for="filter-search">Recherche
+                    <input type="text" id="filter-search" name="q" value="<?= htmlspecialchars($q) ?>" placeholder="Rechercher un livre...">
+                </label>
                 <label for="filter-genre">Genre
                     <select id="filter-genre" name="genre">
                         <option value="">Tous les genres</option>
@@ -522,7 +469,7 @@ h1 { text-align:center; color:#00796b; margin:20px 0; font-family:'Great Vibes',
                     <select id="filter-note" name="note_min">
                         <option value="">Aucune note minimale</option>
                         <?php for ($note = 1; $note <= 5; $note++): ?>
-                            <option value="<?= $note ?>" <?= $noteMin === $note ? 'selected' : '' ?>><?= $note ?> ★ et plus</option>
+                            <option value="<?= $note ?>" <?= $noteMin === $note ? 'selected' : '' ?>><?= $note ?> â˜… et plus</option>
                         <?php endfor; ?>
                     </select>
                 </label>
@@ -558,7 +505,7 @@ h1 { text-align:center; color:#00796b; margin:20px 0; font-family:'Great Vibes',
     <nav class="pagination">
         <?php if ($page > 1): ?>
             <?php $prevParams = $queryParams; $prevParams['page'] = $page - 1; $prevQuery = http_build_query($prevParams); ?>
-            <a href="index.php<?= $prevQuery ? '?' . $prevQuery : '' ?>" class="prev">Précédent</a>
+            <a href="index.php<?= $prevQuery ? '?' . $prevQuery : '' ?>" class="prev">PrÃ©cÃ©dent</a>
         <?php endif; ?>
 
         <?php for ($i = 1; $i <= $totalPages; $i++): ?>
@@ -586,8 +533,8 @@ function reserverLivre(livreId, btn) {
         alert(data.message);
         if(data.success){
             btn.disabled = true;
-            btn.textContent = 'Réservé';
-            btn.closest('.card').querySelector('.disponibilite').textContent = 'réservé';
+            btn.textContent = 'RÃ©servÃ©';
+            btn.closest('.card').querySelector('.disponibilite').textContent = 'rÃ©servÃ©';
         }
     })
     .catch(err=>console.error(err));

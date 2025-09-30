@@ -37,7 +37,7 @@ try {
 }
 
 // --------------------
-// Connexion MongoDB (optionnelle)
+// Connexion MongoDB
 // --------------------
 $mongoClient = null;
 $mongoDB = null;

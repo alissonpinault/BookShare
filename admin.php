@@ -304,8 +304,6 @@ button.supprimer {background: white; color: #b71c1c; border: 2px solid #b71c1c;}
 button.supprimer:hover { background:#b71c1c ;color: white;}
 button.modifier { background: white; color: #52a058ff; border: 2px solid #52a058ff;}
 button.modifier:hover { background: #52a058ff;color: white;}
-<<<<<<< ours
-<<<<<<< ours
 .mobile-bottom-nav { display:none; }
 .mobile-bottom-nav__link { color:#004d40; text-decoration:none; font-size:0.75rem; font-weight:600; display:flex; flex-direction:column; align-items:center; gap:6px; }
 .mobile-bottom-nav__icon { width:54px; height:54px; border-radius:50%; background:linear-gradient(135deg,#00796b,#00acc1); color:#ffffff; display:flex; align-items:center; justify-content:center; font-size:1.4rem; box-shadow:0 8px 16px rgba(0,0,0,0.15); transition:transform 0.2s ease, box-shadow 0.2s ease; }
@@ -320,33 +318,24 @@ button.modifier:hover { background: #52a058ff;color: white;}
     form input, form textarea { width:90%; }
     .mobile-bottom-nav { position:fixed; bottom:0; left:0; right:0; display:flex; justify-content:space-around; padding:12px; background:rgba(255,255,255,0.8); backdrop-filter: blur(6px); border-top:1px solid rgba(0,0,0,0.1); z-index:1000; }
 }
-=======
+
 @media(max-width:600px){ table, canvas { width:95%; } nav { flex-wrap:nowrap; gap:12px; } nav .logo { font-size:1.3em; } .mobile-menu-toggle { display:inline-flex; align-items:center; justify-content:center; } nav .actions { display:none; } form input, form textarea { width:90%; } }
->>>>>>> theirs
-=======
->>>>>>> theirs
+
 </style>
 </head>
 <body>
 
 <!-- BARRE DE NAVIGATION -->
-<<<<<<< ours
-<<<<<<< ours
-=======
->>>>>>> theirs
 <nav>
     <div class="logo">
         <img src="https://img.freepik.com/vecteurs-premium/lire-logo-du-livre_7888-13.jpg" alt="Logo BookShare">
         BookShare
     </div>
     <div class="actions">
-<<<<<<< ours
     <form method="get" action="index.php" id="main-search-form" style="margin:0;">
         <input type="text" id="main-search-input" name="q" placeholder="Rechercher un livre...">
-=======
     <form method="get" action="index.php" style="margin:0;">
         <input type="text" name="q" placeholder="Rechercher un livre...">
->>>>>>> theirs
     </form>
 
      <button onclick="window.location.href='index.php'">Accueil</button>
@@ -365,12 +354,7 @@ button.modifier:hover { background: #52a058ff;color: white;}
     <?php endif; ?>
 </div>
 </nav>
-<<<<<<< ours
-=======
 <?php include __DIR__ . '/php/partials/header.php'; ?>
->>>>>>> theirs
-=======
->>>>>>> theirs
 
 <h1>Panneau Administrateur</h1>
 
@@ -432,7 +416,9 @@ button.modifier:hover { background: #52a058ff;color: white;}
 
 <!-- Modal Ajouter un livre -->
 <div id="modalAdd" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); justify-content:center; align-items:center; z-index:1000;">
-    <div style="background:white; padding:30px; border-radius:15px; max-width:500px; width:90%; position:relative; box-shadow:0 10px 30px rgba(0,0,0,0.3); transform:scale(0.9); transition: transform 0.3s ease;">
+    <div style="background:white; padding:30px; border-radius:15px; max-width:500px; width:90%; 
+        position:relative; box-shadow:0 10px 30px rgba(0,0,0,0.3); transform:scale(0.9); transition: transform 0.3s ease;">
+        
         <span style="position:absolute; top:15px; right:20px; cursor:pointer; font-size:1.5em;" onclick="closeAddModal()">✖</span>
         <h2 style="font-family: 'Great Vibes', cursive; text-align:center; font-size:2.5em; margin-bottom:25px;">Ajouter un livre</h2>
         <form id="formAddBook" style="max-width:400px; margin:0 auto; text-align:center;">
