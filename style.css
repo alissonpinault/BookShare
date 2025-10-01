@@ -1,20 +1,24 @@
 /* ==========================================
    GLOBAL
 ========================================== */
+/* RESET DE BASE POUR RESPONSIVE */
+* {
+  box-sizing: border-box;
+}
+
 html, body {
     height: 100%;
     margin: 0;
     font-family: 'Roboto', sans-serif;
     background: linear-gradient(135deg, #a8edea, #fed6e3);
+    overflow-x: hidden;
 }
-
 
 body {
     display: flex;
     flex-direction: column;
     padding-top: 60px;
 }
-
 
 main {
     flex: 1;
@@ -111,7 +115,7 @@ input:focus, textarea:focus, select:focus {
 /* Burger */
 .burger { display:none; font-size:28px; background:none; border:none; color:white; cursor:pointer; }
 
-/* Mobile */
+/* Mobile navbar */
 @media (max-width: 768px) {
   .site-nav { position: relative; }
 
@@ -140,7 +144,6 @@ input:focus, textarea:focus, select:focus {
     to   { opacity:1; transform: translateY(0); }
   }
 }
-
 
 /* ==========================================
    LISTS & RESERVATIONS
@@ -214,14 +217,11 @@ footer {
     padding: 20px 10px;
     margin-top: 40px;
 }
-
 footer .footer-text {
     margin-top: 10px;
     font-size: 0.9em;
     color: #e0f2f1;
 }
-
-/* Pagination dans footer */
 footer .pagination {
     display: flex;
     justify-content: center;
@@ -253,17 +253,6 @@ footer .pagination a.active {
     background: #004d40;
     color: #ffffff;
     pointer-events: none;
-}
-
-/* responsive */
-@media (max-width: 600px) {
-    footer .pagination { gap: 6px; }
-    footer .pagination a {
-        flex: 1 1 36px;
-        font-size: 14px;
-        padding: 0;
-        height: 36px;
-    }
 }
 
 /* ==========================================
@@ -303,17 +292,35 @@ footer .pagination a.active {
 }
 
 /* ==========================================
-   RESPONSIVE
+   RESPONSIVE FIXES
 ========================================== */
-@media (max-width:600px) {
-    body { padding-bottom: 88px; }
+@media (max-width:768px) {
+    /* Container prend toute la largeur */
+    .container {
+        max-width: 100%;
+        margin: 10px;
+        padding: 15px;
+    }
 
-    .filters-form, .filters-row { flex-direction: column; gap: 12px; }
-    .filters-actions button { width: 100%; }
+    /* Cartes en colonne */
+    .cards-container {
+        flex-direction: column;
+        align-items: center;
+        padding: 10px;
+    }
+    .card {
+        width: 100%;
+        max-width: 90%;
+    }
 
-    .cards-container { flex-direction: column; align-items: center; }
-    .card { width: 90%; }
-
-    .pagination { gap: 6px; }
-    .pagination a { flex: 1 1 48px; font-size: 14px; }
+    /* Pagination adaptée */
+    .pagination {
+        width: 100%;
+        gap: 6px;
+        margin: 20px auto;
+    }
+    .pagination a {
+        flex: 1 1 auto;
+        font-size: 14px;
+    }
 }
