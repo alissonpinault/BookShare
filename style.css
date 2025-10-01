@@ -1,0 +1,309 @@
+/* ==========================================
+   GLOBAL
+========================================== */
+body {
+    margin: 0;
+    font-family: 'Roboto', sans-serif;
+    background: linear-gradient(135deg, #a8edea, #fed6e3);
+}
+
+/* Containers */
+.container {
+    max-width: 900px;
+    margin: 20px auto;
+    padding: 20px;
+    background: rgba(255,255,255,0.95);
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    text-align: center;
+}
+
+/* Titles */
+h1, h2 {
+    text-align: center;
+    color: #00796b;
+    font-family: 'Great Vibes', cursive;
+}
+h1 { font-size: 2.5em; margin-bottom: 30px; }
+h2 { font-size: 2em; margin-bottom: 20px; }
+
+/* Buttons */
+button {
+    padding: 8px 12px;
+    background: #00796b;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+button:hover {
+    background: #004d40;
+    transform: translateY(-2px);
+}
+button:disabled {
+    background: #ccc;
+    cursor: default;
+}
+button.action { margin: 2px; border-radius: 4px; }
+button.terminer { background: white; color: #f57c00; border: 2px solid #f57c00; }
+button.terminer:hover { background: #f57c00; color: white; }
+button.supprimer { background: white; color: #b71c1c; border: 2px solid #b71c1c; }
+button.supprimer:hover { background: #b71c1c; color: white; }
+button.modifier { background: white; color: #52a058; border: 2px solid #52a058; }
+button.modifier:hover { background: #52a058; color: white; }
+
+/* Inputs */
+input, textarea, select {
+    padding: 8px;
+    margin: 6px 0;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 1em;
+    transition: all 0.3s;
+}
+input:focus, textarea:focus, select:focus {
+    border-color: #00796b;
+    box-shadow: 0 0 5px rgba(0,121,107,0.5);
+    outline: none;
+}
+
+/* ==========================================
+   NAVBAR
+========================================== */
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background: #00796b;
+    color: white;
+    flex-wrap: wrap;
+}
+nav .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: bold;
+    font-size: 1.5em;
+}
+nav .logo img {
+    height: 40px;
+    width: auto;
+}
+nav .actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+nav input[type="text"] {
+    padding: 6px 10px;
+    border: none;
+    border-radius: 4px;
+    width: 200px;
+}
+nav button {
+    background: #004d40;
+    border: none;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 4px;
+}
+nav button:hover {
+    background: #00332c;
+    transform: translateY(-2px);
+}
+
+/* ==========================================
+   LISTS & RESERVATIONS
+========================================== */
+.list { list-style: none; padding: 0; margin: 0; }
+.list li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    gap: 15px;
+}
+.list li img {
+    width: 60px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+.reservation-info { flex: 1; display: flex; flex-direction: column; }
+.reservation-actions { display: flex; align-items: center; gap: 10px; }
+
+/* ==========================================
+   STARS / NOTES
+========================================== */
+.stars { display: flex; gap: 4px; cursor: pointer; }
+.star { font-size: 1.5em; color: #ccc; transition: color 0.2s; }
+.star.hover, .star.selected { color: gold; }
+.moyenne-notes {
+    margin-top: 10px;
+    font-size: 1.2em;
+    color: #444;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: center;
+}
+.moyenne-notes .star.filled { color: gold; }
+
+/* ==========================================
+   CARDS
+========================================== */
+.cards-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    padding: 20px;
+}
+.card {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    width: 250px;
+    overflow: hidden;
+    transition: transform 0.2s;
+}
+.card:hover { transform: scale(1.05); }
+.card img { width: 100%; height: 150px; object-fit: cover; }
+.card-content { padding: 15px; text-align: center; }
+.card-content h3 { margin: 5px 0; color: #00796b; }
+.card-content p { margin: 5px 0; font-size: 14px; }
+
+/* ==========================================
+   PAGINATION
+========================================== */
+.pagination {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin: 20px 0;
+    flex-wrap: wrap;
+}
+.pagination .page-link, .pagination a {
+    padding: 6px 12px;
+    border-radius: 4px;
+    background: #eee;
+    color: #333;
+    text-decoration: none;
+    transition: background 0.3s, color 0.3s;
+}
+.pagination .page-link:hover, .pagination a:hover {
+    background: #d4d4d4;
+}
+.pagination .page-link.active, .pagination a.active {
+    background: #00796b;
+    color: #fff;
+}
+.pagination .page-link.disabled {
+    pointer-events: none;
+    opacity: 0.5;
+    background: #ccc;
+    color: #666;
+}
+
+/* ==========================================
+   FORMS LOGIN/REGISTER
+========================================== */
+.auth-container {
+    background: rgba(255,255,255,0.95);
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    width: 380px;
+    text-align: center;
+    animation: fadeIn 0.8s ease;
+    position: relative;
+}
+.auth-container h2 {
+    font-family: 'Great Vibes', cursive;
+    font-size: 2.5em;
+    color: #00796b;
+    margin-bottom: 30px;
+}
+.error {
+    color: #d32f2f;
+    margin-bottom: 15px;
+    font-weight: bold;
+    font-size: 14px;
+    animation: shake 0.4s;
+}
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-5px); }
+    40%, 80% { transform: translateX(5px); }
+}
+
+/* ==========================================
+   MOBILE BOTTOM NAV
+========================================== */
+.mobile-bottom-nav { display: none; }
+.mobile-bottom-nav__link {
+    color: #004d40;
+    text-decoration: none;
+    font-size: 0.75rem;
+    font-weight: 600;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+}
+.mobile-bottom-nav__icon {
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    background: linear-gradient(135deg,#00796b,#00acc1);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.mobile-bottom-nav__link:hover .mobile-bottom-nav__icon,
+.mobile-bottom-nav__link.is-active .mobile-bottom-nav__icon {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+}
+
+/* ==========================================
+   RESPONSIVE
+========================================== */
+@media (max-width:600px) {
+    body { padding-bottom: 88px; }
+    nav { flex-direction: column; gap: 10px; }
+    nav input[type="text"] { width: 100%; }
+
+    .filters-form, .filters-row { flex-direction: column; gap: 12px; }
+    .filters-actions button { width: 100%; }
+
+    .cards-container { flex-direction: column; align-items: center; }
+    .card { width: 90%; }
+
+    .pagination { gap: 6px; }
+    .pagination a { flex: 1 1 48px; font-size: 14px; }
+
+    .mobile-bottom-nav {
+        position: fixed;
+        bottom: 0; left: 0; right: 0;
+        display: flex;
+        justify-content: space-around;
+        padding: 12px;
+        background: rgba(255,255,255,0.8);
+        backdrop-filter: blur(6px);
+        border-top: 1px solid rgba(0,0,0,0.1);
+        z-index: 1000;
+    }
+}
