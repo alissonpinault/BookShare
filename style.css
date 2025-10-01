@@ -157,32 +157,68 @@ input:focus, textarea:focus, select:focus {
 }
 
 /* Colonne filtres (desktop/tablette) */
+/* ==== Mise en page 2 colonnes ==== */
+.layout {
+  display: grid;
+  grid-template-columns: 280px 1fr; /* colonne gauche filtres + colonne droite cartes */
+  column-gap: 24px;                 /* espace entre les colonnes */
+  align-items: start;               /* tout en haut */
+  padding: 0 20px 20px;
+}
+
+/* Colonne gauche (filtres) */
 .filters-wrapper {
-    width: 250px;
-    flex-shrink: 0;
+  width: 100%;
+  flex: 0 0 auto;
 }
+
 .filters-panel {
-    background: rgba(255,255,255,0.95);
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  background: rgba(255,255,255,0.95);
+  padding: 16px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0,0,0,.2);
 }
+
+/* Titre des filtres */
 .filters-title {
-    margin-top: 0;
-    font-size: 1.2em;
-    color: #00796b;
-    font-weight: bold;
-    margin-bottom: 15px;
+  margin: 0 0 12px;
+  font-size: 1.15rem;
+  color: #00796b;
+  text-align: center;
 }
+
+/* Labels + champs */
 .filters-form label {
-    display: block;
-    margin-bottom: 15px;
-    font-weight: 600;
-    color: #004d40;
+  display: block;
+  width: 100%;
+  margin-bottom: 12px;
+  font-weight: 600;
+  color: #004d40;
 }
+
+/* Les champs s’adaptent à la largeur de la colonne */
+.filters-form select,
+.filters-form input[type="text"] {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  font-size: .95rem;
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid #b2dfdb;
+  background: #f8fbfb;
+}
+
 .filters-actions button {
-    width: 100%;
+  width: 100%;
 }
+
+/* Colonne droite (cartes livres) */
+.cards-container {
+  margin-top: 0;
+  padding: 0;
+}
+
 
 /* Modal filtres (mobile) */
 .filters-toggle {
