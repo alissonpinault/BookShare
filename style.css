@@ -115,6 +115,53 @@ nav button:hover {
     transform: translateY(-2px);
 }
 
+/* Bouton burger (caché par défaut en desktop) */
+.burger {
+    display: none;
+    font-size: 28px;
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+    nav {
+        position: relative;
+    }
+
+    /* Burger visible */
+    .burger {
+        display: block;
+    }
+
+    /* Menu caché par défaut */
+    .actions {
+        display: none;
+        flex-direction: column;
+        gap: 10px;
+        position: absolute;
+        top: 100%;
+        right: 0;
+        background: #00796b;
+        padding: 15px;
+        border-radius: 0 0 6px 6px;
+        width: 200px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    }
+
+    /* Quand le menu est ouvert */
+    .actions.open {
+        display: flex;
+    }
+
+    .actions button,
+    .actions input[type="text"] {
+        width: 100%;
+    }
+}
+
 /* ==========================================
    LISTS & RESERVATIONS
 ========================================== */

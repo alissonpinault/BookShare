@@ -225,6 +225,16 @@ if ($noteMin !== null) {
 
 
 <script>
+    
+    document.addEventListener("DOMContentLoaded", () => {
+    const burger = document.querySelector(".burger");
+    const actions = document.querySelector(".actions");
+
+    burger.addEventListener("click", () => {
+        actions.classList.toggle("open");
+    });
+});
+
 function reserverLivre(livreId, btn) {
     fetch('', {
         method:'POST',
