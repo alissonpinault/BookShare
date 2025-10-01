@@ -150,7 +150,7 @@ try {
                         <div class="reservation-info">
                             <strong><?= htmlspecialchars($reservation->getTitre()) ?></strong>
                             <span>Auteur : <?= htmlspecialchars($reservation->getAuteur()) ?></span>
-                            <span>Reserve le : <?= htmlspecialchars($reservation->getDateReservation() ?? '') ?></span>
+                            <span>Réservé le : <?= htmlspecialchars($reservation->getDateReservation() ?? '') ?></span>
                         </div>
                         <form method="post" class="reservation-actions">
                             <input type="hidden" name="reservation_id" value="<?= (int) $reservation->getId() ?>">
@@ -259,7 +259,7 @@ try {
         <?php endif; ?>
     <?php endif; ?>
 </div>
-
+</div>
 <script>
 
 //menu burger
@@ -386,7 +386,7 @@ document.querySelectorAll('.stars').forEach(starsContainer => {
 
 </script>
 
-<?php include __DIR__ . 'footer.php'; ?>
+<?php include 'footer.php'; ?>
 
 </body>
 </html>
