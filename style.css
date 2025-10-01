@@ -127,44 +127,43 @@ nav button:hover {
 
 /* Mobile */
 @media (max-width: 768px) {
-    nav {
-        position: relative;
-    }
+  nav { position: relative; }
 
-    .burger {
-        display: block;
-        z-index: 1100; /* reste au-dessus */
-    }
+  
+  nav .burger {
+    display: block;
+    z-index: 1100;
+  }
 
-    /* Menu caché par défaut */
-    .actions {
-        display: none;
-        flex-direction: column;
-        gap: 15px;
-        position: absolute;
-        top: 100%;
-        left: 0;
-        width: 100%;
-        background: #00796b;
-        padding: 20px;
-        text-align: center;
-    }
+  nav .actions {
+    display: none;                
+    flex-direction: column;
+    gap: 15px;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;                   
+    background: #00796b;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    z-index: 1000;
+  }
 
-    /* Quand ouvert */
-    .actions.open {
-        display: flex;
-        animation: slideDown 0.3s ease;
-    }
+  nav .actions.open {
+    display: flex;
+    animation: slideDown 0.3s ease;
+  }
 
-    .actions button,
-    .actions input[type="text"] {
-        width: 100%;
-    }
+  nav .actions button,
+  nav .actions input[type="text"] {
+    width: 100%;
+  }
 
-    @keyframes slideDown {
-        from { opacity: 0; transform: translateY(-10px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
 }
 
 
