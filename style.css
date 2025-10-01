@@ -92,7 +92,7 @@ input:focus, textarea:focus, select:focus {
    NAVBAR
 ========================================== */
 .site-nav {
-    position: static;
+    position: fixed;
     top: 0;
     left: 0;
     width: 100%;
