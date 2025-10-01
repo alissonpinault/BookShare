@@ -216,30 +216,37 @@ document.addEventListener("DOMContentLoaded", () => {
 // Filtres (mobile)
 document.addEventListener("DOMContentLoaded", () => {
   const toggleBtn = document.querySelector(".filters-toggle");
-  if (!toggleBtn) return;
+  const panel = document.querySelector(".filters-wrapper .filters-panel");
 
+  // Crée le modal
   const modal = document.createElement("div");
   modal.className = "filters-modal";
-    const panel = document.querySelector(".filters-wrapper .filters-panel");
-  const clonedPanel = panel.cloneNode(true);
 
-  // Ajout bouton de fermeture
+  // Clone du panneau
+  const modalContent = panel.cloneNode(true);
+
+  // Ajout du bouton Fermer
   const closeBtn = document.createElement("button");
-  closeBtn.textContent = "✖ Fermer";
-  closeBtn.className = "filters-close";
-  closeBtn.addEventListener("click", () => modal.classList.remove("open"));
+  closeBtn.className = "close-btn";
+  closeBtn.innerHTML = "&times;"; // croix
+  modalContent.appendChild(closeBtn);
 
-  modal.appendChild(closeBtn);
-  modal.appendChild(clonedPanel);
-
+  modal.appendChild(modalContent);
   document.body.appendChild(modal);
 
+  // Ouvrir modal
   toggleBtn.addEventListener("click", () => {
-    modal.classList.toggle("open");
+    modal.classList.add("open");
   });
 
+  // Fermer modal (croix)
+  closeBtn.addEventListener("click", () => {
+    modal.classList.remove("open");
+  });
+
+  // Fermer si on clique hors du panneau
   modal.addEventListener("click", e => {
-    if (e.target === modal) modal.classList.remove("open");
+    if(e.target === modal) modal.classList.remove("open");
   });
 });
 </script>
