@@ -91,8 +91,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reserver'])) {
     <?php endif; ?>
 </div>
 
-<?php require __DIR__ . '/php/components/mobile_bottom_nav.php'; ?>
-
 <script> 
 //menu burger
 document.addEventListener("DOMContentLoaded", () => {
@@ -104,7 +102,6 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 </script>
-</div>
 
 <?php include __DIR__ . 'footer.php'; ?>
 
