@@ -72,14 +72,21 @@ input:focus, textarea:focus, select:focus {
    NAVBAR
 ========================================== */
 nav {
+    position: fixed;          
+    top: 0;
+    left: 0;
+    width: 100%;             
+    z-index: 1000;            
+    background: #00796b;
+    color: white;
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 10px 20px;
-    background: #00796b;
-    color: white;
     flex-wrap: wrap;
+    box-sizing: border-box;   
 }
+
 nav .logo {
     display: flex;
     align-items: center;
@@ -109,10 +116,16 @@ nav button {
     color: white;
     padding: 6px 12px;
     border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s;
 }
 nav button:hover {
     background: #00332c;
     transform: translateY(-2px);
+}
+
+body {
+    padding-top: 60px;  
 }
 
 /* Burger button */
