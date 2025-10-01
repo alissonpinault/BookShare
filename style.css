@@ -7,63 +7,63 @@
 }
 
 html, body {
-    height: 100%;
-    margin: 0;
-    padding: 0;
-    font-family: 'Roboto', sans-serif;
-    background: linear-gradient(135deg, #a8edea, #fed6e3);
-    overflow-x: hidden;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: 'Roboto', sans-serif;
+  background: linear-gradient(135deg, #a8edea, #fed6e3);
+  overflow-x: hidden;
 }
 
 body {
-    margin: 0;
-    display: flex;
-    flex-direction: column;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 main {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Containers */
 .container {
-    max-width: 900px;
-    margin: 20px auto;
-    padding: 20px;
-    background: rgba(255,255,255,0.95);
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    text-align: center;
+  max-width: 900px;
+  margin: 20px auto;
+  padding: 20px;
+  background: rgba(255,255,255,0.95);
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  text-align: center;
 }
 
 /* Titles */
 h1, h2 {
-    text-align: center;
-    color: #00796b;
-    font-family: 'Great Vibes', cursive;
+  text-align: center;
+  color: #00796b;
+  font-family: 'Great Vibes', cursive;
 }
-h1 { font-size: 2.5em; margin-bottom: 30px; margin-top: 30px; }
+h1 { font-size: 2.5em; margin-bottom: 30px; margin-top: 30; }
 h2 { font-size: 2em; margin-bottom: 20px; }
 
 /* Buttons */
 button {
-    padding: 8px 12px;
-    background: #00796b;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: all 0.3s;
+  padding: 8px 12px;
+  background: #00796b;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s;
 }
 button:hover {
-    background: #004d40;
-    transform: translateY(-2px);
+  background: #004d40;
+  transform: translateY(-2px);
 }
 button:disabled {
-    background: #ccc;
-    cursor: default;
+  background: #ccc;
+  cursor: default;
 }
 button.action { margin: 2px; border-radius: 4px; }
 button.terminer { background: white; color: #f57c00; border: 2px solid #f57c00; }
@@ -75,37 +75,36 @@ button.modifier:hover { background: #52a058; color: white; }
 
 /* Inputs */
 input, textarea, select {
-    padding: 8px;
-    margin: 6px 0;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-    font-size: 1em;
-    transition: all 0.3s;
+  padding: 8px;
+  margin: 6px 0;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 1em;
+  transition: all 0.3s;
 }
 input:focus, textarea:focus, select:focus {
-    border-color: #00796b;
-    box-shadow: 0 0 5px rgba(0,121,107,0.5);
-    outline: none;
+  border-color: #00796b;
+  box-shadow: 0 0 5px rgba(0,121,107,0.5);
+  outline: none;
 }
 
 /* ==========================================
    NAVBAR
 ========================================== */
 .site-nav {
-    position: static;
-    top: 0;
-    left: 0;
-    width: 100%;
-    z-index: 1000;
-    background: #00796b;
-    color: white;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 20px;
-    flex-wrap: wrap;
-    box-sizing: border-box;
-    margin-top: 0;
+  position: static;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  background: #00796b;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  flex-wrap: wrap;
+  box-sizing: border-box;
 }
 .site-nav .logo { display:flex; align-items:center; gap:10px; font-weight:bold; font-size:1.5em; }
 .site-nav .logo img { height:40px; width:auto; }
@@ -120,9 +119,7 @@ input:focus, textarea:focus, select:focus {
 /* Mobile navbar */
 @media (max-width: 768px) {
   .site-nav { position: relative; }
-
   .site-nav .burger { display:block; z-index:1100; }
-
   .site-nav .actions {
     display:none;
     flex-direction:column;
@@ -152,14 +149,12 @@ input:focus, textarea:focus, select:focus {
 ========================================== */
 .layout {
   display: grid;
-  grid-template-columns: 280px 1fr; /* colonne gauche filtres + cartes */
+  grid-template-columns: 280px 1fr;
   column-gap: 24px;
   align-items: start;
   padding: 0 20px 20px;
 }
-
-/* Colonne gauche (filtres) */
-.filters-wrapper { width: 100%; flex: 0 0 auto; }
+.filters-wrapper { width: 100%; }
 .filters-panel {
   background: rgba(255,255,255,0.95);
   padding: 16px;
@@ -174,16 +169,12 @@ input:focus, textarea:focus, select:focus {
 }
 .filters-form label {
   display: block;
-  width: 100%;
   margin-bottom: 12px;
   font-weight: 600;
   color: #004d40;
 }
-.filters-form select,
-.filters-form input[type="text"] {
+.filters-form select {
   width: 100%;
-  max-width: 100%;
-  font-size: .95rem;
   padding: 8px 10px;
   border-radius: 6px;
   border: 1px solid #b2dfdb;
@@ -195,15 +186,14 @@ input:focus, textarea:focus, select:focus {
    MODAL FILTRES (MOBILE)
 ========================================== */
 .filters-toggle {
-    display: none;
-    margin: 10px auto;
-    padding: 10px 20px;
-    background: #00796b;
-    color: #fff;
-    border-radius: 6px;
+  display: none;
+  margin: 10px auto;
+  padding: 10px 20px;
+  background: #00796b;
+  color: #fff;
+  border-radius: 6px;
 }
-/* Overlay */
-.filters-modal{
+.filters-modal {
   position: fixed;
   top:0; left:0;
   width:100%; height:100%;
@@ -216,11 +206,11 @@ input:focus, textarea:focus, select:focus {
   transition: opacity 0.3s ease;
   z-index:2000;
 }
-.filters-modal.open{
+.filters-modal.open {
   visibility:visible;
   opacity:1;
 }
-.filters-modal .filters-panel{
+.filters-modal .filters-panel {
   background:white;
   padding:20px;
   border-radius:12px;
@@ -229,8 +219,7 @@ input:focus, textarea:focus, select:focus {
   width:320px;
   position:relative;  
 }
-/* Bouton fermer */
-.filters-modal .close-btn{
+.filters-modal .close-btn {
   position:absolute;
   top:10px;
   right:10px;
@@ -248,20 +237,19 @@ input:focus, textarea:focus, select:focus {
   cursor:pointer;
   transition: background 0.3s;
 }
-.filters-modal .close-btn:hover{ background:#aaa; }
+.filters-modal .close-btn:hover { background:#aaa; }
 
 /* ==========================================
    CARDS
 ========================================== */
-/* === Grille desktop classique === */
+/* Desktop : 4 colonnes */
 .cards-container {
   display: grid;
-  grid-template-columns: repeat(4, 1fr); /* 4 colonnes desktop */
+  grid-template-columns: repeat(4, 1fr);
   gap: 20px;
   padding: 20px;
   justify-items: center;
 }
-
 .card {
   background: white;
   border-radius: 10px;
@@ -273,53 +261,45 @@ input:focus, textarea:focus, select:focus {
   display: flex;
   flex-direction: column;
 }
+.card:hover { transform: scale(1.05); }
 .card img {
   width: 100%;
   height: 180px;
   object-fit: cover;
 }
-.card-content {
-  padding: 15px;
-  text-align: center;
-}
+.card-content { padding: 15px; text-align: center; }
 
-/* === Tablettes et mobiles : style Amazon === */
+/* Tablette & mobile : style Amazon */
 @media (max-width: 992px) {
   .cards-container {
-    display: grid;
     grid-template-columns: 1fr 1fr; /* 2 colonnes */
     gap: 16px;
     padding: 12px;
   }
-
   .card {
     max-width: 100%;
     display: flex;
-    flex-direction: row;  /* image à gauche, texte à droite */
+    flex-direction: row; 
     align-items: flex-start;
     padding: 10px;
   }
-
   .card img {
-    width: 100px;   /* largeur fixe */
-    height: 140px;  /* hauteur fixe */
+    width: 100px;
+    height: 140px;
     object-fit: cover;
     flex-shrink: 0;
     border-radius: 6px;
   }
-
   .card-content {
     text-align: left;
-    padding: 0 0 0 12px;
+    padding-left: 12px;
     flex: 1;
   }
-
   .card-content h3 {
     font-size: 1rem;
     margin: 0 0 6px;
     color: #00796b;
   }
-
   .card-content p {
     font-size: 0.85rem;
     margin: 2px 0;
@@ -331,68 +311,59 @@ input:focus, textarea:focus, select:focus {
    FOOTER
 ========================================== */
 footer {
-    background: #00796b;
-    color: white;
-    text-align: center;
-    padding: 20px 10px;
-    margin-top: 40px;
+  background: #00796b;
+  color: white;
+  text-align: center;
+  padding: 20px 10px;
+  margin-top: 40px;
 }
 footer .footer-text {
-    margin-top: 10px;
-    font-size: 0.9em;
-    color: #e0f2f1;
+  margin-top: 10px;
+  font-size: 0.9em;
+  color: #e0f2f1;
 }
 footer .pagination {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-bottom: 10px;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 10px;
 }
 footer .pagination a {
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-    min-width: 40px;
-    height: 40px;
-    padding: 0 12px;
-    border-radius: 6px;
-    background: #ffffff;
-    color: #00796b;
-    font-weight: 500;
-    text-decoration: none;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.15);
-    transition: background 0.3s, color 0.3s, transform 0.2s;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 40px;
+  height: 40px;
+  padding: 0 12px;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #00796b;
+  font-weight: 500;
+  text-decoration: none;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+  transition: background 0.3s, color 0.3s, transform 0.2s;
 }
 footer .pagination a:hover {
-    background: #00796b;
-    color: #ffffff;
-    transform: translateY(-2px);
+  background: #00796b;
+  color: #ffffff;
+  transform: translateY(-2px);
 }
 footer .pagination a.active {
-    background: #004d40;
-    color: #ffffff;
-    pointer-events: none;
+  background: #004d40;
+  color: #ffffff;
+  pointer-events: none;
 }
 
 /* ==========================================
    RESPONSIVE FIXES
 ========================================== */
-@media (max-width:768px) {
-    .layout {
-        display: grid;                
-        grid-template-columns: 1fr;    
-        column-gap: 0;                 
-        padding: 0 12px 16px;
-    }
-    .filters-wrapper { display: none; }
-    .filters-toggle {
-        display:block;
-        margin: 12px auto 16px;
-        padding: 10px 20px;
-    }
-    .cards-container {
-        grid-template-columns: 1fr; /* 1 carte par ligne en mobile */
-    }
-    .card { width: 100%; max-width: 90%; }
+@media (max-width: 768px) {
+  .layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    padding: 0 12px 16px;
+  }
+  .filters-wrapper { display: none; }
+  .filters-toggle { display:block; }
 }
