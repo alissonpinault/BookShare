@@ -3,12 +3,13 @@
 ========================================== */
 html, body {
     height: 100%;
-}
-
-body {
     margin: 0;
     font-family: 'Roboto', sans-serif;
     background: linear-gradient(135deg, #a8edea, #fed6e3);
+}
+
+
+body {
     display: flex;
     flex-direction: column;
     padding-top: 60px;
@@ -17,6 +18,8 @@ body {
 
 main {
     flex: 1;
+    display: flex;
+    flex-direction: column;
 }
 
 /* Containers */
@@ -84,11 +87,11 @@ input:focus, textarea:focus, select:focus {
    NAVBAR
 ========================================== */
 nav {
-    position: fixed;          
+    position: fixed;
     top: 0;
     left: 0;
-    width: 100%;             
-    z-index: 1000;            
+    width: 100%;
+    z-index: 1000;
     background: #00796b;
     color: white;
     display: flex;
@@ -96,7 +99,7 @@ nav {
     align-items: center;
     padding: 10px 20px;
     flex-wrap: wrap;
-    box-sizing: border-box;   
+    box-sizing: border-box;
 }
 
 nav .logo {
@@ -136,7 +139,6 @@ nav button:hover {
     transform: translateY(-2px);
 }
 
-
 /* Burger button */
 .burger {
     display: none;
@@ -147,24 +149,20 @@ nav button:hover {
     cursor: pointer;
 }
 
-/* Mobile */
+/* Mobile navbar */
 @media (max-width: 768px) {
   nav { position: relative; }
 
-  
-  nav .burger {
-    display: block;
-    z-index: 1100;
-  }
+  nav .burger { display: block; z-index: 1100; }
 
   nav .actions {
-    display: none;                
+    display: none;
     flex-direction: column;
     gap: 15px;
     position: absolute;
     top: 100%;
     left: 0;
-    width: 100%;                   
+    width: 100%;
     background: #00796b;
     padding: 20px;
     text-align: center;
@@ -268,7 +266,7 @@ footer .footer-text {
     color: #e0f2f1;
 }
 
-/* Pagination intégrée dans le footer */
+/* Pagination dans footer */
 footer .pagination {
     display: flex;
     justify-content: center;
@@ -276,7 +274,6 @@ footer .pagination {
     gap: 10px;
     margin-bottom: 10px;
 }
-
 footer .pagination a {
     display: inline-flex;
     justify-content: center;
@@ -292,24 +289,20 @@ footer .pagination a {
     box-shadow: 0 2px 4px rgba(0,0,0,0.15);
     transition: background 0.3s, color 0.3s, transform 0.2s;
 }
-
 footer .pagination a:hover {
     background: #00796b;
     color: #ffffff;
     transform: translateY(-2px);
 }
-
 footer .pagination a.active {
     background: #004d40;
     color: #ffffff;
     pointer-events: none;
 }
 
-/* Responsive pagination */
+/* responsive */
 @media (max-width: 600px) {
-    footer .pagination {
-        gap: 6px;
-    }
+    footer .pagination { gap: 6px; }
     footer .pagination a {
         flex: 1 1 36px;
         font-size: 14px;
