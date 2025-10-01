@@ -383,6 +383,95 @@ input:focus, textarea:focus, select:focus {
 
 
 /* ==========================================
+   ADMIN - ONGLET & TABLEAUX
+========================================== */
+
+/* Onglets */
+.tab-buttons {
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
+  gap: 12px;
+}
+
+.tab-buttons .tabBtn {
+  background: #00796b;
+  color: #fff;
+  font-weight: 600;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s;
+}
+
+.tab-buttons .tabBtn:hover {
+  background: #004d40;
+  transform: translateY(-2px);
+}
+
+.tab-buttons .tabBtn.active {
+  background: #004d40;
+}
+
+/* Tableaux */
+.tabContent table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px auto;
+  background: #fff;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.tabContent th {
+  background: #00796b;
+  color: #fff;
+  text-align: left;
+  padding: 12px;
+}
+
+.tabContent td {
+  padding: 12px;
+  border-bottom: 1px solid #ddd;
+}
+
+.tabContent tr:nth-child(even) {
+  background: #f9f9f9;
+}
+
+/* Pagination */
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin: 15px 0;
+}
+
+.pagination .page,
+.pagination .current {
+  padding: 6px 12px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.pagination .page {
+  background: #eee;
+  color: #333;
+  transition: background 0.2s;
+}
+
+.pagination .page:hover {
+  background: #ccc;
+}
+
+.pagination .current {
+  background: #00796b;
+  color: #fff;
+}
+
+
+/* ==========================================
    FOOTER
 ========================================== */
 footer {
