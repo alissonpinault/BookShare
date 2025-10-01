@@ -562,6 +562,30 @@ input:focus, textarea:focus, select:focus {
 
 
 /* ==========================================
+   MODAL - FORMULAIRE AJOUT LIVRE
+========================================== */
+#modalAdd form,
+#modalEdit form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;              /* espace entre les champs */
+  width: 100%;
+}
+
+#modalAdd input,
+#modalAdd textarea,
+#modalAdd button,
+#modalEdit input,
+#modalEdit textarea,
+#modalEdit button {
+  width: 100%;            /* occupe toute la largeur dispo */
+  max-width: 400px;       /* limite la largeur */
+  margin: 0 auto;         /* centre horizontalement */
+  box-sizing: border-box;
+}
+
+
+/* ==========================================
    FOOTER
 ========================================== */
 footer {
