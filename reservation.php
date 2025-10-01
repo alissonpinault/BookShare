@@ -125,31 +125,7 @@ try {
 
 </head>
 <body>
-<nav>
-    <div class="logo">
-        <img src="https://img.freepik.com/vecteurs-premium/lire-logo-du-livre_7888-13.jpg" alt="Logo BookShare">
-        BookShare
-    </div>
-    <div class="actions">
-        <form method="get" action="index.php" id="main-search-form" style="margin:0;">
-            <input type="text" id="main-search-input" name="q" placeholder="Rechercher un livre...">
-        <form method="get" action="index.php" style="margin:0;">
-            <input type="text" name="q" placeholder="Rechercher un livre...">
-        </form>
-        <button onclick="window.location.href='index.php'">Accueil</button>
-        <?php if ($utilisateur): ?>
-            <?php if ($utilisateur->estAdmin()): ?>
-                <button onclick="window.location.href='admin.php'">Panneau Admin</button>
-            <?php endif; ?>
-            <button onclick="window.location.href='reservation.php'">Mes Reservations</button>
-            <button onclick="window.location.href='deconnexion.php'">Deconnexion (<?= htmlspecialchars($utilisateur->getPseudo()) ?>)</button>
-        <?php else: ?>
-            <button onclick="window.location.href='connexion.php'">Connexion</button>
-            <button onclick="window.location.href='inscription.php'">Creer un compte</button>
-        <?php endif; ?>
-    </div>
-</nav>
-<?php include __DIR__ . '/php/partials/header.php'; ?>
+<?php include 'nav.php'; ?>
 
 <div class="container">
     <h1>Mes réservations</h1>

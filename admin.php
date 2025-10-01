@@ -273,37 +273,7 @@ $utilisateurs = $utilisateursStmt->fetchAll(PDO::FETCH_ASSOC);
 
 </head>
 <body>
-
-<!-- BARRE DE NAVIGATION -->
-<nav>
-    <div class="logo">
-        <img src="https://img.freepik.com/vecteurs-premium/lire-logo-du-livre_7888-13.jpg" alt="Logo BookShare">
-        BookShare
-    </div>
-    <div class="actions">
-    <form method="get" action="index.php" id="main-search-form" style="margin:0;">
-        <input type="text" id="main-search-input" name="q" placeholder="Rechercher un livre...">
-    <form method="get" action="index.php" style="margin:0;">
-        <input type="text" name="q" placeholder="Rechercher un livre...">
-    </form>
-
-     <button onclick="window.location.href='index.php'">Accueil</button>
-
-    <?php if ($utilisateur_id): ?>
-        <?php if($role==='admin'): ?>
-            <button onclick="window.location.href='admin.php'">Panneau Admin</button>
-        <?php endif; ?>
-
-        <button onclick="window.location.href='reservation.php'">Mes Réservations</button>
-
-        <button onclick="window.location.href='deconnexion.php'">Déconnexion (<?= htmlspecialchars($pseudo) ?>)</button>
-    <?php else: ?>
-        <button onclick="window.location.href='connexion.php'">Connexion</button>
-        <button onclick="window.location.href='inscription.php'">Créer un compte</button>
-    <?php endif; ?>
-</div>
-</nav>
-<?php include __DIR__ . '/php/partials/header.php'; ?>
+<?php include 'nav.php'; ?>
 
 <h1>Panneau Administrateur</h1>
 

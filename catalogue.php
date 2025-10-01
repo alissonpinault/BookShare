@@ -2,6 +2,13 @@
 require_once 'db.php';
 session_start();
 
+// Initialiser la connexion MongoDB si elle n'existe pas
+if (!isset($mongoDB) || $mongoDB === null) {
+    require_once 'vendor/autoload.php';
+    $mongoClient = new MongoDB\Client("mongodb://localhost:27017");
+    $mongoDB = $mongoClient->bookshare; // Remplacez 'bookshare' par le nom de votre base MongoDB
+}
+
 $utilisateur_id = $_SESSION['utilisateur_id'] ?? null;
 $pseudo = $_SESSION['pseudo'] ?? 'guest';
 
