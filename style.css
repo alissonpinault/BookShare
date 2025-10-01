@@ -215,7 +215,7 @@ input:focus, textarea:focus, select:focus {
 
 /* Colonne droite (cartes livres) */
 .cards-container {
-  margin-top: 0;
+  margin-top: 0; 
   padding: 0;
 }
 
@@ -416,13 +416,18 @@ footer .pagination a.active {
 @media (max-width:768px) {
     /* Layout en colonne : filtres cachés */
     .layout {
-        flex-direction: column;
+        display: grid;                
+        grid-template-columns: 1fr;    
+        column-gap: 0;                 
+        padding: 0 12px 16px;
     }
     .filters-wrapper {
         display: none;
     }
     .filters-toggle {
-        display: block;
+        display:block;
+        margin: 12px auto 16px;   
+        padding: 10px 20px;
     }
 
     /* Container prend toute la largeur */
