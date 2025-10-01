@@ -148,6 +148,86 @@ input:focus, textarea:focus, select:focus {
 }
 
 /* ==========================================
+   LAYOUT AVEC FILTRES
+========================================== */
+.layout {
+    display: flex;
+    gap: 20px;
+    padding: 20px;
+}
+
+/* Colonne filtres (desktop/tablette) */
+.filters-wrapper {
+    width: 250px;
+    flex-shrink: 0;
+}
+.filters-panel {
+    background: rgba(255,255,255,0.95);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+.filters-title {
+    margin-top: 0;
+    font-size: 1.2em;
+    color: #00796b;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+.filters-form label {
+    display: block;
+    margin-bottom: 15px;
+    font-weight: 600;
+    color: #004d40;
+}
+.filters-actions button {
+    width: 100%;
+}
+
+/* Modal filtres (mobile) */
+.filters-toggle {
+    display: none;
+    margin: 10px auto;
+    padding: 10px 20px;
+    background: #00796b;
+    color: #fff;
+    border-radius: 6px;
+}
+.filters-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: 2000;
+    justify-content: center;
+    align-items: center;
+}
+
+.filters-modal.open { display: flex; }
+.filters-modal .filters-panel {
+    width: 90%;
+    max-width: 400px;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.filters-modal .filters-close {
+  display: block;
+  margin: 15px auto;
+  padding: 8px 16px;
+  background: #b71c1c;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+.filters-modal .filters-close:hover {
+  background: #8a1414;
+}
+
+/* ==========================================
    LISTS & RESERVATIONS
 ========================================== */
 .list { list-style: none; padding: 0; margin: 0; }
@@ -189,6 +269,7 @@ input:focus, textarea:focus, select:focus {
    CARDS
 ========================================== */
 .cards-container {
+    flex: 1;
     display: flex;
     flex-wrap: wrap;
     gap: 20px;
@@ -297,6 +378,17 @@ footer .pagination a.active {
    RESPONSIVE FIXES
 ========================================== */
 @media (max-width:768px) {
+    /* Layout en colonne : filtres cachés */
+    .layout {
+        flex-direction: column;
+    }
+    .filters-wrapper {
+        display: none;
+    }
+    .filters-toggle {
+        display: block;
+    }
+
     /* Container prend toute la largeur */
     .container {
         max-width: 100%;

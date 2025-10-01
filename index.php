@@ -126,63 +126,67 @@ if ($noteMin !== null) $queryParams['note_min'] = $noteMin;
 <body>
 <?php include 'nav.php'; ?>
 
-<main>
-    <h1>Bienvenue sur BookShare</h1>
+<h1>Bienvenue sur BookShare</h1>
 
-    <div class="filters-wrapper">
+<main class="layout">
+    <!-- Filtres (colonne desktop/tablette) -->
+    <aside class="filters-wrapper">
         <div id="filters-panel" class="filters-panel">
             <h2 class="filters-title">Filtres de recherche</h2>
             <form method="get" action="index.php" class="filters-form">
-                <div class="filters-row">
-                    <label for="filter-genre">Genre
-                        <select id="filter-genre" name="genre">
-                            <option value="">Tous les genres</option>
-                            <?php foreach ($genres as $optionGenre): ?>
-                                <option value="<?= htmlspecialchars($optionGenre) ?>" <?= $optionGenre === $genre ? 'selected' : '' ?>>
-                                    <?= htmlspecialchars($optionGenre) ?>
-                                </option>
-                            <?php endforeach; ?>
-                        </select>
-                    </label>
+                <label for="filter-genre">Genre
+                    <select id="filter-genre" name="genre">
+                        <option value="">Tous les genres</option>
+                        <?php foreach ($genres as $optionGenre): ?>
+                            <option value="<?= htmlspecialchars($optionGenre) ?>" <?= $optionGenre === $genre ? 'selected' : '' ?>>
+                                <?= htmlspecialchars($optionGenre) ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </label>
 
-                    <label for="filter-auteur">Auteur
-                        <select id="filter-auteur" name="auteur">
-                            <option value="">Tous les auteurs</option>
-                            <?php foreach ($auteurs as $optionAuteur): ?>
-                                <option value="<?= htmlspecialchars($optionAuteur) ?>" <?= $optionAuteur === $auteur ? 'selected' : '' ?>>
-                                    <?= htmlspecialchars($optionAuteur) ?>
-                                </option>
-                            <?php endforeach; ?>
-                        </select>
-                    </label>
+                <label for="filter-auteur">Auteur
+                    <select id="filter-auteur" name="auteur">
+                        <option value="">Tous les auteurs</option>
+                        <?php foreach ($auteurs as $optionAuteur): ?>
+                            <option value="<?= htmlspecialchars($optionAuteur) ?>" <?= $optionAuteur === $auteur ? 'selected' : '' ?>>
+                                <?= htmlspecialchars($optionAuteur) ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </label>
 
-                    <label for="filter-statut">Statut
-                        <select id="filter-statut" name="statut">
-                            <option value="">Tous les statuts</option>
-                            <option value="disponible" <?= $statut === 'disponible' ? 'selected' : '' ?>>Disponible</option>
-                            <option value="indisponible" <?= $statut === 'indisponible' ? 'selected' : '' ?>>Indisponible</option>
-                        </select>
-                    </label>
+                <label for="filter-statut">Statut
+                    <select id="filter-statut" name="statut">
+                        <option value="">Tous les statuts</option>
+                        <option value="disponible" <?= $statut === 'disponible' ? 'selected' : '' ?>>Disponible</option>
+                        <option value="indisponible" <?= $statut === 'indisponible' ? 'selected' : '' ?>>Indisponible</option>
+                    </select>
+                </label>
 
-                    <label for="filter-note">Note minimale
-                        <select id="filter-note" name="note_min">
-                            <option value="">Aucune note minimale</option>
-                            <?php for ($note = 1; $note <= 5; $note++): ?>
-                                <option value="<?= $note ?>" <?= $noteMin === $note ? 'selected' : '' ?>>
-                                    <?= $note ?> ★ et plus
-                                </option>
-                            <?php endfor; ?>
-                        </select>
-                    </label>
-                </div>
+                <label for="filter-note">Note minimale
+                    <select id="filter-note" name="note_min">
+                        <option value="">Aucune note minimale</option>
+                        <?php for ($note = 1; $note <= 5; $note++): ?>
+                            <option value="<?= $note ?>" <?= $noteMin === $note ? 'selected' : '' ?>>
+                                <?= $note ?> ★ et plus
+                            </option>
+                        <?php endfor; ?>
+                    </select>
+                </label>
+
                 <div class="filters-actions">
                     <button type="submit">Appliquer</button>
                 </div>
             </form>
         </div>
-    </div>
+    </aside>
 
-    <div class="cards-container">
+    <!-- Bouton filtres (mobile uniquement) -->
+    <button class="filters-toggle">Filtres</button>
+
+    <!-- Liste des livres -->
+    <section class="cards-container">
         <?php foreach ($livres as $livre): ?>
             <a href="livre.php?id=<?= $livre['livre_id'] ?>" style="text-decoration:none; color:inherit;">
                 <div class="card">
@@ -194,7 +198,7 @@ if ($noteMin !== null) $queryParams['note_min'] = $noteMin;
                 </div>
             </a>
         <?php endforeach; ?>
-    </div>
+    </section>
 </main>
 
 <?php include 'footer.php'; ?>
@@ -207,6 +211,36 @@ document.addEventListener("DOMContentLoaded", () => {
   if (!burger || !actions) return;
   actions.classList.remove("open");
   burger.addEventListener("click", () => actions.classList.toggle("open"));
+});
+
+// Filtres (mobile)
+document.addEventListener("DOMContentLoaded", () => {
+  const toggleBtn = document.querySelector(".filters-toggle");
+  if (!toggleBtn) return;
+
+  const modal = document.createElement("div");
+  modal.className = "filters-modal";
+    const panel = document.querySelector(".filters-wrapper .filters-panel");
+  const clonedPanel = panel.cloneNode(true);
+
+  // Ajout bouton de fermeture
+  const closeBtn = document.createElement("button");
+  closeBtn.textContent = "✖ Fermer";
+  closeBtn.className = "filters-close";
+  closeBtn.addEventListener("click", () => modal.classList.remove("open"));
+
+  modal.appendChild(closeBtn);
+  modal.appendChild(clonedPanel);
+
+  document.body.appendChild(modal);
+
+  toggleBtn.addEventListener("click", () => {
+    modal.classList.toggle("open");
+  });
+
+  modal.addEventListener("click", e => {
+    if (e.target === modal) modal.classList.remove("open");
+  });
 });
 </script>
 </body>
