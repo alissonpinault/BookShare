@@ -151,43 +151,27 @@ input:focus, textarea:focus, select:focus {
    LAYOUT AVEC FILTRES
 ========================================== */
 .layout {
-    display: flex;
-    gap: 20px;
-    padding: 20px;
-}
-
-/* Colonne filtres (desktop/tablette) */
-/* ==== Mise en page 2 colonnes ==== */
-.layout {
   display: grid;
-  grid-template-columns: 280px 1fr; /* colonne gauche filtres + colonne droite cartes */
-  column-gap: 24px;                 /* espace entre les colonnes */
-  align-items: start;               /* tout en haut */
+  grid-template-columns: 280px 1fr; /* colonne gauche filtres + cartes */
+  column-gap: 24px;
+  align-items: start;
   padding: 0 20px 20px;
 }
 
 /* Colonne gauche (filtres) */
-.filters-wrapper {
-  width: 100%;
-  flex: 0 0 auto;
-}
-
+.filters-wrapper { width: 100%; flex: 0 0 auto; }
 .filters-panel {
   background: rgba(255,255,255,0.95);
   padding: 16px;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0,0,0,.2);
 }
-
-/* Titre des filtres */
 .filters-title {
   margin: 0 0 12px;
   font-size: 1.15rem;
   color: #00796b;
   text-align: center;
 }
-
-/* Labels + champs */
 .filters-form label {
   display: block;
   width: 100%;
@@ -195,32 +179,21 @@ input:focus, textarea:focus, select:focus {
   font-weight: 600;
   color: #004d40;
 }
-
-/* Les champs s’adaptent à la largeur de la colonne */
 .filters-form select,
 .filters-form input[type="text"] {
   width: 100%;
   max-width: 100%;
-  box-sizing: border-box;
   font-size: .95rem;
   padding: 8px 10px;
   border-radius: 6px;
   border: 1px solid #b2dfdb;
   background: #f8fbfb;
 }
+.filters-actions button { width: 100%; }
 
-.filters-actions button {
-  width: 100%;
-}
-
-/* Colonne droite (cartes livres) */
-.cards-container {
-  margin-top: 0; 
-  padding: 0;
-}
-
-
-/* Modal filtres (mobile) */
+/* ==========================================
+   MODAL FILTRES (MOBILE)
+========================================== */
 .filters-toggle {
     display: none;
     margin: 10px auto;
@@ -229,28 +202,24 @@ input:focus, textarea:focus, select:focus {
     color: #fff;
     border-radius: 6px;
 }
-/* Overlay du modal */
+/* Overlay */
 .filters-modal{
   position: fixed;
   top:0; left:0;
   width:100%; height:100%;
   background: rgba(0,0,0,0.5);
   display:flex;
-  align-items:center;       
-  justify-content:center;   
+  align-items:center;
+  justify-content:center;
   visibility:hidden;
   opacity:0;
   transition: opacity 0.3s ease;
   z-index:2000;
 }
-
-/* Quand il est ouvert */
 .filters-modal.open{
   visibility:visible;
   opacity:1;
 }
-
-/* Contenu du modal */
 .filters-modal .filters-panel{
   background:white;
   padding:20px;
@@ -260,7 +229,6 @@ input:focus, textarea:focus, select:focus {
   width:320px;
   position:relative;  
 }
-
 /* Bouton fermer */
 .filters-modal .close-btn{
   position:absolute;
@@ -280,71 +248,45 @@ input:focus, textarea:focus, select:focus {
   cursor:pointer;
   transition: background 0.3s;
 }
-
-.filters-modal .close-btn:hover{
-  background:#aaa;
-}
-
-/* ==========================================
-   LISTS & RESERVATIONS
-========================================== */
-.list { list-style: none; padding: 0; margin: 0; }
-.list li {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px;
-    border-bottom: 1px solid #ddd;
-    gap: 15px;
-}
-.list li img {
-    width: 60px;
-    height: 80px;
-    object-fit: cover;
-    border-radius: 4px;
-}
-.reservation-info { flex: 1; display: flex; flex-direction: column; }
-.reservation-actions { display: flex; align-items: center; gap: 10px; }
-
-/* ==========================================
-   STARS / NOTES
-========================================== */
-.stars { display: flex; gap: 4px; cursor: pointer; }
-.star { font-size: 1.5em; color: #ccc; transition: color 0.2s; }
-.star.hover, .star.selected { color: gold; }
-.moyenne-notes {
-    margin-top: 10px;
-    font-size: 1.2em;
-    color: #444;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    justify-content: center;
-}
-.moyenne-notes .star.filled { color: gold; }
+.filters-modal .close-btn:hover{ background:#aaa; }
 
 /* ==========================================
    CARDS
 ========================================== */
 .cards-container {
-    flex: 1;
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: 20px;
-    justify-content: center;
     padding: 20px;
+    justify-items: center;
+}
+@media (min-width: 992px) {
+  .cards-container {
+    grid-template-columns: repeat(4, 1fr); /* 4 colonnes fixes */
+  }
 }
 .card {
     background: white;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    width: 250px;
+    width: 220px;
     overflow: hidden;
     transition: transform 0.2s;
+    display: flex;
+    flex-direction: column;
 }
 .card:hover { transform: scale(1.05); }
-.card img { width: 100%; height: 150px; object-fit: cover; }
-.card-content { padding: 15px; text-align: center; }
+.card img {
+    width: 100%;
+    height: 180px;     /* uniforme */
+    object-fit: cover;
+    display: block;
+}
+.card-content {
+    flex: 1;
+    padding: 15px;
+    text-align: center;
+}
 .card-content h3 { margin: 5px 0; color: #00796b; }
 .card-content p { margin: 5px 0; font-size: 14px; }
 
@@ -397,87 +339,23 @@ footer .pagination a.active {
 }
 
 /* ==========================================
-   FORMS LOGIN/REGISTER
-========================================== */
-.auth-container {
-    background: rgba(255,255,255,0.95);
-    padding: 40px;
-    border-radius: 15px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-    width: 380px;
-    text-align: center;
-    animation: fadeIn 0.8s ease;
-    position: relative;
-}
-.auth-container h2 {
-    font-family: 'Great Vibes', cursive;
-    font-size: 2.5em;
-    color: #00796b;
-    margin-bottom: 30px;
-}
-.error {
-    color: #d32f2f;
-    margin-bottom: 15px;
-    font-weight: bold;
-    font-size: 14px;
-    animation: shake 0.4s;
-}
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-20px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-@keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    20%, 60% { transform: translateX(-5px); }
-    40%, 80% { transform: translateX(5px); }
-}
-
-/* ==========================================
    RESPONSIVE FIXES
 ========================================== */
 @media (max-width:768px) {
-    /* Layout en colonne : filtres cachés */
     .layout {
         display: grid;                
         grid-template-columns: 1fr;    
         column-gap: 0;                 
         padding: 0 12px 16px;
     }
-    .filters-wrapper {
-        display: none;
-    }
+    .filters-wrapper { display: none; }
     .filters-toggle {
         display:block;
-        margin: 12px auto 16px;   
+        margin: 12px auto 16px;
         padding: 10px 20px;
     }
-
-    /* Container prend toute la largeur */
-    .container {
-        max-width: 100%;
-        margin: 10px;
-        padding: 15px;
-    }
-
-    /* Cartes en colonne */
     .cards-container {
-        flex-direction: column;
-        align-items: center;
-        padding: 10px;
+        grid-template-columns: 1fr; /* 1 carte par ligne en mobile */
     }
-    .card {
-        width: 100%;
-        max-width: 90%;
-    }
-
-    /* Pagination adaptée */
-    .pagination {
-        width: 100%;
-        gap: 6px;
-        margin: 20px auto;
-    }
-    .pagination a {
-        flex: 1 1 auto;
-        font-size: 14px;
-    }
+    .card { width: 100%; max-width: 90%; }
 }
