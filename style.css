@@ -12,6 +12,7 @@ html, body {
 body {
     display: flex;
     flex-direction: column;
+    padding-top: 60px;
 }
 
 
@@ -86,6 +87,7 @@ input:focus, textarea:focus, select:focus {
    NAVBAR
 ========================================== */
 .site-nav {
+    position: static;
     top: 0;
     left: 0;
     width: 100%;
