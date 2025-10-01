@@ -32,7 +32,7 @@ if ($noteMin !== null && ($noteMin < 1 || $noteMin > 5)) {
     $noteMin = null;
 }
 
-$parPage = 10;
+$parPage = 12;
 $page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
 $offset = ($page - 1) * $parPage;
 
