@@ -799,7 +799,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script>
 
-<?php require __DIR__ . '/php/components/mobile_bottom_nav.php'; ?>
+<?php include __DIR__ . 'footer.php'; ?>
 
 </body>
 </html>
