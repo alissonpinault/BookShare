@@ -189,8 +189,6 @@ if ($noteMin !== null) $queryParams['note_min'] = $noteMin;
                     <img src="<?= htmlspecialchars($livre['image_url'] ?: 'images/livre-defaut.jpg') ?>" alt="Livre">
                     <div class="card-content">
                         <h3><?= htmlspecialchars($livre['titre']) ?></h3>
-                        <p>Auteur : <?= htmlspecialchars($livre['auteur']) ?></p>
-                        <p>Genre : <?= htmlspecialchars($livre['genre']) ?></p>
                         <p>Statut : <span class="disponibilite"><?= htmlspecialchars($livre['disponibilite']) ?></span></p>
                     </div>
                 </div>
@@ -204,10 +202,10 @@ if ($noteMin !== null) $queryParams['note_min'] = $noteMin;
 <script>
 // menu burger
 document.addEventListener("DOMContentLoaded", () => {
-  const burger = document.querySelector(".burger");
-  const actions = document.querySelector("nav .actions");
+  const burger  = document.querySelector(".burger");
+  const actions = document.querySelector(".site-nav .actions");
   if (!burger || !actions) return;
-  actions.classList.remove("open");   // fermé au chargement
+  actions.classList.remove("open");
   burger.addEventListener("click", () => actions.classList.toggle("open"));
 });
 </script>

@@ -1,4 +1,4 @@
-<nav>
+<nav class="site-nav">
     <!-- Logo à gauche -->
     <div class="logo">
         <img src="images/logo.jpg" alt="Logo BookShare">
