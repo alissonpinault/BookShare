@@ -261,6 +261,16 @@ try {
 </div>
 
 <script>
+    
+//menu burger
+    document.addEventListener("DOMContentLoaded", () => {
+    const burger = document.querySelector(".burger");
+    const actions = document.querySelector(".actions");
+
+    burger.addEventListener("click", () => {
+        actions.classList.toggle("open");
+    });
+});
 const tabs = document.querySelectorAll('.tab');
 const contents = document.querySelectorAll('.tab-content');
 

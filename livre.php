@@ -93,7 +93,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reserver'])) {
 
 <?php require __DIR__ . '/php/components/mobile_bottom_nav.php'; ?>
 
-<script src="js/navigation.js"></script>
+<script> 
+//menu burger
+
+document.addEventListener("DOMContentLoaded", () => {
+    const burger = document.querySelector(".burger");
+    const actions = document.querySelector(".actions");
+
+    burger.addEventListener("click", () => {
+        actions.classList.toggle("open");
+    });
+});
+
+</script>
 </div>
 </body>
 </html>

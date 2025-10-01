@@ -225,7 +225,8 @@ if ($noteMin !== null) {
 
 
 <script>
-    
+//menu burger
+
     document.addEventListener("DOMContentLoaded", () => {
     const burger = document.querySelector(".burger");
     const actions = document.querySelector(".actions");
