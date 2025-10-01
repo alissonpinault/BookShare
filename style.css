@@ -147,179 +147,136 @@ input:focus, textarea:focus, select:focus {
 /* ==========================================
    LAYOUT AVEC FILTRES
 ========================================== */
-.layout {
-  display: grid;
-  grid-template-columns: 280px 1fr;
-  column-gap: 24px;
-  align-items: start;
-  padding: 0 20px 20px;
+.layout{
+  display:grid;
+  grid-template-columns: 260px 1fr;   /* sidebar + contenu */
+  column-gap: 20px;
+  align-items:start;
+  padding: 0 16px 20px;
 }
-.filters-wrapper { width: 100%; }
-.filters-panel {
+
+@media (max-width: 1024px){
+  .layout{
+    grid-template-columns: 240px 1fr; /* sidebar un peu plus étroite */
+    column-gap: 16px;
+    padding: 0 12px 16px;
+  }
+}
+
+.filters-wrapper{ width:100%; }
+.filters-panel{
   background: rgba(255,255,255,0.95);
   padding: 16px;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0,0,0,.2);
 }
-.filters-title {
-  margin: 0 0 12px;
-  font-size: 1.15rem;
-  color: #00796b;
-  text-align: center;
+.filters-title{ margin:0 0 12px; font-size:1.1rem; color:#00796b; text-align:center; }
+.filters-form label{ display:block; margin-bottom:12px; font-weight:600; color:#004d40; }
+.filters-form select,
+.filters-form input[type="text"]{
+  width:100%; padding:8px 10px; border-radius:6px; border:1px solid #b2dfdb; background:#f8fbfb;
 }
-.filters-form label {
-  display: block;
-  margin-bottom: 12px;
-  font-weight: 600;
-  color: #004d40;
-}
-.filters-form select {
-  width: 100%;
-  padding: 8px 10px;
-  border-radius: 6px;
-  border: 1px solid #b2dfdb;
-  background: #f8fbfb;
-}
-.filters-actions button { width: 100%; }
+.filters-actions button{ width:100%; }
+
+/* Bouton modal filtres (mobile uniquement) */
+.filters-toggle{ display:none; margin:10px auto 16px; padding:10px 20px; background:#00796b; color:#fff; border-radius:6px; }
 
 /* ==========================================
    MODAL FILTRES (MOBILE)
 ========================================== */
-.filters-toggle {
-  display: none;
-  margin: 10px auto;
-  padding: 10px 20px;
-  background: #00796b;
-  color: #fff;
-  border-radius: 6px;
+.filters-modal{
+  position:fixed; inset:0;
+  background: rgba(0,0,0,.5);
+  display:flex; align-items:center; justify-content:center;
+  visibility:hidden; opacity:0; transition:opacity .3s ease; z-index:2000;
 }
-.filters-modal {
-  position: fixed;
-  top:0; left:0;
-  width:100%; height:100%;
-  background: rgba(0,0,0,0.5);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  visibility:hidden;
-  opacity:0;
-  transition: opacity 0.3s ease;
-  z-index:2000;
+.filters-modal.open{ visibility:visible; opacity:1; }
+.filters-modal .filters-panel{
+  background:#fff; padding:20px; border-radius:12px; box-shadow:0 8px 20px rgba(0,0,0,.3);
+  width: min(360px, 92vw); position:relative;
 }
-.filters-modal.open {
-  visibility:visible;
-  opacity:1;
+.filters-modal .close-btn{
+  position:absolute; top:10px; right:10px;
+  width:32px; height:32px; border:none; border-radius:50%;
+  background:#ccc; color:#333; font-weight:bold; cursor:pointer; display:flex; align-items:center; justify-content:center;
 }
-.filters-modal .filters-panel {
-  background:white;
+.filters-modal .close-btn:hover{ background:#aaa; }
+
+/* ==========================================
+   CARDS
+========================================== */
+.cards-container{
+  width:100%;
+  min-width:0;                    /* évite les débordements de grille */
+  display:grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr)); /* 4 colonnes desktop */
+  gap:20px;
   padding:20px;
-  border-radius:12px;
-  box-shadow:0 8px 20px rgba(0,0,0,0.3);
-  max-width:90%;
-  width:320px;
-  position:relative;  
-}
-.filters-modal .close-btn {
-  position:absolute;
-  top:10px;
-  right:10px;
-  background:#ccc;
-  border:none;
-  color:#333;
-  font-size:18px;
-  font-weight:bold;
-  border-radius:50%;
-  width:32px;
-  height:32px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  cursor:pointer;
-  transition: background 0.3s;
-}
-.filters-modal .close-btn:hover { background:#aaa; }
-
-/* ==========================================
-   CARDS
-========================================== */
-/* ==========================================
-   CARDS
-========================================== */
-/* Desktop : 4 colonnes */
-.cards-container {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
-  padding: 20px;
-  justify-items: center;
+  justify-items:stretch;
+  align-content:start;
 }
 
-.card {
-  background: white;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-  width: 100%;
-  max-width: 250px;
-  overflow: hidden;
-  transition: transform 0.2s;
-  display: flex;
-  flex-direction: column;
-}
-
-.card:hover { transform: scale(1.05); }
-
-.card img {
-  width: 100%;
-  height: 180px;
-  object-fit: cover;
-}
-
-.card-content {
-  padding: 15px;
-  text-align: center;
-}
-
-/* Gérer le texte sans casser la carte */
-.card-content h3 {
-  margin: 5px 0;
-  color: #00796b;
-  font-size: 1rem;
-  white-space: nowrap;          /* pas de retour à la ligne */
-  overflow: hidden;             /* cache ce qui dépasse */
-  text-overflow: ellipsis;      /* ajoute ... */
-}
-
-.card-content p {
-  margin: 5px 0;
-  font-size: 0.9rem;
-  color: #333;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* Tablettes : 2 colonnes */
-@media (max-width: 992px) {
-  .cards-container {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 16px;
-    padding: 12px;
-  }
-  .card {
-    max-width: 100%;
+@media (max-width: 992px){        /* Tablettes = 2 colonnes */
+  .cards-container{
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap:16px; padding:12px;
   }
 }
 
-/* Mobiles : 1 colonne */
-@media (max-width: 768px) {
-  .cards-container {
+.card{
+  background:#fff; border-radius:10px; box-shadow:0 4px 8px rgba(0,0,0,.2);
+  overflow:hidden; transition:transform .2s;
+  display:flex; flex-direction:column;
+  width:100%; min-width:0;        /* permet au contenu de rétrécir */
+}
+.card:hover{ transform:scale(1.03); }
+
+/* Image uniforme */
+.card img{
+  width:100%;
+  height:220px;                   /* même hauteur partout */
+  object-fit:cover;
+  display:block;
+}
+
+/* Contenu + gestion du texte */
+.card-content{ padding:12px; text-align:center; }
+.card-content h3{
+  margin:4px 0 6px; color:#00796b; font-size:1rem;
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+.card-content p{
+  margin:4px 0; font-size:.9rem; color:#333;
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+
+/* Mobiles : */
+@media (max-width: 768px){
+  /* Layout en 1 colonne : sidebar cachée, bouton filtres visible */
+  .layout{ grid-template-columns: 1fr; padding: 0 10px 14px; }
+  .filters-wrapper{ display:none; }
+  .filters-toggle{ display:block; }
+
+  /* Grille -> 1 colonne 100% et style “Amazon” (image gauche, texte droite) */
+  .cards-container{
     grid-template-columns: 1fr;
-    gap: 12px;
-    padding: 10px;
+    gap:12px; padding:10px;
   }
-  .card {
-    width: 100%;
-    max-width: 90%;
+  .card{
+    flex-direction:row; align-items:flex-start;
+    padding:10px; border-radius:10px;
+  }
+  .card img{
+    width:100px; height:140px; flex-shrink:0; border-radius:6px;
+  }
+  .card-content{
+    text-align:left; padding:0 0 0 12px; flex:1; min-width:0;
+  }
+  /* Multiligne avec ellipsis pour garder la carte compacte */
+  .card-content h3,
+  .card-content p{
+    white-space:normal; overflow:hidden;
+    display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:2; /* 2 lignes max */
   }
 }
 
