@@ -170,7 +170,7 @@ input:focus, textarea:focus, select:focus {
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0,0,0,.2);
 }
-.filters-title{ margin:0 0 12px; font-size:1.1rem; color:#00796b; text-align:center; }
+.filters-title{ margin:0 0 12px; font-size:1.5rem; color:#00796b; text-align:center; }
 .filters-form label{ display:block; margin-bottom:12px; font-weight:600; color:#004d40; }
 .filters-form select,
 .filters-form input[type="text"]{
