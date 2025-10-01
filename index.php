@@ -142,12 +142,9 @@ if ($noteMin !== null) {
 
 <div class="filters-wrapper">
     <div id="filters-panel" class="filters-panel">
-        <h2 class="filters-title">ðŸ” Filtres de recherche</h2>
+        <h2 class="filters-title">Filtres de recherche</h2>
         <form method="get" action="index.php" class="filters-form">
             <div class="filters-row">
-                <label for="filter-search">Recherche
-                    <input type="text" id="filter-search" name="q" value="<?= htmlspecialchars($q) ?>" placeholder="Rechercher un livre...">
-                </label>
                 <label for="filter-genre">Genre
                     <select id="filter-genre" name="genre">
                         <option value="">Tous les genres</option>
@@ -211,7 +208,7 @@ if ($noteMin !== null) {
     <nav class="pagination">
         <?php if ($page > 1): ?>
             <?php $prevParams = $queryParams; $prevParams['page'] = $page - 1; $prevQuery = http_build_query($prevParams); ?>
-            <a href="index.php<?= $prevQuery ? '?' . $prevQuery : '' ?>" class="prev">PrÃ©cÃ©dent</a>
+            <a href="index.php<?= $prevQuery ? '?' . $prevQuery : '' ?>" class="prev">Précédent</a>
         <?php endif; ?>
 
         <?php for ($i = 1; $i <= $totalPages; $i++): ?>

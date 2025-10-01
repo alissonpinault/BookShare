@@ -30,7 +30,7 @@
         <button onclick="window.location.href='reservation.php'">Mes Réservations</button>
 
         <button onclick="window.location.href='deconnexion.php'">
-            DÃ©connexion (<?= htmlspecialchars($utilisateur->getPseudo()) ?>)
+            Déconnexion (<?= htmlspecialchars($utilisateur->getPseudo()) ?>)
         </button>
     <?php else: ?>
         <button onclick="window.location.href='connexion.php'">Connexion</button>
