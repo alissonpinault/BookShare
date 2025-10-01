@@ -276,7 +276,7 @@ input:focus, textarea:focus, select:focus {
   .card-content h3,
   .card-content p{
     white-space:normal; overflow:hidden;
-    display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:2; /* 2 lignes max */
+    display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:2; line-clamp:2; /* 2 lignes max */
   }
 }
 

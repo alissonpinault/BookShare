@@ -120,7 +120,7 @@ if ($noteMin !== null) $queryParams['note_min'] = $noteMin;
 <title>BookShare - Accueil</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Great+Vibes&display=swap" rel="stylesheet">
-<link rel="icon" type="image/jpg" href="https://img.freepik.com/vecteurs-premium/lire-logo-du-livre_7888-13.jpg">
+<link rel="icon" type="image/jpg" href="images/logo.jpg">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
