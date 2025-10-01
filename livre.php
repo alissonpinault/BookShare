@@ -100,6 +100,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const burger = document.querySelector(".burger");
     const actions = document.querySelector(".actions");
 
+    // S'assure que le menu est fermé au chargement
+    actions.classList.remove("open");
+
     burger.addEventListener("click", () => {
         actions.classList.toggle("open");
     });
