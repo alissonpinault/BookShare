@@ -472,6 +472,83 @@ input:focus, textarea:focus, select:focus {
 
 
 /* ==========================================
+   ADMIN - TABLEAUX RESPONSIVE
+========================================== */
+
+.tabContent table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px auto;
+  background: #fff;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.tabContent th {
+  background: #00796b;
+  color: #fff;
+  text-align: left;
+  padding: 12px;
+}
+
+.tabContent td {
+  padding: 12px;
+  border-bottom: 1px solid #ddd;
+}
+
+.tabContent tr:nth-child(even) {
+  background: #f9f9f9;
+}
+
+/* --- Responsive tables -> mode "cartes" --- */
+@media (max-width: 768px) {
+  .tabContent table,
+  .tabContent thead,
+  .tabContent tbody,
+  .tabContent th,
+  .tabContent td,
+  .tabContent tr {
+    display: block;
+    width: 100%;
+  }
+
+  .tabContent thead {
+    display: none; /* cache les en-têtes */
+  }
+
+  .tabContent tr {
+    margin-bottom: 15px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    padding: 10px;
+  }
+
+  .tabContent td {
+    border: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 10px;
+    position: relative;
+  }
+
+  /* Affiche le nom de la colonne avant la valeur */
+  .tabContent td::before {
+    content: attr(data-label);
+    font-weight: bold;
+    color: #00796b;
+    flex: 1;
+    text-align: left;
+    padding-right: 10px;
+  }
+
+  .tabContent td:last-child {
+    justify-content: center;
+  }
+}
+
+
+/* ==========================================
    FOOTER
 ========================================== */
 footer {

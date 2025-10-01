@@ -286,24 +286,32 @@ $utilisateurs = $utilisateursStmt->fetchAll(PDO::FETCH_ASSOC);
 
 <!-- Onglet Réservations -->
 <div id="reservations" class="tabContent" data-page-param="reservations_page" data-current-page="<?= (int) $reservationsPagination['page'] ?>" data-total-pages="<?= (int) $reservationsPagination['total_pages'] ?>" style="display:block;">
-    <table>
-        <tr>
-            <th>Utilisateur</th><th>Livre</th><th>Date</th><th>Statut</th><th>Actions</th>
-        </tr>
-        <?php foreach($reservations as $r): ?>
-        <tr>
-            <td><?= htmlspecialchars($r['pseudo']) ?></td>
-            <td><?= htmlspecialchars($r['titre']) ?></td>
-            <td><?= date('Y-m-d', strtotime($r['date_reservation'])) ?></td>
-            <td><?= $r['statut'] ?></td>
-            <td>
-                <?php if($r['statut'] === 'en cours'): ?>
-                    <button class="action terminer" data-reservation="<?= (int) $r['reservation_id'] ?>" data-livre="<?= (int) $r['livre_id'] ?>" onclick="terminer(this, <?= (int) $r['reservation_id'] ?>, <?= (int) $r['livre_id'] ?>)">Terminer</button>
-                <?php endif; ?>
-            </td>
-        </tr>
-        <?php endforeach; ?>
-    </table>
+<table>
+    <tr>
+        <th>Utilisateur</th>
+        <th>Livre</th>
+        <th>Date</th>
+        <th>Statut</th>
+        <th>Actions</th>
+    </tr>
+    <?php foreach($reservations as $r): ?>
+    <tr>
+        <td data-label="Utilisateur"><?= htmlspecialchars($r['pseudo']) ?></td>
+        <td data-label="Livre"><?= htmlspecialchars($r['titre']) ?></td>
+        <td data-label="Date"><?= date('Y-m-d', strtotime($r['date_reservation'])) ?></td>
+        <td data-label="Statut"><?= $r['statut'] ?></td>
+        <td data-label="Actions">
+            <?php if($r['statut'] === 'en cours'): ?>
+                <button class="action terminer"
+                        onclick="terminer(this, <?= (int)$r['reservation_id'] ?>, <?= (int)$r['livre_id'] ?>)">
+                    Terminer
+                </button>
+            <?php endif; ?>
+        </td>
+    </tr>
+    <?php endforeach; ?>
+</table>
+
     <?php
         $reservationsCount = count($reservations);
         $reservationsStart = $reservationsCount ? $reservationsPagination['offset'] + 1 : 0;
@@ -358,19 +366,32 @@ $utilisateurs = $utilisateursStmt->fetchAll(PDO::FETCH_ASSOC);
 </div>
 
 <table id="booksTable">
-    <tr><th>Titre</th><th>Auteur</th><th>Genre</th><th>Actions</th></tr>
+    <tr>
+        <th>Titre</th>
+        <th>Auteur</th>
+        <th>Genre</th>
+        <th>Actions</th>
+    </tr>
     <?php foreach($livres as $b): ?>
     <tr data-id="<?= $b['livre_id'] ?>">
-        <td><?= htmlspecialchars($b['titre']) ?></td>
-        <td><?= htmlspecialchars($b['auteur']) ?></td>
-        <td><?= htmlspecialchars($b['genre']) ?></td>
-        <td>
-            <button class="action modifier" data-livre='<?= htmlspecialchars(json_encode($b), ENT_QUOTES, 'UTF-8') ?>' onclick="openEditModal(this)">Modifier</button>
-            <button class="action supprimer" onclick="deleteBook(this, <?= (int) $b['livre_id'] ?>)">Supprimer</button>
+        <td data-label="Titre"><?= htmlspecialchars($b['titre']) ?></td>
+        <td data-label="Auteur"><?= htmlspecialchars($b['auteur']) ?></td>
+        <td data-label="Genre"><?= htmlspecialchars($b['genre']) ?></td>
+        <td data-label="Actions">
+            <button class="action modifier"
+                    data-livre='<?= htmlspecialchars(json_encode($b), ENT_QUOTES, 'UTF-8') ?>'
+                    onclick="openEditModal(this)">
+                Modifier
+            </button>
+            <button class="action supprimer"
+                    onclick="deleteBook(this, <?= (int) $b['livre_id'] ?>)">
+                Supprimer
+            </button>
         </td>
     </tr>
     <?php endforeach; ?>
 </table>
+
 <?php
     $livresCount = count($livres);
     $livresStart = $livresCount ? $livresPagination['offset'] + 1 : 0;
@@ -414,31 +435,43 @@ $utilisateurs = $utilisateursStmt->fetchAll(PDO::FETCH_ASSOC);
         <p style="text-align:center;">Aucun utilisateur enregistré.</p>
     <?php else: ?>
         <table>
-            <tr><th>Pseudo</th><th>Email</th><th>Role</th><th>Inscription</th><th>Actions</th></tr>
-            <?php foreach ($utilisateurs as $u): ?>
-                <?php
-                    $roleUtilisateur = $u['role'] ?? 'utilisateur';
-                    $isSelf = $utilisateur_id && (int) $u['utilisateur_id'] === (int) $utilisateur_id;
-                    $isAdminRole = $roleUtilisateur === 'admin';
-                    $dateInscription = isset($u['date_inscription']) ? date('Y-m-d', strtotime($u['date_inscription'])) : '-';
-                ?>
-                <tr>
-                    <td><?= htmlspecialchars($u['pseudo']) ?></td>
-                    <td><?= htmlspecialchars($u['email']) ?></td>
-                    <td><?= htmlspecialchars($roleUtilisateur) ?></td>
-                    <td><?= htmlspecialchars($dateInscription) ?></td>
-                    <td>
-                        <?php if ($isSelf): ?>
-                            <em>Compte actuel</em>
-                        <?php elseif ($isAdminRole): ?>
-                            <em>Administrateur</em>
-                        <?php else: ?>
-                            <button class="action supprimer" data-user="<?= (int) $u['utilisateur_id'] ?>" data-pseudo="<?= htmlspecialchars($u['pseudo'], ENT_QUOTES, 'UTF-8') ?>" onclick="deleteUser(this, this.dataset.user, this.dataset.pseudo)">Supprimer</button>
-                        <?php endif; ?>
-                    </td>
-                </tr>
-            <?php endforeach; ?>
-        </table>
+    <tr>
+        <th>Pseudo</th>
+        <th>Email</th>
+        <th>Role</th>
+        <th>Inscription</th>
+        <th>Actions</th>
+    </tr>
+    <?php foreach ($utilisateurs as $u): ?>
+        <?php
+            $roleUtilisateur = $u['role'] ?? 'utilisateur';
+            $isSelf = $utilisateur_id && (int) $u['utilisateur_id'] === (int) $utilisateur_id;
+            $isAdminRole = $roleUtilisateur === 'admin';
+            $dateInscription = isset($u['date_inscription']) ? date('Y-m-d', strtotime($u['date_inscription'])) : '-';
+        ?>
+        <tr>
+            <td data-label="Pseudo"><?= htmlspecialchars($u['pseudo']) ?></td>
+            <td data-label="Email"><?= htmlspecialchars($u['email']) ?></td>
+            <td data-label="Role"><?= htmlspecialchars($roleUtilisateur) ?></td>
+            <td data-label="Inscription"><?= htmlspecialchars($dateInscription) ?></td>
+            <td data-label="Actions">
+                <?php if ($isSelf): ?>
+                    <em>Compte actuel</em>
+                <?php elseif ($isAdminRole): ?>
+                    <em>Administrateur</em>
+                <?php else: ?>
+                    <button class="action supprimer"
+                            data-user="<?= (int) $u['utilisateur_id'] ?>"
+                            data-pseudo="<?= htmlspecialchars($u['pseudo'], ENT_QUOTES, 'UTF-8') ?>"
+                            onclick="deleteUser(this, this.dataset.user, this.dataset.pseudo)">
+                        Supprimer
+                    </button>
+                <?php endif; ?>
+            </td>
+        </tr>
+    <?php endforeach; ?>
+</table>
+
     <?php endif; ?>
     <div class="pagination-info">
         <?php if($utilisateursCount): ?>
