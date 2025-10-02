@@ -61,13 +61,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <title>Inscription - BookShare</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Great+Vibes&display=swap" rel="stylesheet">
-<link rel="icon" type="image/jpg" href="https://img.freepik.com/vecteurs-premium/lire-logo-du-livre_7888-13.jpg">
+<link rel="icon" type="image/jpg" href="images/logo.jpg">
 <link rel="stylesheet" href="style.css">
 </head>
 <body class="auth-body">
 
 <div class="auth-container">
-    <img src="https://img.freepik.com/vecteurs-premium/lire-logo-du-livre_7888-13.jpg" alt="Illustration" class="auth-illustration">
+    <img src="images/logo.jpg" alt="Illustration" class="auth-illustration">
     <h2>Créer un compte</h2>
 
     <?php if ($message): ?>

@@ -148,7 +148,6 @@ input:focus, textarea:focus, select:focus {
 /* ==========================================
    FORMULAIRES AUTH (Connexion + Inscription)
 ========================================== */
-
 .auth-body {
   margin: 0;
   font-family: 'Roboto', sans-serif;
@@ -159,11 +158,12 @@ input:focus, textarea:focus, select:focus {
   height: 100vh;
 }
 
+/* ====== CONTAINER ====== */
 .auth-container {
-  background: rgba(255,255,255,0.95);
+  background: rgba(255, 255, 255, 0.95);
   padding: 40px;
   border-radius: 15px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
   width: 380px;
   text-align: center;
   animation: fadeIn 0.8s ease;
@@ -177,6 +177,7 @@ input:focus, textarea:focus, select:focus {
   margin-bottom: 30px;
 }
 
+/* ====== INPUTS ====== */
 .auth-container input {
   width: 100%;
   padding: 12px;
@@ -189,10 +190,11 @@ input:focus, textarea:focus, select:focus {
 
 .auth-container input:focus {
   border-color: #00796b;
-  box-shadow: 0 0 5px rgba(0,121,107,0.5);
+  box-shadow: 0 0 5px rgba(0, 121, 107, 0.5);
   outline: none;
 }
 
+/* ====== BOUTONS ====== */
 .auth-container button {
   width: 100%;
   padding: 12px;
@@ -209,17 +211,20 @@ input:focus, textarea:focus, select:focus {
 .auth-container button:hover {
   background: #004d40;
   transform: translateY(-2px);
-  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
+/* Boutons secondaires */
 .auth-container .secondary-btn {
   background: #ccc;
   color: #333;
 }
+
 .auth-container .secondary-btn:hover {
   background: #bbb;
 }
 
+/* ====== MESSAGES ERREUR ====== */
 .auth-error {
   color: #d32f2f;
   margin-bottom: 15px;
@@ -228,18 +233,19 @@ input:focus, textarea:focus, select:focus {
   animation: shake 0.4s;
 }
 
-/* Illustration décorative */
+/* ====== ILLUSTRATION ====== */
 .auth-illustration {
   position: absolute;
   top: -50px;
   right: -50px;
   width: 100px;
-  opacity: 0.2;
+  opacity: 0.5; /* 50% transparent */
 }
 
+/* ====== ANIMATIONS ====== */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(-20px); }
-  to { opacity: 1; transform: translateY(0); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes shake {
@@ -248,13 +254,15 @@ input:focus, textarea:focus, select:focus {
   40%, 80% { transform: translateX(5px); }
 }
 
+/* ====== RESPONSIVE ====== */
 @media (max-width: 500px) {
   .auth-container {
     width: 90%;
     padding: 30px;
   }
+
   .auth-illustration {
-    display: none;
+    display: none; /* On cache l'illustration sur mobile */
   }
 }
 
