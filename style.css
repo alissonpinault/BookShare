@@ -381,6 +381,52 @@ input:focus, textarea:focus, select:focus {
   color: gold;
 }
 
+/* ==========================================
+   ONGLET RÉSERVATIONS (En cours / Archivées)
+========================================== */
+
+.tabs {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.tabs .tab {
+  background: #00796b;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.3s;
+}
+
+.tabs .tab:hover {
+  background: #004d40;
+}
+
+.tabs .tab.active {
+  background: #004d40;
+}
+
+/* Contenu des onglets : caché par défaut */
+.tab-content {
+  display: none;
+  animation: fadeIn 0.3s ease;
+}
+
+/* Seul l’onglet actif s’affiche */
+.tab-content.active {
+  display: block;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-5px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
 
 /* ==========================================
    ADMIN - ONGLET & TABLEAUX
