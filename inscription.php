@@ -67,7 +67,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body class="auth-body">
 
 <div class="auth-container">
+  
     <img src="images/logo.jpg" alt="Illustration" class="auth-illustration">
+
     <h2>Créer un compte</h2>
 
     <?php if ($message): ?>
