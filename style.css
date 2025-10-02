@@ -149,7 +149,7 @@ input:focus, textarea:focus, select:focus {
    STYLES AUTH (Connexion + Inscription)
 ========================================== */
 
-.auth-body {
+body.auth-body {
   margin: 0;
   font-family: 'Roboto', sans-serif;
   background: linear-gradient(135deg, #a8edea, #fed6e3);
@@ -159,7 +159,7 @@ input:focus, textarea:focus, select:focus {
   height: 100vh;
 }
 
-.auth-container {
+body.auth-body .auth-container {
   background: rgba(255,255,255,0.95);
   padding: 40px;
   border-radius: 15px;
@@ -170,14 +170,14 @@ input:focus, textarea:focus, select:focus {
   position: relative;
 }
 
-.auth-container h2 {
+body.auth-body .auth-container h2 {
   font-family: 'Great Vibes', cursive;
   font-size: 2.5em;
   color: #00796b;
   margin-bottom: 30px;
 }
 
-.auth-container input {
+body.auth-body .auth-container input {
   width: 100%;
   padding: 12px;
   margin-bottom: 20px;
@@ -187,13 +187,13 @@ input:focus, textarea:focus, select:focus {
   transition: all 0.3s;
 }
 
-.auth-container input:focus {
+body.auth-body .auth-container input:focus {
   border-color: #00796b;
   box-shadow: 0 0 5px rgba(0,121,107,0.5);
   outline: none;
 }
 
-.auth-container button {
+body.auth-body .auth-container button {
   width: 100%;
   padding: 12px;
   background: #00796b;
@@ -206,21 +206,21 @@ input:focus, textarea:focus, select:focus {
   margin-bottom: 10px;
 }
 
-.auth-container button:hover {
+body.auth-body .auth-container button:hover {
   background: #004d40;
   transform: translateY(-2px);
   box-shadow: 0 4px 10px rgba(0,0,0,0.2);
 }
 
-.auth-container .secondary-btn {
+body.auth-body .auth-container .secondary-btn {
   background: #ccc;
   color: #333;
 }
-.auth-container .secondary-btn:hover {
+body.auth-body .auth-container .secondary-btn:hover {
   background: #bbb;
 }
 
-.auth-error {
+body.auth-body .auth-error {
   color: #d32f2f;
   margin-bottom: 15px;
   font-weight: bold;
@@ -229,7 +229,7 @@ input:focus, textarea:focus, select:focus {
 }
 
 /* Illustration décorative */
-.auth-illustration {
+body.auth-body .auth-illustration {
   position: absolute;
   top: -50px;
   right: -50px;
@@ -249,11 +249,11 @@ input:focus, textarea:focus, select:focus {
 }
 
 @media (max-width: 500px) {
-  .auth-container {
+  body.auth-body .auth-container {
     width: 90%;
     padding: 30px;
   }
-  .auth-illustration {
+  body.auth-body .auth-illustration {
     display: none;
   }
 }
