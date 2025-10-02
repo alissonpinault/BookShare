@@ -145,8 +145,248 @@ input:focus, textarea:focus, select:focus {
 }
 
 /* ==========================================
-   ONGLET (UNIFIÉ)
+   LAYOUT AVEC FILTRES
 ========================================== */
+.layout{
+  display:grid;
+  grid-template-columns: 260px 1fr;   /* sidebar + contenu */
+  column-gap: 20px;
+  align-items:start;
+  padding: 0 16px 20px;
+}
+
+@media (max-width: 1024px){
+  .layout{
+    grid-template-columns: 240px 1fr; /* sidebar un peu plus étroite */
+    column-gap: 16px;
+    padding: 0 12px 16px;
+  }
+}
+
+.filters-wrapper{ width:100%; }
+.filters-panel{
+  background: rgba(255,255,255,0.95);
+  padding: 16px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0,0,0,.2);
+}
+.filters-title{ margin:0 0 12px; font-size:1.5rem; color:#00796b; text-align:center; }
+.filters-form label{ display:block; margin-bottom:12px; font-weight:600; color:#004d40; }
+.filters-form select,
+.filters-form input[type="text"]{
+  width:100%; padding:8px 10px; border-radius:6px; border:1px solid #b2dfdb; background:#f8fbfb;
+}
+.filters-actions button{ width:100%; }
+
+/* Bouton modal filtres (mobile uniquement) */
+.filters-toggle{ display:none; margin:10px auto 16px; padding:10px 20px; background:#00796b; color:#fff; border-radius:6px; }
+
+/* ==========================================
+   MODAL FILTRES (MOBILE)
+========================================== */
+.filters-modal{
+  position:fixed; inset:0;
+  background: rgba(0,0,0,.5);
+  display:flex; align-items:center; justify-content:center;
+  visibility:hidden; opacity:0; transition:opacity .3s ease; z-index:2000;
+}
+.filters-modal.open{ visibility:visible; opacity:1; }
+.filters-modal .filters-panel{
+  background:#fff; padding:20px; border-radius:12px; box-shadow:0 8px 20px rgba(0,0,0,.3);
+  width: min(360px, 92vw); position:relative;
+}
+.filters-modal .close-btn{
+  position:absolute; top:10px; right:10px;
+  width:32px; height:32px; border:none; border-radius:50%;
+  background:#ccc; color:#333; font-weight:bold; cursor:pointer; display:flex; align-items:center; justify-content:center;
+}
+.filters-modal .close-btn:hover{ background:#aaa; }
+
+/* ==========================================
+   CARDS
+========================================== */
+.cards-container{
+  width:100%;
+  min-width:0;                    /* évite les débordements de grille */
+  display:grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr)); /* 4 colonnes desktop */
+  gap:20px;
+  padding:20px;
+  justify-items:stretch;
+  align-content:start;
+}
+
+@media (max-width: 992px){        /* Tablettes = 2 colonnes */
+  .cards-container{
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap:16px; padding:12px;
+  }
+}
+
+.card{
+  background:#fff; border-radius:10px; box-shadow:0 4px 8px rgba(0,0,0,.2);
+  overflow:hidden; transition:transform .2s;
+  display:flex; flex-direction:column;
+  width:100%; min-width:0;        /* permet au contenu de rétrécir */
+}
+.card:hover{ transform:scale(1.03); }
+
+/* Image uniforme */
+.card img{
+  width:100%;
+  height:220px;                   /* même hauteur partout */
+  object-fit:cover;
+  display:block;
+}
+
+/* Contenu + gestion du texte */
+.card-content{ padding:12px; text-align:center; }
+.card-content h3{
+  margin:4px 0 6px; color:#00796b; font-size:1rem;
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+.card-content p{
+  margin:4px 0; font-size:.9rem; color:#333;
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+
+/* Mobiles : */
+@media (max-width: 768px){
+  /* Layout en 1 colonne : sidebar cachée, bouton filtres visible */
+  .layout{ grid-template-columns: 1fr; padding: 0 10px 14px; }
+  .filters-wrapper{ display:none; }
+  .filters-toggle{ display:block; }
+
+  /* Grille -> 1 colonne 100% et style “Amazon” (image gauche, texte droite) */
+  .cards-container{
+    grid-template-columns: 1fr;
+    gap:12px; padding:10px;
+  }
+  .card{
+    flex-direction:row; align-items:flex-start;
+    padding:10px; border-radius:10px;
+  }
+  .card img{
+    width:100px; height:140px; flex-shrink:0; border-radius:6px;
+  }
+  .card-content{
+    text-align:left; padding:0 0 0 12px; flex:1; min-width:0;
+  }
+  /* Multiligne avec ellipsis pour garder la carte compacte */
+  .card-content h3,
+  .card-content p{
+    white-space:normal; overflow:hidden;
+    display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:2; line-clamp:2; /* 2 lignes max */
+  }
+}
+
+/* ==========================================
+   LIVRE - PAGE DETAIL
+========================================== */
+.container img {
+  width: 220px;       /* défaut (tablette/mobiles moyens) */
+  height: 320px;
+  object-fit: cover;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  display: block;
+  margin: 0 auto 20px; /* centré avec marge en bas */
+}
+
+/* Mobile petit écran */
+@media (max-width: 600px) {
+  .container img {
+    width: 160px;
+    height: 240px;
+  }
+}
+
+/* Desktop grand écran */
+@media (min-width: 992px) {
+  .container img {
+    width: 300px;
+    height: 450px;
+  }
+}
+
+
+/* ==========================================
+   LISTE RÉSERVATIONS (En cours + Archivées)
+========================================== */
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid #ddd;
+  gap: 16px;
+}
+
+/* Petite vignette couverture */
+.list li img {
+  width: 60px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+/* Bloc infos du livre */
+.reservation-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  font-size: 0.95rem;
+  color: #333;
+}
+.reservation-info strong {
+  font-size: 1rem;
+  margin-bottom: 2px;
+  color: #00796b;
+}
+
+/* Bouton Annuler */
+.reservation-actions button {
+  background: #f57c00;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+.reservation-actions button:hover {
+  background: #e65100;
+}
+
+/* Étoiles notation */
+.stars {
+  display: flex;
+  gap: 4px;
+  cursor: pointer;
+}
+.star {
+  font-size: 1.2rem;
+  color: #ccc;
+  transition: color 0.2s;
+}
+.star.hover,
+.star.selected {
+  color: gold;
+}
+
+
+/* ==========================================
+   ADMIN - ONGLET & TABLEAUX
+========================================== */
+
+/* Onglets */
 .tab-buttons {
   display: flex;
   justify-content: center;
@@ -174,102 +414,7 @@ input:focus, textarea:focus, select:focus {
   background: #004d40;
 }
 
-.tabContent {
-  display: none;
-  animation: fadeIn 0.3s ease;
-}
-.tabContent.active {
-  display: block;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-5px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-@media (max-width: 768px) {
-  .tab-buttons {
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-
-  .tab-buttons .tabBtn {
-    font-size: 0.85rem;  
-    padding: 8px 12px;   
-  }
-}
-
-/* ==========================================
-   RÉSERVATIONS
-========================================== */
-.list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-.list li {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 16px;
-  border-bottom: 1px solid #ddd;
-  gap: 16px;
-  background: #fff;
-  border-radius: 6px;
-  margin-bottom: 10px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-}
-.list li img {
-  width: 60px;
-  height: 80px;
-  object-fit: cover;
-  border-radius: 4px;
-  flex-shrink: 0;
-}
-.reservation-info {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  font-size: 0.95rem;
-  color: #333;
-}
-.reservation-info strong {
-  font-size: 1rem;
-  margin-bottom: 2px;
-  color: #00796b;
-}
-.reservation-actions button {
-  background: #f57c00;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  padding: 6px 12px;
-  cursor: pointer;
-  transition: background 0.3s ease;
-}
-.reservation-actions button:hover {
-  background: #e65100;
-}
-
-/* Étoiles */
-.stars {
-  display: flex;
-  gap: 4px;
-  cursor: pointer;
-}
-.star {
-  font-size: 1.2rem;
-  color: #ccc;
-  transition: color 0.2s;
-}
-.star.hover,
-.star.selected {
-  color: gold;
-}
-
-/* ==========================================
-   TABLEAUX ADMIN + RESPONSIVE
-========================================== */
+/* Tableaux */
 .tabContent table {
   width: 100%;
   border-collapse: collapse;
@@ -277,16 +422,19 @@ input:focus, textarea:focus, select:focus {
   background: #fff;
   box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
+
 .tabContent th {
   background: #00796b;
   color: #fff;
   text-align: left;
   padding: 12px;
 }
+
 .tabContent td {
   padding: 12px;
   border-bottom: 1px solid #ddd;
 }
+
 .tabContent tr:nth-child(even) {
   background: #f9f9f9;
 }
@@ -298,6 +446,7 @@ input:focus, textarea:focus, select:focus {
   gap: 8px;
   margin: 15px 0;
 }
+
 .pagination .page,
 .pagination .current {
   padding: 6px 12px;
@@ -305,17 +454,49 @@ input:focus, textarea:focus, select:focus {
   text-decoration: none;
   font-weight: 500;
 }
+
 .pagination .page {
   background: #eee;
   color: #333;
   transition: background 0.2s;
 }
+
 .pagination .page:hover {
   background: #ccc;
 }
+
 .pagination .current {
   background: #00796b;
   color: #fff;
+}
+
+
+/* ==========================================
+   ADMIN - TABLEAUX RESPONSIVE
+========================================== */
+
+.tabContent table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px auto;
+  background: #fff;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.tabContent th {
+  background: #00796b;
+  color: #fff;
+  text-align: left;
+  padding: 12px;
+}
+
+.tabContent td {
+  padding: 12px;
+  border-bottom: 1px solid #ddd;
+}
+
+.tabContent tr:nth-child(even) {
+  background: #f9f9f9;
 }
 
 /* --- Responsive tables -> mode "cartes" --- */
@@ -329,9 +510,11 @@ input:focus, textarea:focus, select:focus {
     display: block;
     width: 100%;
   }
+
   .tabContent thead {
     display: none; /* cache les en-têtes */
   }
+
   .tabContent tr {
     margin-bottom: 15px;
     background: #fff;
@@ -339,6 +522,7 @@ input:focus, textarea:focus, select:focus {
     box-shadow: 0 2px 6px rgba(0,0,0,0.15);
     padding: 10px;
   }
+
   .tabContent td {
     border: none;
     display: flex;
@@ -347,6 +531,8 @@ input:focus, textarea:focus, select:focus {
     padding: 8px 10px;
     position: relative;
   }
+
+  /* Affiche le nom de la colonne avant la valeur */
   .tabContent td::before {
     content: attr(data-label);
     font-weight: bold;
@@ -355,10 +541,25 @@ input:focus, textarea:focus, select:focus {
     text-align: left;
     padding-right: 10px;
   }
+
   .tabContent td:last-child {
     justify-content: center;
   }
+
+  @media (max-width: 768px) {
+  .tab-buttons {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .tab-buttons .tabBtn {
+    font-size: 0.85rem;  
+    padding: 8px 12px;   
+  }
 }
+
+}
+
 
 /* ==========================================
    MODAL - FORMULAIRE AJOUT / EDIT LIVRE
@@ -372,6 +573,7 @@ input:focus, textarea:focus, select:focus {
   max-width: 420px;       
   margin: 0 auto;
 }
+
 #modalAdd input,
 #modalAdd textarea,
 #modalAdd button,
@@ -386,6 +588,7 @@ input:focus, textarea:focus, select:focus {
   box-sizing: border-box;
   transition: border-color 0.3s, box-shadow 0.3s;
 }
+
 #modalAdd input:focus,
 #modalAdd textarea:focus,
 #modalEdit input:focus,
@@ -394,11 +597,13 @@ input:focus, textarea:focus, select:focus {
   box-shadow: 0 0 6px rgba(0, 121, 107, 0.5);
   outline: none;
 }
+
 #modalAdd textarea,
 #modalEdit textarea {
   min-height: 90px;      
   resize: vertical;       
 }
+
 #modalAdd button,
 #modalEdit button {
   background: #00796b;
@@ -409,10 +614,12 @@ input:focus, textarea:focus, select:focus {
   cursor: pointer;
   transition: background 0.3s ease;
 }
+
 #modalAdd button:hover,
 #modalEdit button:hover {
   background: #004d40;
 }
+
 
 /* ==========================================
    FOOTER
@@ -460,4 +667,25 @@ footer .pagination a.active {
   background: #004d40;
   color: #ffffff;
   pointer-events: none;
+}
+
+/* ==========================================
+   RESPONSIVE FIXES
+========================================== */
+@media (max-width: 768px) {
+  .layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    padding: 0 12px 16px;
+  }
+  .filters-wrapper { display: none; }
+  .filters-toggle { display:block; }
+}
+
+@media (max-width: 768px) {
+  /* Cache les titres de colonnes */
+  .tabContent table thead,
+  .tabContent table tr:first-child {
+    display: none;
+  }
 }
