@@ -15,7 +15,6 @@ html, body {
   overflow-x: hidden;
 }
 
-/* Body global (pages classiques du site) */
 body {
   margin: 0;
   display: flex;
@@ -45,7 +44,7 @@ h1, h2 {
   color: #00796b;
   font-family: 'Great Vibes', cursive;
 }
-h1 { font-size: 2.5em; margin-bottom: 30px; margin-top: 30px; }
+h1 { font-size: 2.5em; margin-bottom: 30px; margin-top: 30; }
 h2 { font-size: 2em; margin-bottom: 20px; }
 
 /* Buttons */
@@ -145,7 +144,6 @@ input:focus, textarea:focus, select:focus {
   }
 }
 
-
 /* ==========================================
    ONGLET (UNIFIÉ)
 ========================================== */
@@ -182,6 +180,23 @@ input:focus, textarea:focus, select:focus {
 }
 .tabContent.active {
   display: block;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-5px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 768px) {
+  .tab-buttons {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .tab-buttons .tabBtn {
+    font-size: 0.85rem;  
+    padding: 8px 12px;   
+  }
 }
 
 /* ==========================================
