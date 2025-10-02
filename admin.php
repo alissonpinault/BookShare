@@ -1,15 +1,23 @@
 <?php
 require_once 'db.php';
+require_once __DIR__ . '/php/UtilisateurPOO.php';
 session_start();
 
 // Vérifier que l'utilisateur est admin
-if(!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin'){
+$utilisateur = null;
+if (isset($_SESSION['utilisateur_id'])) {
+    $utilisateur = new Utilisateur(
+        $_SESSION['utilisateur_id'],
+        $_SESSION['pseudo'] ?? '',
+        $_SESSION['email'] ?? '',
+        $_SESSION['role'] ?? 'user'
+    );
+}
+
+if (!$utilisateur || !$utilisateur->estAdmin()) {
     header('Location: index.php');
     exit;
 }
-$pseudo = $_SESSION['pseudo'];
-$utilisateur_id = $_SESSION['utilisateur_id'] ?? null;
-$role = $_SESSION['role'];
 
 function readPageParam($name){
     if(isset($_GET[$name])){
