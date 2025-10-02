@@ -15,6 +15,7 @@ html, body {
   overflow-x: hidden;
 }
 
+/* Body global (pages classiques du site) */
 body {
   margin: 0;
   display: flex;
@@ -44,7 +45,7 @@ h1, h2 {
   color: #00796b;
   font-family: 'Great Vibes', cursive;
 }
-h1 { font-size: 2.5em; margin-bottom: 30px; margin-top: 30; }
+h1 { font-size: 2.5em; margin-bottom: 30px; margin-top: 30px; }
 h2 { font-size: 2em; margin-bottom: 20px; }
 
 /* Buttons */
@@ -144,22 +145,21 @@ input:focus, textarea:focus, select:focus {
   }
 }
 
-
 /* ==========================================
    STYLES AUTH (Connexion + Inscription)
 ========================================== */
-
-body.auth-body {
+.auth-body {
   margin: 0;
   font-family: 'Roboto', sans-serif;
   background: linear-gradient(135deg, #a8edea, #fed6e3);
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
   height: 100vh;
+  flex-direction: row !important; /* neutralise le body global */
 }
 
-body.auth-body .auth-container {
+.auth-container {
   background: rgba(255,255,255,0.95);
   padding: 40px;
   border-radius: 15px;
@@ -170,14 +170,14 @@ body.auth-body .auth-container {
   position: relative;
 }
 
-body.auth-body .auth-container h2 {
+.auth-container h2 {
   font-family: 'Great Vibes', cursive;
   font-size: 2.5em;
   color: #00796b;
   margin-bottom: 30px;
 }
 
-body.auth-body .auth-container input {
+.auth-container input {
   width: 100%;
   padding: 12px;
   margin-bottom: 20px;
@@ -187,13 +187,13 @@ body.auth-body .auth-container input {
   transition: all 0.3s;
 }
 
-body.auth-body .auth-container input:focus {
+.auth-container input:focus {
   border-color: #00796b;
   box-shadow: 0 0 5px rgba(0,121,107,0.5);
   outline: none;
 }
 
-body.auth-body .auth-container button {
+.auth-container button {
   width: 100%;
   padding: 12px;
   background: #00796b;
@@ -206,21 +206,21 @@ body.auth-body .auth-container button {
   margin-bottom: 10px;
 }
 
-body.auth-body .auth-container button:hover {
+.auth-container button:hover {
   background: #004d40;
   transform: translateY(-2px);
   box-shadow: 0 4px 10px rgba(0,0,0,0.2);
 }
 
-body.auth-body .auth-container .secondary-btn {
+.auth-container .secondary-btn {
   background: #ccc;
   color: #333;
 }
-body.auth-body .auth-container .secondary-btn:hover {
+.auth-container .secondary-btn:hover {
   background: #bbb;
 }
 
-body.auth-body .auth-error {
+.auth-error {
   color: #d32f2f;
   margin-bottom: 15px;
   font-weight: bold;
@@ -229,7 +229,7 @@ body.auth-body .auth-error {
 }
 
 /* Illustration décorative */
-body.auth-body .auth-illustration {
+.auth-illustration {
   position: absolute;
   top: -50px;
   right: -50px;
@@ -249,15 +249,14 @@ body.auth-body .auth-illustration {
 }
 
 @media (max-width: 500px) {
-  body.auth-body .auth-container {
+  .auth-container {
     width: 90%;
     padding: 30px;
   }
-  body.auth-body .auth-illustration {
+  .auth-illustration {
     display: none;
   }
 }
-
 
 /* ==========================================
    ONGLET (UNIFIÉ)
@@ -295,23 +294,6 @@ body.auth-body .auth-illustration {
 }
 .tabContent.active {
   display: block;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-5px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-@media (max-width: 768px) {
-  .tab-buttons {
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-
-  .tab-buttons .tabBtn {
-    font-size: 0.85rem;  
-    padding: 8px 12px;   
-  }
 }
 
 /* ==========================================
