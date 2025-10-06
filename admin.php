@@ -14,6 +14,8 @@ if (isset($_SESSION['utilisateur_id'])) {
     );
 }
 
+$utilisateur_id = $_SESSION['utilisateur_id'] ?? null;
+
 if (!$utilisateur || !$utilisateur->estAdmin()) {
     header('Location: index.php');
     exit;
@@ -107,14 +109,50 @@ function renderPagination($param, array $pagination, $anchor){
 
 // --- Gestion du POST pour actions AJAX ---
 if($_SERVER['REQUEST_METHOD']==='POST' && isset($_POST['action'])){
+  if ($_POST['action'] === 'valider') {
+    $id = (int)$_POST['reservation_id'];
+    $livre_id = (int)$_POST['livre_id'];
+    if ($id && $livre_id) {
+        try {
+            $pdo->beginTransaction();
+            $pdo->prepare("UPDATE reservations SET statut='validee' WHERE reservation_id=?")->execute([$id]);
+            $pdo->prepare("UPDATE livres SET disponibilite='emprunte' WHERE livre_id=?")->execute([$livre_id]);
+            $pdo->commit();
+            echo json_encode(['success' => true, 'statut' => 'validee']); exit;
+        } catch (Throwable $e) {
+            $pdo->rollBack();
+            error_log('Admin valider reservation error: '.$e->getMessage());
+        }
+    }
+    echo json_encode(['success' => false, 'message' => 'Impossible de valider la réservation.']); exit;
+}
+
+if ($_POST['action'] === 'refuser') {
+    $id = (int)$_POST['reservation_id'];
+    $livre_id = (int)$_POST['livre_id'];
+    if ($id && $livre_id) {
+        try {
+            $pdo->beginTransaction();
+            $pdo->prepare("UPDATE reservations SET statut='refusee' WHERE reservation_id=?")->execute([$id]);
+            $pdo->prepare("UPDATE livres SET disponibilite='disponible' WHERE livre_id=?")->execute([$livre_id]);
+            $pdo->commit();
+            echo json_encode(['success' => true, 'statut' => 'refusee']); exit;
+        } catch (Throwable $e) {
+            $pdo->rollBack();
+            error_log('Admin refuser reservation error: '.$e->getMessage());
+        }
+    }
+    echo json_encode(['success' => false, 'message' => 'Impossible de refuser la réservation.']); exit;
+}
+
     if($_POST['action']==='terminer'){
         $id = isset($_POST['id']) ? (int) $_POST['id'] : 0;
         $livre_id = isset($_POST['livre_id']) ? (int) $_POST['livre_id'] : 0;
         if($id && $livre_id){
             try{
-                $pdo->prepare("UPDATE reservations SET statut='terminer' WHERE reservation_id=?")->execute([$id]);
+                $pdo->prepare("UPDATE reservations SET statut='terminee' WHERE reservation_id=?")->execute([$id]);
                 $pdo->prepare("UPDATE livres SET disponibilite='disponible' WHERE livre_id=?")->execute([$livre_id]);
-                echo json_encode(['success'=>true,'reservation_id'=>$id,'livre_id'=>$livre_id,'statut'=>'terminer']); exit;
+                echo json_encode(['success'=>true,'reservation_id'=>$id,'livre_id'=>$livre_id,'statut'=>'terminee']); exit;
             }catch(Throwable $e){
                 error_log('Admin terminer reservation error: '. $e->getMessage());
             }
@@ -189,27 +227,27 @@ if($_SERVER['REQUEST_METHOD']==='POST' && isset($_POST['action'])){
         }
         echo json_encode(['success'=>false,'message'=>'Suppression du livre impossible.']); exit;
     }
-    elseif($_POST['action']==='supprimerUtilisateur'){
-        $userId = isset($_POST['utilisateur_id']) ? (int) $_POST['utilisateur_id'] : 0;
-        if($userId){
-            if($utilisateur_id && $userId === (int)$utilisateur_id){
-                echo json_encode(['success'=>false,'message'=>"Impossible de supprimer votre propre compte."]); exit;
-            }
-            try{
-                $pdo->beginTransaction();
-                $pdo->prepare("DELETE FROM notes WHERE utilisateur_id=?")->execute([$userId]);
-                $pdo->prepare("DELETE FROM reservations WHERE utilisateur_id=?")->execute([$userId]);
-                $pdo->prepare("DELETE FROM utilisateurs WHERE utilisateur_id=?")->execute([$userId]);
-                $pdo->commit();
-                echo json_encode(['success'=>true,'utilisateur_id'=>$userId]); exit;
-            }catch(Throwable $e){
-                $pdo->rollBack();
-                error_log('Admin delete user error: '. $e->getMessage());
-                echo json_encode(['success'=>false,'message'=>'Suppression impossible.']); exit;
-            }
-        }
-        echo json_encode(['success'=>false,'message'=>'Utilisateur introuvable.']); exit;
+   elseif($_POST['action']==='supprimerUtilisateur'){
+    $userId = isset($_POST['utilisateur_id']) ? (int) $_POST['utilisateur_id'] : 0;
+    if ($userId === (int)$_SESSION['utilisateur_id']) {
+        echo json_encode(['success'=>false,'message'=>"Impossible de supprimer votre propre compte."]); exit;
     }
+    if($userId){
+        try{
+            $pdo->beginTransaction();
+            $pdo->prepare("DELETE FROM notes WHERE utilisateur_id=?")->execute([$userId]);
+            $pdo->prepare("DELETE FROM reservations WHERE utilisateur_id=?")->execute([$userId]);
+            $pdo->prepare("DELETE FROM utilisateurs WHERE utilisateur_id=?")->execute([$userId]);
+            $pdo->commit();
+            echo json_encode(['success'=>true,'utilisateur_id'=>$userId]); exit;
+        }catch(Throwable $e){
+            $pdo->rollBack();
+            error_log('Admin delete user error: '. $e->getMessage());
+            echo json_encode(['success'=>false,'message'=>'Suppression impossible.']); exit;
+        }
+    }
+    echo json_encode(['success'=>false,'message'=>'Utilisateur introuvable.']); exit;
+}
 }
 
 // --- Récupération des données ---
@@ -256,11 +294,6 @@ $reservationsTerminees = $pdo->query("
     WHERE r.statut = 'terminee'
     ORDER BY r.date_reservation DESC
 ")->fetchAll(PDO::FETCH_ASSOC);
-
-$reservationsStmt->bindValue(':limit', $reservationsPagination['per_page'], PDO::PARAM_INT);
-$reservationsStmt->bindValue(':offset', $reservationsPagination['offset'], PDO::PARAM_INT);
-$reservationsStmt->execute();
-$reservations = $reservationsStmt->fetchAll(PDO::FETCH_ASSOC);
 
 $livresStmt = $pdo->prepare("SELECT * FROM livres ORDER BY titre LIMIT :limit OFFSET :offset");
 $livresStmt->bindValue(':limit', $livresPagination['per_page'], PDO::PARAM_INT);
@@ -926,7 +959,6 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script>
 
-<?php include __DIR__ . 'footer.php'; ?>
-
+<?php include 'footer.php'; ?>
 </body>
 </html>
