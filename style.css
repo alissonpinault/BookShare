@@ -472,6 +472,49 @@ input:focus, textarea:focus, select:focus {
   color: #fff;
 }
 
+/* ==========================================
+   ADMIN - SOUS-ONGLETS RÉSERVATIONS
+========================================== */
+.sub-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: 15px 0 25px;
+  flex-wrap: wrap;
+}
+
+.subTabBtn {
+  background: #e0f2f1;
+  color: #004d40;
+  font-weight: 600;
+  padding: 8px 16px;
+  border: 2px solid #00796b;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.subTabBtn:hover {
+  background: #00796b;
+  color: white;
+}
+
+.subTabBtn.active {
+  background: #00796b;
+  color: #fff;
+}
+
+/* Sous-onglets responsive */
+@media (max-width: 768px) {
+  .sub-tabs {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .subTabBtn {
+    font-size: 0.85rem;
+    padding: 6px 10px;
+  }
+}
 
 /* ==========================================
    ADMIN - TABLEAUX RESPONSIVE

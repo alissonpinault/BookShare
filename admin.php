@@ -229,14 +229,34 @@ $reservationsPagination = computePagination($totalReservations, $reservationsPer
 $livresPagination = computePagination($totalLivres, $livresPerPage, $livresPage);
 $utilisateursPagination = computePagination($totalUtilisateurs, $utilisateursPerPage, $utilisateursPage);
 
-$reservationsStmt = $pdo->prepare("
+// --- Réservations par statut --- //
+$reservationsEnAttente = $pdo->query("
     SELECT r.*, u.pseudo, l.titre, l.livre_id
     FROM reservations r
-    JOIN utilisateurs u ON r.utilisateur_id=u.utilisateur_id
-    JOIN livres l ON r.livre_id=l.livre_id
+    JOIN utilisateurs u ON r.utilisateur_id = u.utilisateur_id
+    JOIN livres l ON r.livre_id = l.livre_id
+    WHERE r.statut = 'en_attente'
     ORDER BY r.date_reservation DESC
-    LIMIT :limit OFFSET :offset
-");
+")->fetchAll(PDO::FETCH_ASSOC);
+
+$reservationsValidees = $pdo->query("
+    SELECT r.*, u.pseudo, l.titre, l.livre_id
+    FROM reservations r
+    JOIN utilisateurs u ON r.utilisateur_id = u.utilisateur_id
+    JOIN livres l ON r.livre_id = l.livre_id
+    WHERE r.statut = 'validee'
+    ORDER BY r.date_reservation DESC
+")->fetchAll(PDO::FETCH_ASSOC);
+
+$reservationsTerminees = $pdo->query("
+    SELECT r.*, u.pseudo, l.titre, l.livre_id
+    FROM reservations r
+    JOIN utilisateurs u ON r.utilisateur_id = u.utilisateur_id
+    JOIN livres l ON r.livre_id = l.livre_id
+    WHERE r.statut = 'terminee'
+    ORDER BY r.date_reservation DESC
+")->fetchAll(PDO::FETCH_ASSOC);
+
 $reservationsStmt->bindValue(':limit', $reservationsPagination['per_page'], PDO::PARAM_INT);
 $reservationsStmt->bindValue(':offset', $reservationsPagination['offset'], PDO::PARAM_INT);
 $reservationsStmt->execute();
@@ -293,46 +313,99 @@ $utilisateurs = $utilisateursStmt->fetchAll(PDO::FETCH_ASSOC);
 </div>
 
 <!-- Onglet Réservations -->
-<div id="reservations" class="tabContent" data-page-param="reservations_page" data-current-page="<?= (int) $reservationsPagination['page'] ?>" data-total-pages="<?= (int) $reservationsPagination['total_pages'] ?>" style="display:block;">
-<table>
-    <tr>
-        <th>Utilisateur</th>
-        <th>Livre</th>
-        <th>Date</th>
-        <th>Statut</th>
-        <th>Actions</th>
-    </tr>
-    <?php foreach($reservations as $r): ?>
-    <tr>
-        <td data-label="Utilisateur"><?= htmlspecialchars($r['pseudo']) ?></td>
-        <td data-label="Livre"><?= htmlspecialchars($r['titre']) ?></td>
-        <td data-label="Date"><?= date('Y-m-d', strtotime($r['date_reservation'])) ?></td>
-        <td data-label="Statut"><?= $r['statut'] ?></td>
-        <td data-label="Actions">
-            <?php if($r['statut'] === 'en cours'): ?>
-                <button class="action terminer"
-                        onclick="terminer(this, <?= (int)$r['reservation_id'] ?>, <?= (int)$r['livre_id'] ?>)">
-                    Terminer
-                </button>
-            <?php endif; ?>
-        </td>
-    </tr>
-    <?php endforeach; ?>
-</table>
+<div id="reservations" class="tabContent" style="display:block;">
 
-    <?php
-        $reservationsCount = count($reservations);
-        $reservationsStart = $reservationsCount ? $reservationsPagination['offset'] + 1 : 0;
-        $reservationsEnd = $reservationsCount ? $reservationsPagination['offset'] + $reservationsCount : 0;
-    ?>
-    <div class="pagination-info">
-        <?php if($reservationsCount): ?>
-            Affichage de <?= htmlspecialchars($reservationsStart, ENT_QUOTES, 'UTF-8') ?> à <?= htmlspecialchars($reservationsEnd, ENT_QUOTES, 'UTF-8') ?> sur <?= htmlspecialchars($reservationsPagination['total_items'], ENT_QUOTES, 'UTF-8') ?> réservations.
+    <!-- Sous-onglets -->
+    <div class="tab-buttons sub-tabs">
+        <button class="subTabBtn active" data-subtab="attente">En attente</button>
+        <button class="subTabBtn" data-subtab="validees">Validées</button>
+        <button class="subTabBtn" data-subtab="terminees">Terminées</button>
+    </div>
+
+    <!-- Réservations en attente -->
+    <div id="attente" class="subTabContent" style="display:block;">
+        <?php if (empty($reservationsEnAttente)): ?>
+            <p>Aucune réservation en attente.</p>
         <?php else: ?>
-            Aucune réservation trouvée.
+            <table>
+                <tr>
+                    <th>Utilisateur</th>
+                    <th>Livre</th>
+                    <th>Date</th>
+                    <th>Actions</th>
+                </tr>
+                <?php foreach ($reservationsEnAttente as $r): ?>
+                <tr>
+                    <td><?= htmlspecialchars($r['pseudo']) ?></td>
+                    <td><?= htmlspecialchars($r['titre']) ?></td>
+                    <td><?= date('Y-m-d', strtotime($r['date_reservation'])) ?></td>
+                    <td>
+                        <form method="post">
+                            <input type="hidden" name="reservation_id" value="<?= (int)$r['reservation_id'] ?>">
+                            <input type="hidden" name="livre_id" value="<?= (int)$r['livre_id'] ?>">
+                            <button type="submit" name="action" value="valider" class="btn-green">Valider</button>
+                            <button type="submit" name="action" value="refuser" class="btn-red">Refuser</button>
+                        </form>
+                    </td>
+                </tr>
+                <?php endforeach; ?>
+            </table>
         <?php endif; ?>
     </div>
-    <?= renderPagination('reservations_page', $reservationsPagination, 'reservations'); ?>
+
+    <!-- Réservations validées -->
+    <div id="validees" class="subTabContent">
+        <?php if (empty($reservationsValidees)): ?>
+            <p>Aucune réservation validée.</p>
+        <?php else: ?>
+            <table>
+                <tr>
+                    <th>Utilisateur</th>
+                    <th>Livre</th>
+                    <th>Date</th>
+                    <th>Actions</th>
+                </tr>
+                <?php foreach ($reservationsValidees as $r): ?>
+                <tr>
+                    <td><?= htmlspecialchars($r['pseudo']) ?></td>
+                    <td><?= htmlspecialchars($r['titre']) ?></td>
+                    <td><?= date('Y-m-d', strtotime($r['date_reservation'])) ?></td>
+                    <td>
+                        <form method="post">
+                            <input type="hidden" name="reservation_id" value="<?= (int)$r['reservation_id'] ?>">
+                            <input type="hidden" name="livre_id" value="<?= (int)$r['livre_id'] ?>">
+                            <button type="submit" name="action" value="terminer" class="btn-blue">Terminer</button>
+                        </form>
+                    </td>
+                </tr>
+                <?php endforeach; ?>
+            </table>
+        <?php endif; ?>
+    </div>
+
+    <!-- Réservations terminées -->
+    <div id="terminees" class="subTabContent">
+        <?php if (empty($reservationsTerminees)): ?>
+            <p>Aucune réservation terminée.</p>
+        <?php else: ?>
+            <table>
+                <tr>
+                    <th>Utilisateur</th>
+                    <th>Livre</th>
+                    <th>Date</th>
+                    <th>Statut</th>
+                </tr>
+                <?php foreach ($reservationsTerminees as $r): ?>
+                <tr>
+                    <td><?= htmlspecialchars($r['pseudo']) ?></td>
+                    <td><?= htmlspecialchars($r['titre']) ?></td>
+                    <td><?= date('Y-m-d', strtotime($r['date_reservation'])) ?></td>
+                    <td>✅ Terminée</td>
+                </tr>
+                <?php endforeach; ?>
+            </table>
+        <?php endif; ?>
+    </div>
 </div>
 
 <!-- Onglet Gérer les livres -->
@@ -581,6 +654,19 @@ function terminer(button, reservationId, livreId){
         })
         .catch(handleRequestError);
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+    // Gestion sous-onglets réservations
+    document.querySelectorAll(".subTabBtn").forEach(btn => {
+        btn.addEventListener("click", () => {
+            document.querySelectorAll(".subTabBtn").forEach(b => b.classList.remove("active"));
+            document.querySelectorAll(".subTabContent").forEach(c => c.style.display = "none");
+
+            btn.classList.add("active");
+            document.getElementById(btn.dataset.subtab).style.display = "block";
+        });
+    });
+});
 
 // Livres
 function filterBooks(){
