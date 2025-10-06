@@ -38,7 +38,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reserver'])) {
     } else {
         $message = "<p style='color:red; text-align:center;'>Ce livre est deja reserve.</p>";
     }
+
+} elseif ((new Reservation($pdo))->creerReservation($livreId, (int)$utilisateurId)) {
+    header('Location: livre.php?id=' . $livreId);
+    exit;
 }
+
 ?>
 
 <!DOCTYPE html>
@@ -108,7 +113,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </script>
 
-<?php include __DIR__ . 'footer.php'; ?>
+<?php include 'footer.php'; ?>
 
 </body>
 </html>

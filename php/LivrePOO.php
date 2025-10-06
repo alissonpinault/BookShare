@@ -44,9 +44,7 @@ class Livre {
         return $this->data['disponibilite'] ?? 'inconnu';
     }
 
-    /**
-     * Réserver un livre
-     */
+    /* Réserver un livre */
     public function reserver(int $utilisateur_id): bool {
         if ($this->getDisponibilite() !== 'disponible') {
             return false;
