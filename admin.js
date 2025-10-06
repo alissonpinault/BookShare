@@ -74,15 +74,28 @@ document.addEventListener("DOMContentLoaded", () => {
     ".subTabContentenattente, .subTabContentencours, .subTabContentarchive"
   );
 
+  // Clic sur un sous-onglet
   subTabButtons.forEach((btn) => {
     btn.addEventListener("click", () => {
       subTabButtons.forEach((b) => b.classList.remove("active"));
       subTabContents.forEach((c) => (c.style.display = "none"));
+
       btn.classList.add("active");
       const target = document.getElementById(btn.dataset.subtab);
       if (target) target.style.display = "block";
     });
   });
+
+  // Afficher uniquement le sous-onglet "En attente" par défaut
+  const defaultBtn = document.querySelector(".subTabBtnenattente");
+  const defaultContent = document.getElementById("attente");
+
+  if (defaultBtn && defaultContent) {
+    subTabButtons.forEach((b) => b.classList.remove("active"));
+    subTabContents.forEach((c) => (c.style.display = "none"));
+    defaultBtn.classList.add("active");
+    defaultContent.style.display = "block";
+  }
 });
 
 // ========== LIVRES ==========
