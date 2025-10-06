@@ -37,7 +37,7 @@ class Reservation
 
             // 2️⃣ Rendre le livre indisponible
             $updateLivre = $this->pdo->prepare("
-                UPDATE livres SET statut = 'indisponible' WHERE livre_id = ?
+                UPDATE livres SET disponibilite = 'indisponible' WHERE livre_id = ?
             ");
             $updateLivre->execute([$livreId]);
 
@@ -75,7 +75,7 @@ class Reservation
 
             // Remettre le livre disponible
             $updateLivre = $this->pdo->prepare("
-                UPDATE livres SET statut = 'disponible' WHERE livre_id = ?
+                UPDATE livres SET disponibilite = 'disponible' WHERE livre_id = ?
             ");
             $updateLivre->execute([$reservation['livre_id']]);
 
