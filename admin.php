@@ -971,6 +971,35 @@ document.addEventListener('DOMContentLoaded', () => {
     const button = document.querySelector(`.tabBtn[data-tab="${targetTab}"]`);
     openTab(targetTab, { currentTarget: button }, !window.location.hash);
 });
+
+document.addEventListener("DOMContentLoaded", () => {
+    // Capter tous les formulaires d’action réservation
+    document.querySelectorAll("form").forEach(form => {
+        form.addEventListener("submit", e => {
+            const action = form.querySelector("button[name='action']");
+            if (!action) return;
+
+            // Si c’est une action valider / refuser / terminer → AJAX
+            const val = action.value;
+            if (["valider", "refuser", "terminer"].includes(val)) {
+                e.preventDefault(); // empêcher le rechargement
+                const data = new FormData(form);
+                fetch("admin.php", { method: "POST", body: data })
+                    .then(r => r.json())
+                    .then(d => {
+                        if (d.success) {
+                            alert("Action effectuée avec succès !");
+                            location.reload(); // recharger proprement le tableau
+                        } else {
+                            alert("Erreur : " + d.message);
+                        }
+                    })
+                    .catch(err => console.error("Erreur AJAX :", err));
+            }
+        });
+    });
+});
+
 </script>
 
 <?php include 'footer.php'; ?>
