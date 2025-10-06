@@ -206,16 +206,14 @@ document.addEventListener("DOMContentLoaded", () => {
   const subTabButtons = document.querySelectorAll(
     ".subTabBtnenattente, .subTabBtnencours, .subTabBtnarchive"
   );
-  const subTabContents = document.querySelectorAll(
-    ".subTabContentenattente, .subTabContentencours, .subTabContentarchive"
-  );
+  const subTabContents = document.querySelectorAll(".tabContent");
 
-  // Masquer tous les contenus sauf "En attente" au chargement
+  // Masquer tout sauf "En attente"
   subTabContents.forEach((content) => (content.style.display = "none"));
   const defaultTab = document.getElementById("enattente");
   if (defaultTab) defaultTab.style.display = "block";
 
-  // Gestion des clics sur les boutons
+  // Gestion des clics
   subTabButtons.forEach((btn) => {
     btn.addEventListener("click", () => {
       subTabButtons.forEach((b) => b.classList.remove("active"));
