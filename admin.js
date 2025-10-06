@@ -1,9 +1,5 @@
-// ==========================
-// 📘 admin.js (BookShare)
-// ==========================
-
 document.addEventListener("DOMContentLoaded", () => {
-    console.log("✅ admin.js chargé");
+    console.log("admin.js chargé");
 
     // --- Menu Burger ---
     const burger = document.querySelector(".burger");
@@ -16,6 +12,14 @@ document.addEventListener("DOMContentLoaded", () => {
     const showError = msg => alert(msg || "Une erreur est survenue.");
     const toJson = r => r.ok ? r.json() : Promise.reject("Erreur réseau");
     const handleError = e => { console.error(e); showError(); };
+
+    document.addEventListener('DOMContentLoaded', () => {
+    // Initialiser l’onglet actif (par défaut = Réservations)
+        const initialHash = window.location.hash ? window.location.hash.substring(1) : 'reservations';
+        const targetTab = document.getElementById(initialHash) ? initialHash : 'reservations';
+        const button = document.querySelector(`.tabBtn[data-tab="${targetTab}"]`);
+        openTab(targetTab, { currentTarget: button }, !window.location.hash);
+    });
 
     // --- Changement d’onglet principal ---
     function openTab(tabName) {
@@ -57,7 +61,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     .then(toJson)
                     .then(d => {
                         if (d.success) {
-                            alert(`✅ Action "${action}" effectuée avec succès !`);
+                            alert(`Action "${action}" effectuée avec succès !`);
                             location.reload();
                         } else showError(d.message);
                     })
