@@ -36,7 +36,7 @@ try {
     $totalTerminees = $reservationService->countReservationsByStatut($utilisateur->getId(), 'terminee');
 
     $totalPagesEnAttente = max(1, (int) ceil($totalEnAttente / $pageSize));
-    $totalPagesEnCours = max(1, (int) ceil( $totalEnCours / $pageSize));
+    $totalPagesEnCours = max(1, (int) ceil($totalEnCours / $pageSize));
     $totalPagesTerminees = max(1, (int) ceil($totalTerminees / $pageSize));
 
     $pageEnAttente = min($pageEnAttente, $totalPagesEnAttente);
@@ -58,7 +58,6 @@ try {
         $pageSize,
         $offsetEnCours
     );
-
     $reservationsTerminees = $reservationService->getReservationsTerminees(
         $utilisateur->getId(),
         $pageSize,
@@ -113,18 +112,22 @@ try {
     </div>
 
     <!-- Réservations en attente -->
-     <div id="enattente" class="tabContent" style="display:block;">
+    <div id="enattente" class="tabContent" style="display:block;">
     <?php if (empty($reservationsEnAttente)): ?>
         <p>Aucune réservation en attente.</p>
     <?php else: ?>
         <ul class="list">
             <?php foreach ($reservationsEnAttente as $reservation): ?>
+                <?php
+                    $date = $reservation->getDateReservation();
+                    $dateAffichee = $date ? date('d/m/Y', strtotime($date)) : '-';
+                ?>
                 <li>
                     <img src="<?= htmlspecialchars($reservation->getImageUrl() ?: 'images/livre-defaut.jpg') ?>" alt="Couverture">
                     <div class="reservation-info">
                         <strong><?= htmlspecialchars($reservation->getTitre()) ?></strong>
                         <span>Auteur : <?= htmlspecialchars($reservation->getAuteur()) ?></span>
-                        <span>Réservé le : <?= htmlspecialchars($reservation->getDateReservation() ?? '') ?></span>
+                        <span>Réservé le : <?= htmlspecialchars($dateAffichee) ?></span>
                     </div>
                     <form method="post" class="reservation-actions">
                         <input type="hidden" name="reservation_id" value="<?= (int) $reservation->getId() ?>">
@@ -133,8 +136,8 @@ try {
                 </li>
             <?php endforeach; ?>
         </ul>
-        <?php endif; ?>
-     </div>
+    <?php endif; ?>
+    </div>
      
     <!-- Emprunt en cours -->
     <div id="encours" class="tabContent">
@@ -143,12 +146,16 @@ try {
         <?php else: ?>
             <ul class="list">
                 <?php foreach ($reservationsEnCours as $reservation): ?>
+                    <?php
+                        $date = $reservation->getDateReservation();
+                        $dateAffichee = $date ? date('d/m/Y', strtotime($date)) : '-';
+                    ?>
                     <li>
                         <img src="<?= htmlspecialchars($reservation->getImageUrl() ?: 'images/livre-defaut.jpg') ?>" alt="Couverture">
                         <div class="reservation-info">
                             <strong><?= htmlspecialchars($reservation->getTitre()) ?></strong>
                             <span>Auteur : <?= htmlspecialchars($reservation->getAuteur()) ?></span>
-                            <span>Réservé le : <?= htmlspecialchars($reservation->getDateReservation() ?? '') ?></span>
+                            <span>Emprunté le : <?= htmlspecialchars($dateAffichee) ?></span>
                         </div>
                     </li>
                 <?php endforeach; ?>
@@ -163,12 +170,16 @@ try {
         <?php else: ?>
             <ul class="list">
                 <?php foreach ($reservationsTerminees as $reservation): ?>
+                    <?php
+                        $date = $reservation->getDateReservation();
+                        $dateAffichee = $date ? date('d/m/Y', strtotime($date)) : '-';
+                    ?>
                     <li>
                         <img src="<?= htmlspecialchars($reservation->getImageUrl() ?: 'images/livre-defaut.jpg') ?>" alt="Couverture">
                         <div class="reservation-info">
                             <strong><?= htmlspecialchars($reservation->getTitre()) ?></strong>
                             <span>Auteur : <?= htmlspecialchars($reservation->getAuteur()) ?></span>
-                            <span>Réservé le : <?= htmlspecialchars($reservation->getDateReservation() ?? '') ?></span>
+                            <span>Emprunté le : <?= htmlspecialchars($dateAffichee) ?></span>
                         </div>
 
                         <!-- Étoiles -->
@@ -194,34 +205,31 @@ try {
 <script>
 // menu burger
 document.addEventListener("DOMContentLoaded", () => {
-    const burger  = document.querySelector(".burger");
-    const actions = document.querySelector(".site-nav .actions");
-    if (!burger || !actions) return;
-    actions.classList.remove("open");
-    burger.addEventListener("click", () => actions.classList.toggle("open"));
+  const burger  = document.querySelector(".burger");
+  const actions = document.querySelector(".site-nav .actions");
+  if (!burger || !actions) return;
+  actions.classList.remove("open");
+  burger.addEventListener("click", () => actions.classList.toggle("open"));
 });
 
-// ---- Système sous-onglets Réservations ----
+// ---- Système sous-onglets ----
 document.addEventListener("DOMContentLoaded", () => {
   const subTabButtons = document.querySelectorAll(
     ".subTabBtnenattente, .subTabBtnencours, .subTabBtnarchive"
   );
   const subTabContents = document.querySelectorAll(".tabContent");
 
-  // Masquer tout sauf "En attente"
-  subTabContents.forEach((content) => (content.style.display = "none"));
+  subTabContents.forEach((c) => (c.style.display = "none"));
   const defaultTab = document.getElementById("enattente");
   if (defaultTab) defaultTab.style.display = "block";
 
-  // Gestion des clics
   subTabButtons.forEach((btn) => {
     btn.addEventListener("click", () => {
       subTabButtons.forEach((b) => b.classList.remove("active"));
       subTabContents.forEach((c) => (c.style.display = "none"));
       btn.classList.add("active");
 
-      const targetId = btn.dataset.tab;
-      const target = document.getElementById(targetId);
+      const target = document.getElementById(btn.dataset.tab);
       if (target) target.style.display = "block";
     });
   });
@@ -229,51 +237,51 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // ---- Gestion étoiles ----
 document.querySelectorAll('.stars').forEach(starsContainer => {
-    const stars = starsContainer.querySelectorAll('.star');
-    const livreId = starsContainer.dataset.livre;
-    const userId = starsContainer.dataset.user;
-    let noteExistante = parseInt(starsContainer.dataset.note);
+  const stars = starsContainer.querySelectorAll('.star');
+  const livreId = starsContainer.dataset.livre;
+  const userId = starsContainer.dataset.user;
+  let noteExistante = parseInt(starsContainer.dataset.note);
 
-    if (noteExistante > 0) {
-        stars.forEach(star => {
-            if (parseInt(star.dataset.value) <= noteExistante) {
-                star.classList.add('selected');
-            }
-        });
-        return;
-    }
+  if (noteExistante > 0) {
+      stars.forEach(star => {
+          if (parseInt(star.dataset.value) <= noteExistante) {
+              star.classList.add('selected');
+          }
+      });
+      return;
+  }
 
-    stars.forEach(star => {
-        star.addEventListener('mouseenter', () => {
-            const val = parseInt(star.dataset.value);
-            stars.forEach(s => s.classList.toggle('hover', parseInt(s.dataset.value) <= val));
-        });
+  stars.forEach(star => {
+      star.addEventListener('mouseenter', () => {
+          const val = parseInt(star.dataset.value);
+          stars.forEach(s => s.classList.toggle('hover', parseInt(s.dataset.value) <= val));
+      });
 
-        star.addEventListener('mouseleave', () => {
-            stars.forEach(s => s.classList.remove('hover'));
-        });
+      star.addEventListener('mouseleave', () => {
+          stars.forEach(s => s.classList.remove('hover'));
+      });
 
-        star.addEventListener('click', () => {
-            const note = parseInt(star.dataset.value);
-            fetch('note_livre.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ livre_id: livreId, utilisateur_id: userId, note: note })
-            })
-            .then(resp => resp.json())
-            .then(data => {
-                if (data.success) {
-                    stars.forEach(s => {
-                        s.classList.remove('hover');
-                        s.classList.toggle('selected', parseInt(s.dataset.value) <= note);
-                    });
-                } else {
-                    alert("Erreur : " + data.message);
-                }
-            })
-            .catch(err => console.error(err));
-        });
-    });
+      star.addEventListener('click', () => {
+          const note = parseInt(star.dataset.value);
+          fetch('note_livre.php', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ livre_id: livreId, utilisateur_id: userId, note: note })
+          })
+          .then(resp => resp.json())
+          .then(data => {
+              if (data.success) {
+                  stars.forEach(s => {
+                      s.classList.remove('hover');
+                      s.classList.toggle('selected', parseInt(s.dataset.value) <= note);
+                  });
+              } else {
+                  alert("Erreur : " + data.message);
+              }
+          })
+          .catch(err => console.error(err));
+      });
+  });
 });
 </script>
 
