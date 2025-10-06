@@ -116,7 +116,7 @@ if($_SERVER['REQUEST_METHOD']==='POST' && isset($_POST['action'])){
         try {
             $pdo->beginTransaction();
             $pdo->prepare("UPDATE reservations SET statut='validee' WHERE reservation_id=?")->execute([$id]);
-            $pdo->prepare("UPDATE livres SET disponibilite='emprunte' WHERE livre_id=?")->execute([$livre_id]);
+            $pdo->prepare("UPDATE livres SET disponibilite='indisponible' WHERE livre_id=?")->execute([$livre_id]);
             $pdo->commit();
             echo json_encode(['success' => true, 'statut' => 'validee']); exit;
         } catch (Throwable $e) {
@@ -146,7 +146,7 @@ if ($_POST['action'] === 'refuser') {
 }
 
     if($_POST['action']==='terminer'){
-        $id = isset($_POST['id']) ? (int) $_POST['id'] : 0;
+        $id = isset($_POST['reservation_id']) ? (int) $_POST['reservation_id'] : 0;
         $livre_id = isset($_POST['livre_id']) ? (int) $_POST['livre_id'] : 0;
         if($id && $livre_id){
             try{
@@ -688,15 +688,29 @@ function terminer(button, reservationId, livreId){
         .catch(handleRequestError);
 }
 
-document.addEventListener("DOMContentLoaded", () => {
+    document.addEventListener("DOMContentLoaded", () => {
     // Gestion sous-onglets réservations
-    document.querySelectorAll(".subTabBtn").forEach(btn => {
-        btn.addEventListener("click", () => {
-            document.querySelectorAll(".subTabBtn").forEach(b => b.classList.remove("active"));
-            document.querySelectorAll(".subTabContent").forEach(c => c.style.display = "none");
+    const subTabButtons = document.querySelectorAll(
+        ".subTabBtnenattente, .subTabBtnencours, .subTabBtnarchive"
+    );
+    const subTabContents = document.querySelectorAll(
+        ".subTabContentenattente, .subTabContentencours, .subTabContentarchive"
+    );
 
+    subTabButtons.forEach(btn => {
+        btn.addEventListener("click", () => {
+            // Retirer la classe active de tous les boutons
+            subTabButtons.forEach(b => b.classList.remove("active"));
+            // Masquer toutes les sections
+            subTabContents.forEach(c => (c.style.display = "none"));
+
+            // Activer le bouton cliqué
             btn.classList.add("active");
-            document.getElementById(btn.dataset.subtab).style.display = "block";
+
+            // Trouver le contenu correspondant
+            const targetId = btn.dataset.subtab;
+            const target = document.getElementById(targetId);
+            if (target) target.style.display = "block";
         });
     });
 });
