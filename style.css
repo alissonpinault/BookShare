@@ -362,7 +362,7 @@ input:focus, textarea:focus, select:focus {
   transition: background 0.3s ease;
 }
 .reservation-actions button:hover {
-  background: #e65100;
+  background: #f57c00;
 }
 
 /* Étoiles notation */
@@ -473,7 +473,7 @@ input:focus, textarea:focus, select:focus {
 }
 
 /* ==========================================
-   ADMIN - SOUS-ONGLETS RÉSERVATIONS
+  SOUS-ONGLETS RÉSERVATIONS
 ========================================== */
 .sub-tabs {
   display: flex;
@@ -754,6 +754,27 @@ footer .pagination a.active {
   background: #004d40;
   color: #ffffff;
   pointer-events: none;
+}
+
+/* ==========================================
+   FIX FOOTER COLLÉ EN BAS
+========================================== */
+html, body {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+main,
+.tabContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 60vh;
+}
+
+footer {
+  margin-top: auto;
 }
 
 /* ==========================================

@@ -107,13 +107,13 @@ try {
 
     <!-- Boutons onglets -->
     <div class="tab-buttons">
-        <button class="tabBtn active" data-tab="enattente">En attente</button>
-        <button class="tabBtn" data-tab="encours">En cours</button>
-        <button class="tabBtn" data-tab="archivees">Archivées</button>
+        <button class="tabBtnenattente active" data-tab="enattente">En attente</button>
+        <button class="tabBtnencours" data-tab="encours">En cours</button>
+        <button class="tabBtnarchive" data-tab="archivees">Archivées</button>
     </div>
 
     <!-- Réservations en attente -->
-     <div id="enattente" class="tabContent" style="display:block;">
+     <div id="enattente" class="tabContentenattente" style="display:block;">
     <?php if (empty($reservationsEnAttente)): ?>
         <p>Aucune réservation en attente.</p>
     <?php else: ?>
@@ -137,7 +137,7 @@ try {
      </div>
      
     <!-- Emprunt en cours -->
-    <div id="encours" class="tabContent">
+    <div id="encours" class="tabContentencours">
         <?php if (empty($reservationsEnCours)): ?>
             <p>Aucun emprunt en cours</p>
         <?php else: ?>
@@ -157,7 +157,7 @@ try {
     </div>
 
     <!-- Réservations terminées -->
-    <div id="archivees" class="tabContent">
+    <div id="archivees" class="tabContentarchive">
         <?php if (empty($reservationsTerminees)): ?>
             <p>Aucune réservation archivée.</p>
         <?php else: ?>
