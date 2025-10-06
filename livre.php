@@ -63,19 +63,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reserver'])) {
     <p><strong>Description :</strong><br><?= nl2br(htmlspecialchars($livre->getDescription() ?: 'Aucune description.')) ?></p>
     <p><strong>Statut :</strong> <?= $livre->getDisponibilite() === 'disponible' ? 'Disponible' : 'Reserve' ?></p>
 
-    <div class="moyenne-notes" aria-hidden="false">
-        <?php
-        $etoilesRemplies = (int) floor($moyenne);
-        $etoilesRestantes = 5 - $etoilesRemplies;
-        ?>
+   <div class="moyenne-notes" aria-hidden="false"> 
+    <?php
+    $etoilesRemplies = (int) floor($moyenne);
+    $etoilesRestantes = 5 - $etoilesRemplies;
+    ?>
+    
+    <div class="stars">
         <?php for ($i = 0; $i < $etoilesRemplies; $i++): ?>
-            <span class="star filled">&#9733;</span>
+            <span class="star selected">&#9733;</span>
         <?php endfor; ?>
         <?php for ($i = 0; $i < $etoilesRestantes; $i++): ?>
             <span class="star">&#9734;</span>
         <?php endfor; ?>
-        <span>(<?= $moyenne ?> / 5 - <?= $totalVotes ?> vote<?= $totalVotes > 1 ? 's' : '' ?>)</span>
     </div>
+
+    <span>(<?= number_format($moyenne, 1) ?> / 5 - <?= $totalVotes ?> vote<?= $totalVotes > 1 ? 's' : '' ?>)</span>
+</div>
+
 
     <?= $message ?>
 
