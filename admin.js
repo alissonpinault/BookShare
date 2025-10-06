@@ -335,4 +335,39 @@ document.addEventListener("DOMContentLoaded", () => {
   const targetTab = document.getElementById(initialHash) ? initialHash : "reservations";
   const button = document.querySelector(`.tabBtn[data-tab="${targetTab}"]`);
   openTab(targetTab, { currentTarget: button }, !window.location.hash);
+  
+  // ========== GESTION FORMULAIRES ACTIONS (Valider / Refuser / Terminer) ==========
+document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll("form").forEach(form => {
+    form.addEventListener("submit", e => {
+      const actionButton = form.querySelector("button[name='action']");
+      if (!actionButton) return;
+
+      const action = actionButton.value;
+
+      // Intercepter uniquement les actions via AJAX
+      if (["valider", "refuser", "terminer"].includes(action)) {
+        e.preventDefault(); // Empêche le rechargement / page blanche
+
+        const data = new FormData(form);
+
+        fetch("admin.php", { method: "POST", body: data })
+          .then(r => r.json())
+          .then(d => {
+            if (d.success) {
+              alert(`Action "${action}" effectuée avec succès !`);
+              location.reload(); // recharge proprement la page admin
+            } else {
+              alert("Erreur : " + (d.message || "action impossible"));
+            }
+          })
+          .catch(err => {
+            console.error("Erreur AJAX :", err);
+            alert("Erreur lors de la requête AJAX");
+          });
+      }
+    });
+  });
+});
+
 });
