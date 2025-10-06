@@ -1,9 +1,9 @@
 <nav class="site-nav">
     <!-- Logo à gauche -->
-    <div class="logo">
-        <img src="images/logo.jpg" alt="Logo BookShare">
-        BookShare
-    </div>
+    <a href="index.php" class="logo" style="text-decoration: none; color: inherit;">
+    <img src="images/logo.jpg" alt="Logo BookShare">
+    BookShare
+    </a>
 
     <!-- Bouton burger  -->
     <button class="burger" aria-label="Menu">&#9776;</button>
