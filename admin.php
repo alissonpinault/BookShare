@@ -4,19 +4,19 @@ require_once __DIR__ . '/php/UtilisateurPOO.php';
 session_start();
 
 // Vérifier que l'utilisateur est admin
-$utilisateur = null;
-if (isset($_SESSION['utilisateur_id'])) {
-    $utilisateur = new Utilisateur(
-        $_SESSION['utilisateur_id'],
-        $_SESSION['pseudo'] ?? '',
-        $_SESSION['email'] ?? '',
-        $_SESSION['role'] ?? 'user'
-    );
+if (empty($_SESSION['utilisateur_id'])) {
+    header('Location: index.php');
+    exit;
 }
 
-$utilisateur_id = $_SESSION['utilisateur_id'] ?? null;
+$utilisateur = new Utilisateur(
+    $_SESSION['utilisateur_id'],
+    $_SESSION['pseudo'] ?? '',
+    $_SESSION['email'] ?? '',
+    $_SESSION['role'] ?? 'user'
+);
 
-if (!$utilisateur || !$utilisateur->estAdmin()) {
+if (!$utilisateur->estAdmin()) {
     header('Location: index.php');
     exit;
 }
@@ -110,6 +110,7 @@ function renderPagination($param, array $pagination, $anchor){
 // --- Gestion du POST pour actions AJAX ---
 if($_SERVER['REQUEST_METHOD']==='POST' && isset($_POST['action'])){
   if ($_POST['action'] === 'valider') {
+    header('Content-Type: application/json');
     $id = (int)$_POST['reservation_id'];
     $livre_id = (int)$_POST['livre_id'];
     if ($id && $livre_id) {
@@ -128,6 +129,7 @@ if($_SERVER['REQUEST_METHOD']==='POST' && isset($_POST['action'])){
 }
 
 if ($_POST['action'] === 'refuser') {
+    header('Content-Type: application/json');
     $id = (int)$_POST['reservation_id'];
     $livre_id = (int)$_POST['livre_id'];
     if ($id && $livre_id) {
@@ -146,19 +148,28 @@ if ($_POST['action'] === 'refuser') {
 }
 
     if($_POST['action']==='terminer'){
-        $id = isset($_POST['reservation_id']) ? (int) $_POST['reservation_id'] : 0;
-        $livre_id = isset($_POST['livre_id']) ? (int) $_POST['livre_id'] : 0;
-        if($id && $livre_id){
-            try{
-                $pdo->prepare("UPDATE reservations SET statut='terminee' WHERE reservation_id=?")->execute([$id]);
-                $pdo->prepare("UPDATE livres SET disponibilite='disponible' WHERE livre_id=?")->execute([$livre_id]);
-                echo json_encode(['success'=>true,'reservation_id'=>$id,'livre_id'=>$livre_id,'statut'=>'terminee']); exit;
-            }catch(Throwable $e){
-                error_log('Admin terminer reservation error: '. $e->getMessage());
-            }
+    header('Content-Type: application/json');
+    $id = (int) $_POST['reservation_id'];
+    $livre_id = (int) $_POST['livre_id'];
+
+    if($id && $livre_id){
+        try{
+            $pdo->beginTransaction();
+            $pdo->prepare("UPDATE reservations SET statut='terminee' WHERE reservation_id=?")->execute([$id]);
+            $pdo->prepare("UPDATE livres SET disponibilite='disponible' WHERE livre_id=?")->execute([$livre_id]);
+            $pdo->commit();
+
+            echo json_encode(['success'=>true,'statut'=>'terminee']);
+            exit;
+        }catch(Throwable $e){
+            $pdo->rollBack();
+            error_log('Admin terminer reservation error: '. $e->getMessage());
         }
-        echo json_encode(['success'=>false,'message'=>'Impossible de terminer la réservation.']); exit;
     }
+    echo json_encode(['success'=>false,'message'=>'Impossible de terminer la réservation.']);
+    exit;
+}
+
     elseif($_POST['action']==='ajouterLivre'){
         $titre = $_POST['titre'] ?? '';
         $auteur = $_POST['auteur'] ?? '';

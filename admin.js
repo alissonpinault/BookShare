@@ -360,11 +360,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const row = form.closest("tr");
   if (row) {
     // Mettre à jour la colonne "statut"
-    const statutCell = row.querySelector("td:nth-child(4)");
+    const statutCell = row.querySelector("td:nth-child(3)");
     if (statutCell) statutCell.textContent = result.statut || actionButton.value;
 
     // Supprimer les boutons d’action (valider/refuser)
-    const actionCell = row.querySelector("td:nth-child(5)");
+    const actionCell = row.querySelector("td:nth-child(4)");
     if (actionCell) actionCell.innerHTML = "";
   }
 }
