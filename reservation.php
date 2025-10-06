@@ -92,7 +92,7 @@ try {
 <title>Mes Réservations - BookShare</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Great+Vibes&display=swap" rel="stylesheet">
-<link rel="icon" type="image/jpg" href="https://img.freepik.com/vecteurs-premium/lire-logo-du-livre_7888-13.jpg">
+<link rel="icon" type="image/jpg" href="images/logo.jpg">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -107,13 +107,13 @@ try {
 
     <!-- Boutons onglets -->
     <div class="tab-buttons">
-        <button class="tabBtn active" data-tab="enattente">En attente</button>
-        <button class="tabBtn" data-tab="encours">En cours</button>
-        <button class="tabBtn" data-tab="archivees">Archivées</button>
+        <button class="subTabBtnenattente active" data-tab="enattente">En attente</button>
+        <button class="subTabBtnencours" data-tab="encours">En cours</button>
+        <button class="subTabBtnarchive" data-tab="archivees">Archivées</button>
     </div>
 
     <!-- Réservations en attente -->
-     <div id="enattente" class="tabContent" style="display:block;">
+     <div id="enattente" class="subTabBtnenattente" style="display:block;">
     <?php if (empty($reservationsEnAttente)): ?>
         <p>Aucune réservation en attente.</p>
     <?php else: ?>
@@ -137,7 +137,7 @@ try {
      </div>
      
     <!-- Emprunt en cours -->
-    <div id="encours" class="tabContent">
+    <div id="encours" class="subTabBtnencours">
         <?php if (empty($reservationsEnCours)): ?>
             <p>Aucun emprunt en cours</p>
         <?php else: ?>
@@ -157,7 +157,7 @@ try {
     </div>
 
     <!-- Réservations terminées -->
-    <div id="archivees" class="tabContent">
+    <div id="archivees" class="subTabBtnarchive">
         <?php if (empty($reservationsTerminees)): ?>
             <p>Aucune réservation archivée.</p>
         <?php else: ?>
