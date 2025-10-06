@@ -382,7 +382,7 @@ $utilisateurs = $utilisateursStmt->fetchAll(PDO::FETCH_ASSOC);
                 <tr>
                     <td><?= htmlspecialchars($r['pseudo']) ?></td>
                     <td><?= htmlspecialchars($r['titre']) ?></td>
-                    <td><?= date('Y-m-d', strtotime($r['date_reservation'])) ?></td>
+                    <td><?= date('d-m-Y', strtotime($r['date_reservation'])) ?></td>
                     <td>
                         <form method="post">
                             <input type="hidden" name="reservation_id" value="<?= (int)$r['reservation_id'] ?>">
@@ -413,7 +413,7 @@ $utilisateurs = $utilisateursStmt->fetchAll(PDO::FETCH_ASSOC);
                 <tr>
                     <td><?= htmlspecialchars($r['pseudo']) ?></td>
                     <td><?= htmlspecialchars($r['titre']) ?></td>
-                    <td><?= date('Y-m-d', strtotime($r['date_reservation'])) ?></td>
+                    <td><?= date('d-m-Y', strtotime($r['date_reservation'])) ?></td>
                     <td>
                         <form method="post">
                             <input type="hidden" name="reservation_id" value="<?= (int)$r['reservation_id'] ?>">
@@ -443,7 +443,7 @@ $utilisateurs = $utilisateursStmt->fetchAll(PDO::FETCH_ASSOC);
                 <tr>
                     <td><?= htmlspecialchars($r['pseudo']) ?></td>
                     <td><?= htmlspecialchars($r['titre']) ?></td>
-                    <td><?= date('Y-m-d', strtotime($r['date_reservation'])) ?></td>
+                    <td><?= date('d-m-Y', strtotime($r['date_reservation'])) ?></td>
                     <td>Terminée</td>
                 </tr>
                 <?php endforeach; ?>
@@ -572,7 +572,7 @@ $utilisateurs = $utilisateursStmt->fetchAll(PDO::FETCH_ASSOC);
             $roleUtilisateur = $u['role'] ?? 'utilisateur';
             $isSelf = $utilisateur_id && (int) $u['utilisateur_id'] === (int) $utilisateur_id;
             $isAdminRole = $roleUtilisateur === 'admin';
-            $dateInscription = isset($u['date_inscription']) ? date('Y-m-d', strtotime($u['date_inscription'])) : '-';
+            $dateInscription = isset($u['date_inscription']) ? date('d-m-Y', strtotime($u['date_inscription'])) : '-';
         ?>
         <tr>
             <td data-label="Pseudo"><?= htmlspecialchars($u['pseudo']) ?></td>
