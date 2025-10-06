@@ -716,13 +716,27 @@ footer {
   color: white;
   text-align: center;
   padding: 20px 10px;
-  margin-top: 40px;
+  margin-top: auto; /* permet de coller le footer en bas si le contenu est court */
+  flex-shrink: 0;   /* empêche le footer de se compresser sur les pages longues */
 }
+
+/* structure parent pour que le footer reste logique */
+html, body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+main {
+  flex: 1; /* le contenu prend l'espace restant */
+}
+
+/* --- pagination et texte identiques --- */
 footer .footer-text {
   margin-top: 10px;
   font-size: 0.9em;
   color: #e0f2f1;
 }
+
 footer .pagination {
   display: flex;
   justify-content: center;
@@ -730,6 +744,7 @@ footer .pagination {
   gap: 10px;
   margin-bottom: 10px;
 }
+
 footer .pagination a {
   display: inline-flex;
   justify-content: center;
@@ -745,36 +760,17 @@ footer .pagination a {
   box-shadow: 0 2px 4px rgba(0,0,0,0.15);
   transition: background 0.3s, color 0.3s, transform 0.2s;
 }
+
 footer .pagination a:hover {
   background: #00796b;
   color: #ffffff;
   transform: translateY(-2px);
 }
+
 footer .pagination a.active {
   background: #004d40;
   color: #ffffff;
   pointer-events: none;
-}
-
-/* ==========================================
-   FIX FOOTER COLLÉ EN BAS
-========================================== */
-html, body {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-main,
-.tabContent {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  min-height: 60vh;
-}
-
-footer {
-  margin-top: auto;
 }
 
 /* ==========================================
