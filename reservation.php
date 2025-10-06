@@ -201,25 +201,32 @@ document.addEventListener("DOMContentLoaded", () => {
     burger.addEventListener("click", () => actions.classList.toggle("open"));
 });
 
-// ---- Système onglets ----
-function openTab(tabName, evt) {
-    document.querySelectorAll(".tabContent").forEach(c => c.style.display = "none");
-    document.querySelectorAll(".tabBtn").forEach(b => b.classList.remove("active"));
-
-    document.getElementById(tabName).style.display = "block";
-    if (evt && evt.currentTarget) {
-        evt.currentTarget.classList.add("active");
-    }
-}
-
+// ---- Système sous-onglets Réservations ----
 document.addEventListener("DOMContentLoaded", () => {
-    const defaultTab = "enattente";
-    const btn = document.querySelector(`.tabBtn[data-tab="${defaultTab}"]`);
-    if (btn) openTab(defaultTab, { currentTarget: btn });
+  const subTabButtons = document.querySelectorAll(
+    ".subTabBtnenattente, .subTabBtnencours, .subTabBtnarchive"
+  );
+  const subTabContents = document.querySelectorAll(
+    ".subTabContentenattente, .subTabContentencours, .subTabContentarchive"
+  );
 
-    document.querySelectorAll(".tabBtn").forEach(btn => {
-        btn.addEventListener("click", e => openTab(btn.dataset.tab, e));
+  // Masquer tous les contenus sauf "En attente" au chargement
+  subTabContents.forEach((content) => (content.style.display = "none"));
+  const defaultTab = document.getElementById("enattente");
+  if (defaultTab) defaultTab.style.display = "block";
+
+  // Gestion des clics sur les boutons
+  subTabButtons.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      subTabButtons.forEach((b) => b.classList.remove("active"));
+      subTabContents.forEach((c) => (c.style.display = "none"));
+      btn.classList.add("active");
+
+      const targetId = btn.dataset.tab;
+      const target = document.getElementById(targetId);
+      if (target) target.style.display = "block";
     });
+  });
 });
 
 // ---- Gestion étoiles ----
