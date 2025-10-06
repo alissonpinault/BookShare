@@ -19,38 +19,64 @@ try {
 
     $reservationService = new Reservation($pdo);
 
+    // Pagination
     $pageSize = 5;
     $sanitizePage = static function (?string $value): int {
         $page = filter_var($value, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
         return $page ?: 1;
     };
 
-    $pageEncours = $sanitizePage($_GET['page_encours'] ?? null);
-    $pageArchivees = $sanitizePage($_GET['page_archivees'] ?? null);
+    $pageEnAttente = $sanitizePage($_GET['page_en_attente'] ?? null);
+    $pageEnCours = $sanitizePage($_GET['page_en_cours'] ?? null);
+    $pageTerminees = $sanitizePage($_GET['page_terminees'] ?? null);
 
-    // Comptages
-    $totalEncours = $reservationService->countReservationsEnCours($utilisateur->getId());
-    $totalArchivees = $reservationService->countReservationsArchivees($utilisateur->getId());
+    // Comptages par statut
+    $totalEnAttente = $reservationService->countReservationsByStatut($utilisateur->getId(), 'en_attente');
+    $totalEnCours = $reservationService->countReservationsByStatut($utilisateur->getId(), 'validee');
+    $totalTerminees = $reservationService->countReservationsByStatut($utilisateur->getId(), 'terminee');
 
-    $totalPagesEncours = max(1, (int) ceil($totalEncours / $pageSize));
-    $totalPagesArchivees = max(1, (int) ceil($totalArchivees / $pageSize));
+    $totalPagesEnAttente = max(1, (int) ceil($totalEnAttente / $pageSize));
+    $totalPagesEnCours = max(1, (int) ceil( $totalEnCours / $pageSize));
+    $totalPagesTerminees = max(1, (int) ceil($totalTerminees / $pageSize));
 
-    $pageEncours = min($pageEncours, $totalPagesEncours);
-    $pageArchivees = min($pageArchivees, $totalPagesArchivees);
+    $pageEnAttente = min($pageEnAttente, $totalPagesEnAttente);
+    $pageEnCours = min($pageEnCours, $totalPagesEnCours);
+    $pageTerminees = min($pageTerminees, $totalPagesTerminees);
 
-    $offsetEncours = ($pageEncours - 1) * $pageSize;
-    $offsetArchivees = ($pageArchivees - 1) * $pageSize;
+    $offsetEnAttente = ($pageEnAttente - 1) * $pageSize;
+    $offsetEnCours = ($pageEnCours - 1) * $pageSize;
+    $offsetTerminees = ($pageTerminees - 1) * $pageSize;
 
-    $reservationsEnCours = $reservationService->getReservationsEnCours(
+    // Récupération des réservations selon le statut
+    $reservationsEnAttente = $reservationService->getReservationsEnAttente(
         $utilisateur->getId(),
         $pageSize,
-        $offsetEncours
+        $offsetEnAttente
     );
-    $reservationsArchivees = $reservationService->getReservationsArchivees(
+    $reservationsEnCours = $reservationService->getReservationsValidees(
         $utilisateur->getId(),
         $pageSize,
-        $offsetArchivees
+        $offsetEnCours
     );
+
+    $reservationsTerminees = $reservationService->getReservationsTerminees(
+        $utilisateur->getId(),
+        $pageSize,
+        $offsetTerminees
+    );
+
+    // --- Annulation de réservation (POST) ---
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['annuler'], $_POST['reservation_id'])) {
+        $reservationId = (int) $_POST['reservation_id'];
+        $annulee = $reservationService->annulerReservation($reservationId, $utilisateur->getId());
+
+        $message = $annulee
+            ? 'Réservation annulée avec succès.'
+            : "Impossible d'annuler cette réservation (déjà validée ou terminée).";
+
+        header("Location: reservation.php?message=" . urlencode($message));
+        exit;
+    }
 
 } catch (Throwable $e) {
     echo "<h2 style='color:red; text-align:center;'>Erreur : " . htmlspecialchars($e->getMessage()) . '</h2>';
@@ -58,6 +84,7 @@ try {
     exit;
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -80,14 +107,39 @@ try {
 
     <!-- Boutons onglets -->
     <div class="tab-buttons">
-        <button class="tabBtn active" data-tab="encours">En cours</button>
+        <button class="tabBtn active" data-tab="enattente">En attente</button>
+        <button class="tabBtn" data-tab="encours">En cours</button>
         <button class="tabBtn" data-tab="archivees">Archivées</button>
     </div>
 
-    <!-- Réservations en cours -->
-    <div id="encours" class="tabContent" style="display:block;">
+    <!-- Réservations en attente -->
+     <div id="enattente" class="tabContent" style="display:block;">
+    <?php if (empty($reservationsEnAttente)): ?>
+        <p>Aucune réservation en attente.</p>
+    <?php else: ?>
+        <ul class="list">
+            <?php foreach ($reservationsEnAttente as $reservation): ?>
+                <li>
+                    <img src="<?= htmlspecialchars($reservation->getImageUrl() ?: 'images/livre-defaut.jpg') ?>" alt="Couverture">
+                    <div class="reservation-info">
+                        <strong><?= htmlspecialchars($reservation->getTitre()) ?></strong>
+                        <span>Auteur : <?= htmlspecialchars($reservation->getAuteur()) ?></span>
+                        <span>Réservé le : <?= htmlspecialchars($reservation->getDateReservation() ?? '') ?></span>
+                    </div>
+                    <form method="post" class="reservation-actions">
+                        <input type="hidden" name="reservation_id" value="<?= (int) $reservation->getId() ?>">
+                        <button type="submit" name="annuler">Annuler</button>
+                    </form>
+                </li>
+            <?php endforeach; ?>
+        </ul>
+        <?php endif; ?>
+     </div>
+     
+    <!-- Emprunt en cours -->
+    <div id="encours" class="tabContent">
         <?php if (empty($reservationsEnCours)): ?>
-            <p>Aucune réservation en cours</p>
+            <p>Aucun emprunt en cours</p>
         <?php else: ?>
             <ul class="list">
                 <?php foreach ($reservationsEnCours as $reservation): ?>
@@ -98,23 +150,19 @@ try {
                             <span>Auteur : <?= htmlspecialchars($reservation->getAuteur()) ?></span>
                             <span>Réservé le : <?= htmlspecialchars($reservation->getDateReservation() ?? '') ?></span>
                         </div>
-                        <form method="post" class="reservation-actions">
-                            <input type="hidden" name="reservation_id" value="<?= (int) $reservation->getId() ?>">
-                            <button type="submit" name="annuler">Annuler</button>
-                        </form>
                     </li>
                 <?php endforeach; ?>
             </ul>
         <?php endif; ?>
     </div>
 
-    <!-- Réservations archivées -->
+    <!-- Réservations terminées -->
     <div id="archivees" class="tabContent">
-        <?php if (empty($reservationsArchivees)): ?>
+        <?php if (empty($reservationsTerminees)): ?>
             <p>Aucune réservation archivée.</p>
         <?php else: ?>
             <ul class="list">
-                <?php foreach ($reservationsArchivees as $reservation): ?>
+                <?php foreach ($reservationsTerminees as $reservation): ?>
                     <li>
                         <img src="<?= htmlspecialchars($reservation->getImageUrl() ?: 'images/livre-defaut.jpg') ?>" alt="Couverture">
                         <div class="reservation-info">
@@ -153,7 +201,7 @@ document.addEventListener("DOMContentLoaded", () => {
     burger.addEventListener("click", () => actions.classList.toggle("open"));
 });
 
-// ---- Système onglets (même que admin.php) ----
+// ---- Système onglets ----
 function openTab(tabName, evt) {
     document.querySelectorAll(".tabContent").forEach(c => c.style.display = "none");
     document.querySelectorAll(".tabBtn").forEach(b => b.classList.remove("active"));
@@ -165,7 +213,7 @@ function openTab(tabName, evt) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-    const defaultTab = "encours";
+    const defaultTab = "enattente";
     const btn = document.querySelector(`.tabBtn[data-tab="${defaultTab}"]`);
     if (btn) openTab(defaultTab, { currentTarget: btn });
 
