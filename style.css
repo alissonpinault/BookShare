@@ -368,6 +368,8 @@ input:focus, textarea:focus, select:focus {
 /* Étoiles notation */
 .stars {
   display: flex;
+  justify-content: center;
+  align-items: center;
   gap: 4px;
   cursor: pointer;
 }
