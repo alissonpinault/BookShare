@@ -376,8 +376,8 @@ $utilisateurs = $utilisateursStmt->fetchAll(PDO::FETCH_ASSOC);
                         <form method="post">
                             <input type="hidden" name="reservation_id" value="<?= (int)$r['reservation_id'] ?>">
                             <input type="hidden" name="livre_id" value="<?= (int)$r['livre_id'] ?>">
-                            <button type="submit" name="action" value="valider" class="btn-green">Valider</button>
-                            <button type="submit" name="action" value="refuser" class="btn-red">Refuser</button>
+                            <button type="submit" name="action" value="valider" class="valider">Valider</button>
+                            <button type="submit" name="action" value="refuser" class="refuser">Refuser</button>
                         </form>
                     </td>
                 </tr>
@@ -407,7 +407,7 @@ $utilisateurs = $utilisateursStmt->fetchAll(PDO::FETCH_ASSOC);
                         <form method="post">
                             <input type="hidden" name="reservation_id" value="<?= (int)$r['reservation_id'] ?>">
                             <input type="hidden" name="livre_id" value="<?= (int)$r['livre_id'] ?>">
-                            <button type="submit" name="action" value="terminer" class="btn-blue">Terminer</button>
+                            <button type="submit" name="action" value="terminer" class="terminer">Terminer</button>
                         </form>
                     </td>
                 </tr>

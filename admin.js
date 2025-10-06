@@ -331,43 +331,50 @@ function createCharts() {
 
 // ========== INITIALISATION ==========
 document.addEventListener("DOMContentLoaded", () => {
+  // --- Onglet actif par défaut ---
   const initialHash = window.location.hash ? window.location.hash.substring(1) : "reservations";
   const targetTab = document.getElementById(initialHash) ? initialHash : "reservations";
   const button = document.querySelector(`.tabBtn[data-tab="${targetTab}"]`);
   openTab(targetTab, { currentTarget: button }, !window.location.hash);
-  
-  // ========== GESTION FORMULAIRES ACTIONS (Valider / Refuser / Terminer) ==========
-document.addEventListener("DOMContentLoaded", () => {
+
+  // --- GESTION FORMULAIRES ADMIN (Valider / Refuser / Terminer) ---
   document.querySelectorAll("form").forEach(form => {
-    form.addEventListener("submit", e => {
-      const actionButton = form.querySelector("button[name='action']");
-      if (!actionButton) return;
+    form.addEventListener("submit", async (e) => {
+      const actionButton = e.submitter; // bouton cliqué
+      if (!actionButton || !["valider", "refuser", "terminer"].includes(actionButton.value)) {
+        return; // autres formulaires = comportement normal
+      }
 
-      const action = actionButton.value;
+      e.preventDefault(); // empêche le rechargement
+      const formData = new FormData(form);
+      formData.set("action", actionButton.value);
 
-      // Intercepter uniquement les actions via AJAX
-      if (["valider", "refuser", "terminer"].includes(action)) {
-        e.preventDefault(); // Empêche le rechargement / page blanche
+      try {
+        const response = await fetch("admin.php", { method: "POST", body: formData });
+        const result = await response.json();
 
-        const data = new FormData(form);
+       if (result.success) {
+  alert(`Réservation ${result.statut || actionButton.value} avec succès !`);
+  
+  // Trouver la ligne de tableau concernée
+  const row = form.closest("tr");
+  if (row) {
+    // Mettre à jour la colonne "statut"
+    const statutCell = row.querySelector("td:nth-child(4)");
+    if (statutCell) statutCell.textContent = result.statut || actionButton.value;
 
-        fetch("admin.php", { method: "POST", body: data })
-          .then(r => r.json())
-          .then(d => {
-            if (d.success) {
-              alert(`Action "${action}" effectuée avec succès !`);
-              location.reload(); // recharge proprement la page admin
-            } else {
-              alert("Erreur : " + (d.message || "action impossible"));
-            }
-          })
-          .catch(err => {
-            console.error("Erreur AJAX :", err);
-            alert("Erreur lors de la requête AJAX");
-          });
+    // Supprimer les boutons d’action (valider/refuser)
+    const actionCell = row.querySelector("td:nth-child(5)");
+    if (actionCell) actionCell.innerHTML = "";
+  }
+}
+ else {
+          alert(result.message || "Une erreur est survenue.");
+        }
+      } catch (err) {
+        console.error("Erreur AJAX :", err);
+        alert("Erreur de communication avec le serveur.");
       }
     });
   });
-});
-
 });

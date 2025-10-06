@@ -472,6 +472,13 @@ input:focus, textarea:focus, select:focus {
   color: #fff;
 }
 
+button.terminer { background: white; color: #f57c00; border: 2px solid #f57c00; }
+button.terminer:hover { background: #f57c00; color: white; }
+button.refuser { background: white; color: #b71c1c; border: 2px solid #b71c1c; }
+button.refuser:hover { background: #b71c1c; color: white; }
+button.valider { background: white; color: #52a058; border: 2px solid #52a058; }
+button.valider:hover { background: #52a058; color: white; }
+
 /* ==========================================
   SOUS-ONGLETS RÉSERVATIONS
 ========================================== */
