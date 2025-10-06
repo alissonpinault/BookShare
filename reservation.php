@@ -113,7 +113,7 @@ try {
     </div>
 
     <!-- Réservations en attente -->
-     <div id="enattente" class="subTabBtnenattente" style="display:block;">
+     <div id="enattente" class="tabContent" style="display:block;">
     <?php if (empty($reservationsEnAttente)): ?>
         <p>Aucune réservation en attente.</p>
     <?php else: ?>
@@ -137,7 +137,7 @@ try {
      </div>
      
     <!-- Emprunt en cours -->
-    <div id="encours" class="subTabBtnencours">
+    <div id="encours" class="tabContent">
         <?php if (empty($reservationsEnCours)): ?>
             <p>Aucun emprunt en cours</p>
         <?php else: ?>
@@ -157,7 +157,7 @@ try {
     </div>
 
     <!-- Réservations terminées -->
-    <div id="archivees" class="subTabBtnarchive">
+    <div id="archivees" class="tabContent">
         <?php if (empty($reservationsTerminees)): ?>
             <p>Aucune réservation archivée.</p>
         <?php else: ?>
