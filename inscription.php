@@ -29,7 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
     $message = "Adresse email invalide.";}
-    
+
         // Vérifie si pseudo ou email déjà pris
         $stmt = $pdo->prepare("SELECT * FROM utilisateurs WHERE pseudo = ? OR email = ?");
         $stmt->execute([$pseudo, $email]);
@@ -66,7 +66,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Envoi simple, remplaçable par PHPMailer si besoin
             @mail($email, $sujet, $contenu, "From: no-reply@bookshare.com");
 
-            $message = "✅ Inscription réussie. Vérifie ton email pour activer ton compte avant de te connecter.";
+            $_SESSION['flash_message'] = "✅ Inscription réussie. Vérifie ton email pour activer ton compte avant de te connecter.";
+            header('Location: connexion.php');
+            exit;
+
         }
     }
 }

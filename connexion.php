@@ -1,6 +1,10 @@
 <?php
 require_once 'login.php';
 if (session_status() === PHP_SESSION_NONE) session_start();
+if (!empty($_SESSION['flash_message'])) {
+    $message = $_SESSION['flash_message'];
+    unset($_SESSION['flash_message']);
+}
 
 $message = '';
 
