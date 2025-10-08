@@ -48,6 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 <body class="auth-body">
 <div class="auth-container">
+    <img src="images/logo.jpg" alt="Illustration" class="auth-illustration">
     <h2>Mot de passe oublié</h2>
 
     <?php if ($message): ?>
