@@ -1,12 +1,10 @@
 <?php
 require_once 'login.php';
 if (session_status() === PHP_SESSION_NONE) session_start();
-if (!empty($_SESSION['flash_message'])) {
-    $message = $_SESSION['flash_message'];
-    unset($_SESSION['flash_message']);
-}
 
-$message = '';
+// 🔹 On récupère le message flash s’il existe
+$message = $_SESSION['flash_message'] ?? '';
+unset($_SESSION['flash_message']); // Supprime après lecture
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $pseudo = $_POST['pseudo'] ?? '';
@@ -18,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($user['est_valide'] == 0) {
             $message = "⚠️ Ton compte n'est pas encore activé. Vérifie ton email.";
         } else {
-            // Connexion autorisée
+            // ✅ Connexion autorisée
             $_SESSION['utilisateur_id'] = $user['utilisateur_id'];
             $_SESSION['pseudo'] = $user['pseudo'];
             $_SESSION['email'] = $user['email'];
@@ -31,7 +29,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -46,7 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <div class="auth-container">
     <img src="images/logo.jpg" alt="Illustration" class="auth-illustration">
-    <h2>BookShare</h2>
+    <h2>Connexion</h2>
 
     <?php if ($message): ?>
         <div id="alert-message" class="auth-message"><?= htmlspecialchars($message) ?></div>
