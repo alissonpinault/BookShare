@@ -2,10 +2,12 @@
 require_once 'db.php'; // pour $pdo et $mongoDB
 if (session_status() === PHP_SESSION_NONE) session_start();
 
+use MongoDB\Client;
+
 // Vérifier MongoDB
 if (!isset($mongoDB) || $mongoDB === null) {
     try {
-        $mongoClient = new MongoDB\Client("mongodb://localhost:27017");
+        $mongoClient = new Client("mongodb://localhost:27017");
         $mongoDB = $mongoClient->bookshare;
     } catch (Exception $e) {
         $mongoDB = null;
@@ -15,27 +17,37 @@ if (!isset($mongoDB) || $mongoDB === null) {
 $message = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $pseudo = $_POST['pseudo'] ?? '';
-    $email = $_POST['email'] ?? '';
+    $pseudo = trim($_POST['pseudo'] ?? '');
+    $email = trim($_POST['email'] ?? '');
     $mdp = $_POST['mdp'] ?? '';
     $mdp_confirm = $_POST['mdp_confirm'] ?? '';
 
     if ($mdp !== $mdp_confirm) {
-        $message = "Les mots de passe ne correspondent pas";
+        $message = "Les mots de passe ne correspondent pas.";
     } elseif (empty($pseudo) || empty($email) || empty($mdp)) {
-        $message = "Tous les champs sont obligatoires";
+        $message = "Tous les champs sont obligatoires.";
     } else {
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    $message = "Adresse email invalide.";}
+    
+        // Vérifie si pseudo ou email déjà pris
         $stmt = $pdo->prepare("SELECT * FROM utilisateurs WHERE pseudo = ? OR email = ?");
         $stmt->execute([$pseudo, $email]);
         if ($stmt->fetch()) {
-            $message = "Pseudo ou email déjà utilisé";
+            $message = "Pseudo ou email déjà utilisé.";
         } else {
             $hash = password_hash($mdp, PASSWORD_DEFAULT);
-            $pdo->prepare("INSERT INTO utilisateurs (pseudo, email, mot_de_passe, role) VALUES (?, ?, ?, 'utilisateur')")
-                ->execute([$pseudo, $email, $hash]);
+            $token = bin2hex(random_bytes(32));
 
+            // Insère utilisateur non validé
+            $stmt = $pdo->prepare("
+                INSERT INTO utilisateurs (pseudo, email, mot_de_passe, role, est_valide, token_validation)
+                VALUES (?, ?, ?, 'utilisateur', 0, ?)
+            ");
+            $stmt->execute([$pseudo, $email, $hash, $token]);
             $user_id = $pdo->lastInsertId();
 
+            // Enregistre l’inscription dans MongoDB
             if ($mongoDB) {
                 $mongoDB->logs_connexion->insertOne([
                     'utilisateur_id' => (int)$user_id,
@@ -46,10 +58,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ]);
             }
 
-            $_SESSION['utilisateur_id'] = $user_id;
-            $_SESSION['pseudo'] = $pseudo;
-            header('Location: index.php');
-            exit;
+            // Envoie le mail de validation
+            $lien = "https://bookshare-655b6c07c913.herokuapp.com/valider.php?token=". $token;
+            $sujet = "Validation de ton compte BookShare";
+            $contenu = "Bonjour $pseudo,\n\nMerci de t'être inscrit sur BookShare !\nClique sur ce lien pour activer ton compte :\n$lien\n\nÀ très vite sur BookShare !";
+
+            // Envoi simple, remplaçable par PHPMailer si besoin
+            @mail($email, $sujet, $contenu, "From: no-reply@bookshare.com");
+
+            $message = "✅ Inscription réussie. Vérifie ton email pour activer ton compte avant de te connecter.";
         }
     }
 }
@@ -67,13 +84,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body class="auth-body">
 
 <div class="auth-container">
-    <!-- Illustration décorative -->
     <img src="images/logo.jpg" alt="Illustration" class="auth-illustration">
-
     <h2>Créer un compte</h2>
 
     <?php if ($message): ?>
-        <div class="auth-error"><?= htmlspecialchars($message) ?></div>
+    <div id="alert-message" class="auth-message"><?= htmlspecialchars($message) ?></div>
     <?php endif; ?>
 
     <form method="post">
@@ -87,6 +102,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <button class="secondary-btn" onclick="window.location.href='index.php'">Retour à l'accueil</button>
     <button class="secondary-btn" onclick="window.location.href='connexion.php'">Déjà un compte ? Connexion</button>
 </div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const alert = document.getElementById("alert-message");
+  if (alert) {
+    setTimeout(() => {
+      alert.classList.add("hide");
+      setTimeout(() => alert.remove(), 800);
+    }, 5000);
+  }
+});
+</script>
 
 </body>
 </html>

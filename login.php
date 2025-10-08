@@ -1,7 +1,7 @@
 ﻿<?php
 require_once 'db.php';
 
-function login(string $pseudo, string $mdp): bool
+function login(string $pseudo, string $mdp): ?array
 {
     global $pdo, $mongoDB;
 
@@ -11,13 +11,7 @@ function login(string $pseudo, string $mdp): bool
 
     $authenticated = $user && password_verify($mdp, $user['mot_de_passe'] ?? '');
 
-    if ($authenticated) {
-        $_SESSION['utilisateur_id'] = $user['utilisateur_id'];
-        $_SESSION['pseudo'] = $user['pseudo'];
-        $_SESSION['role'] = $user['role'] ?? 'utilisateur';
-        $_SESSION['email'] = $user['email'] ?? '';
-    }
-
+    // Log MongoDB (que le mot de passe soit bon ou non)
     if ($mongoDB) {
         try {
             $mongoDB->logs_connexion->insertOne([
@@ -32,6 +26,12 @@ function login(string $pseudo, string $mdp): bool
         }
     }
 
-    return $authenticated;
+    // Si authentifié → on retourne toutes les infos
+    if ($authenticated) {
+        return $user;
+    }
+
+    // Sinon → on retourne null
+    return null;
 }
 ?>

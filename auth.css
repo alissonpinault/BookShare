@@ -110,3 +110,32 @@
     display: none;
   }
 }
+
+/* Lien "Mot de passe oublié" */
+.forgot-link {
+  display: block;
+  margin-top: 10px;
+  color: #00796b;
+  text-decoration: underline;
+}
+.forgot-link:hover {
+  color: #004d40;
+}
+
+/* Message de confirmation */
+.auth-message {
+  background: rgba(0, 121, 107, 0.15);
+  color: #004d40;
+  border-left: 4px solid #00796b;
+  padding: 10px 15px;
+  border-radius: 6px;
+  margin: 15px 0;
+  text-align: center;
+  font-weight: 500;
+  opacity: 1;
+  transition: opacity 0.8s ease;
+}
+
+.auth-message.hide {
+  opacity: 0;
+}
