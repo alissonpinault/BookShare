@@ -8,7 +8,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $pseudo = $_POST['pseudo'] ?? '';
     $mdp = $_POST['mdp'] ?? '';
 
-    $user = login($pseudo, $mdp); // maintenant $user contient les infos SQL
+    $user = login($pseudo, $mdp);
 
     if ($user) {
         if ($user['est_valide'] == 0) {
@@ -54,7 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <button type="submit">Se connecter</button>
     </form>
 
-    <p><a href="mot_de_passe_oublie.php" class="forgot-link">Mot de passe oublié ?</a></p>
+    <p><a href="mdp_oublie.php" class="forgot-link">Mot de passe oublié ?</a></p>
 
     <button class="secondary-btn" onclick="window.location.href='index.php'">Retour à l'accueil</button>
     <button class="secondary-btn" onclick="window.location.href='inscription.php'">Créer un compte</button>
