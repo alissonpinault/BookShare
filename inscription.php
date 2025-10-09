@@ -61,32 +61,77 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ]);
             }
 
-            // Prépare le mail
+            // --- Prépare le mail de validation ---
             $lien = "https://bookshare-655b6c07c913.herokuapp.com/valider.php?token=" . $token;
-            $sujet = "Validation de ton compte BookShare";
-            $contenu = "Bonjour $pseudo,\n\nMerci de t'être inscrit sur BookShare !\nClique sur ce lien pour activer ton compte :\n$lien\n\nÀ très vite sur BookShare !";
 
-            // --- Envoi via Mailgun (SMTP) ---
             $mail = new PHPMailer(true);
             try {
                 $mail->isSMTP();
-                $mail->Host = getenv('MAILGUN_SMTP_SERVER') ?: 'smtp.mailgun.org';
-                $mail->SMTPAuth = true;
-                $mail->Username = getenv('MAILGUN_SMTP_LOGIN'); // login Mailgun
-                $mail->Password = getenv('MAILGUN_API_KEY');   // mot de passe Mailgun
+                $mail->Host       = getenv('MAILGUN_SMTP_SERVER') ?: 'smtp.mailgun.org';
+                $mail->SMTPAuth   = true;
+                $mail->Username   = getenv('MAILGUN_SMTP_LOGIN');
+                $mail->Password   = getenv('MAILGUN_SMTP_PASSWORD') ?: getenv('MAILGUN_API_KEY');
                 $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-                $mail->Port = getenv('MAILGUN_SMTP_PORT') ?: 587;
+                $mail->Port       = getenv('MAILGUN_SMTP_PORT') ?: 587;
 
-                $mail->setFrom('noreply@bookshare.com', 'BookShare');
+                $mail->CharSet = 'UTF-8';
+                $mail->Encoding = 'base64';
+
+                $mail->setFrom(getenv('MAILGUN_SMTP_LOGIN'), 'BookShare');
                 $mail->addAddress($email, $pseudo);
 
-                $mail->isHTML(false);
-                $mail->Subject = $sujet;
-                $mail->Body = $contenu;
+                // Image intégrée
+                $logoPath = __DIR__ . '/images/logo.jpg';
+                $imgTag = '';
+                if (is_readable($logoPath)) {
+                    $mail->addEmbeddedImage($logoPath, 'bookshare_logo', 'logo.jpg');
+                    $imgTag = "<img src='cid:bookshare_logo' alt='BookShare' style='width:100px; border-radius:50%; background:white; padding:5px;'>";
+                }
 
+                $mail->isHTML(true);
+                $mail->Subject = "📚 Validation de ton compte BookShare";
+                $mail->Body = "
+                    <div style='background:#f6f9fc; padding:30px 0; font-family:Arial, sans-serif;'>
+                      <table align='center' cellpadding='0' cellspacing='0' width='100%' style='max-width:600px; background:white; border-radius:10px; overflow:hidden; box-shadow:0 4px 10px rgba(0,0,0,0.1);'>
+                        <tr>
+                          <td align='center' style='background:#00796b; padding:20px;'>
+                            $imgTag
+                            <h1 style='color:white; font-family:\"Great Vibes\", cursive; font-size:32px; margin:10px 0 0;'>BookShare</h1>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td style='padding:30px; color:#333;'>
+                            <h2 style='text-align:center; color:#00796b;'>Bienvenue, $pseudo !</h2>
+                            <p style='font-size:16px; line-height:1.6; text-align:center;'>
+                              Merci de t'être inscrit sur <strong>BookShare</strong>.<br>
+                              Pour activer ton compte, clique sur le bouton ci-dessous 👇
+                            </p>
+                            <div style='text-align:center; margin:30px 0;'>
+                              <a href='$lien'
+                                 style='background:#00796b; color:white; padding:12px 25px; text-decoration:none; border-radius:8px;
+                                        font-weight:bold; display:inline-block; font-size:16px;'>
+                                 ✅ Activer mon compte
+                              </a>
+                            </div>
+                            <p style='font-size:15px; color:#555; text-align:center;'>
+                              Si le bouton ne fonctionne pas, copie-colle ce lien dans ton navigateur :<br>
+                              <a href='$lien' style='color:#00796b;'>$lien</a>
+                            </p>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td align='center' style='background:#f0f0f0; padding:15px; font-size:13px; color:#555;'>
+                            À très vite sur <strong>BookShare</strong> 💚<br>
+                            <span style='font-size:12px; color:#888;'>© " . date('Y') . " BookShare. Tous droits réservés.</span>
+                          </td>
+                        </tr>
+                      </table>
+                    </div>
+                ";
+
+                $mail->AltBody = "Bonjour $pseudo,\n\nMerci de t'être inscrit sur BookShare !\nClique sur ce lien pour activer ton compte : $lien\n\nÀ très vite sur BookShare !";
                 $mail->send();
 
-                // Message flash pour redirection
                 $_SESSION['flash_message'] = "✅ Inscription réussie. Vérifie ton email pour activer ton compte avant de te connecter.";
                 header('Location: connexion.php');
                 exit;
