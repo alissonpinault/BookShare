@@ -3,6 +3,10 @@ require_once 'db.php'; // pour $pdo et $mongoDB
 if (session_status() === PHP_SESSION_NONE) session_start();
 
 use MongoDB\Client;
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
+require __DIR__ . '/vendor/autoload.php'; // Charge PHPMailer
 
 // Vérifier MongoDB
 if (!isset($mongoDB) || $mongoDB === null) {
@@ -22,28 +26,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $mdp = $_POST['mdp'] ?? '';
     $mdp_confirm = $_POST['mdp_confirm'] ?? '';
 
-    // --- Vérifications de base --- //
     if ($mdp !== $mdp_confirm) {
         $message = "Les mots de passe ne correspondent pas.";
     } elseif (empty($pseudo) || empty($email) || empty($mdp)) {
         $message = "Tous les champs sont obligatoires.";
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $message = "Adresse email invalide.";
-    }
-
-    // Si erreur, on n'exécute pas la suite
-    if (empty($message)) {
+    } else {
         // Vérifie si pseudo ou email déjà pris
         $stmt = $pdo->prepare("SELECT * FROM utilisateurs WHERE pseudo = ? OR email = ?");
         $stmt->execute([$pseudo, $email]);
-
         if ($stmt->fetch()) {
             $message = "Pseudo ou email déjà utilisé.";
         } else {
-            // --- Création du compte --- //
             $hash = password_hash($mdp, PASSWORD_DEFAULT);
             $token = bin2hex(random_bytes(32));
 
+            // Insère utilisateur non validé
             $stmt = $pdo->prepare("
                 INSERT INTO utilisateurs (pseudo, email, mot_de_passe, role, est_valide, token_validation)
                 VALUES (?, ?, ?, 'utilisateur', 0, ?)
@@ -51,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->execute([$pseudo, $email, $hash, $token]);
             $user_id = $pdo->lastInsertId();
 
-            // Log dans MongoDB
+            // Enregistre l’inscription dans MongoDB
             if ($mongoDB) {
                 $mongoDB->logs_connexion->insertOne([
                     'utilisateur_id' => (int)$user_id,
@@ -62,17 +61,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ]);
             }
 
-            // Envoi du mail de validation
+            // Prépare le mail
             $lien = "https://bookshare-655b6c07c913.herokuapp.com/valider.php?token=" . $token;
             $sujet = "Validation de ton compte BookShare";
             $contenu = "Bonjour $pseudo,\n\nMerci de t'être inscrit sur BookShare !\nClique sur ce lien pour activer ton compte :\n$lien\n\nÀ très vite sur BookShare !";
 
-            @mail($email, $sujet, $contenu, "From: no-reply@bookshare.com");
+            // --- Envoi via Mailgun (SMTP) ---
+            $mail = new PHPMailer(true);
+            try {
+                $mail->isSMTP();
+                $mail->Host = getenv('MAILGUN_SMTP_SERVER') ?: 'smtp.mailgun.org';
+                $mail->SMTPAuth = true;
+                $mail->Username = getenv('MAILGUN_SMTP_LOGIN'); // login Mailgun
+                $mail->Password = getenv('MAILGUN_API_KEY');   // mot de passe Mailgun
+                $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+                $mail->Port = getenv('MAILGUN_SMTP_PORT') ?: 587;
 
-            // --- Redirection avec message flash --- //
-            $_SESSION['flash_message'] = "✅ Inscription réussie. Vérifie ton email pour activer ton compte avant de te connecter.";
-            header('Location: connexion.php');
-            exit;
+                $mail->setFrom('noreply@bookshare.com', 'BookShare');
+                $mail->addAddress($email, $pseudo);
+
+                $mail->isHTML(false);
+                $mail->Subject = $sujet;
+                $mail->Body = $contenu;
+
+                $mail->send();
+
+                // Message flash pour redirection
+                $_SESSION['flash_message'] = "✅ Inscription réussie. Vérifie ton email pour activer ton compte avant de te connecter.";
+                header('Location: connexion.php');
+                exit;
+            } catch (Exception $e) {
+                error_log("Erreur d'envoi de mail : " . $mail->ErrorInfo);
+                $message = "Inscription réussie, mais l'email de validation n'a pas pu être envoyé.";
+            }
         }
     }
 }

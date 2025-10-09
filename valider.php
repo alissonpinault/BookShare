@@ -2,38 +2,62 @@
 require_once 'db.php';
 if (session_status() === PHP_SESSION_NONE) session_start();
 
+use MongoDB\Client;
+
+// Vérifie si MongoDB est bien connecté
+if (!isset($mongoDB) || $mongoDB === null) {
+    try {
+        $mongoClient = new Client("mongodb://localhost:27017");
+        $mongoDB = $mongoClient->bookshare;
+    } catch (Exception $e) {
+        $mongoDB = null;
+    }
+}
+
+// Récupère le token envoyé dans l’URL
+$token = $_GET['token'] ?? '';
+
 $message = '';
 
-if (isset($_GET['token'])) {
-    $token = $_GET['token'];
-
-    // Rechercher l'utilisateur avec ce token
+if ($token) {
+    // Recherche du compte correspondant
     $stmt = $pdo->prepare("SELECT * FROM utilisateurs WHERE token_validation = ?");
     $stmt->execute([$token]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if ($user) {
-        // Vérifie si déjà validé
-        if ($user['est_valide'] == 1) {
-            $message = "✅ Ton compte est déjà activé. Tu peux te connecter.";
+        if ((int)$user['est_valide'] === 1) {
+            $message = "✅ Ton compte est déjà activé ! Tu peux te connecter.";
         } else {
             // Active le compte
-            $stmt = $pdo->prepare("UPDATE utilisateurs SET est_valide = 1, token_validation = NULL WHERE utilisateur_id = ?");
-            $stmt->execute([$user['utilisateur_id']]);
-            $message = "🎉 Ton compte est maintenant activé ! Tu peux te connecter.";
+            $update = $pdo->prepare("UPDATE utilisateurs SET est_valide = 1, token_validation = NULL WHERE utilisateur_id = ?");
+            $update->execute([$user['utilisateur_id']]);
+
+            // Log dans MongoDB
+            if ($mongoDB) {
+                $mongoDB->logs_connexion->insertOne([
+                    'utilisateur_id' => (int)$user['utilisateur_id'],
+                    'pseudo' => $user['pseudo'],
+                    'date' => new MongoDB\BSON\UTCDateTime(),
+                    'ip' => $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1',
+                    'resultat' => 'validation_compte'
+                ]);
+            }
+
+            $message = "🎉 Compte activé avec succès ! Tu peux maintenant te connecter.";
         }
     } else {
-        $message = "❌ Lien de validation invalide ou expiré.";
+        $message = "❌ Lien invalide ou déjà utilisé.";
     }
 } else {
-    $message = "❌ Aucun lien de validation fourni.";
+    $message = "❌ Aucun token fourni.";
 }
 ?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<title>Validation - BookShare</title>
+<title>Validation du compte - BookShare</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Great+Vibes&display=swap" rel="stylesheet">
 <link rel="icon" type="image/jpg" href="images/logo.jpg">
@@ -42,15 +66,14 @@ if (isset($_GET['token'])) {
 <body class="auth-body">
 
 <div class="auth-container">
-    <img src="images/logo.jpg" alt="Illustration" class="auth-illustration">
-    <h2>Activation du compte</h2>
+    <img src="images/logo.jpg" alt="Logo" class="auth-illustration">
+    <h2>Validation du compte</h2>
 
     <?php if ($message): ?>
-        <div id="alert-message" class="auth-message"><?= htmlspecialchars($message) ?></div>
+    <div id="alert-message" class="auth-message"><?= htmlspecialchars($message) ?></div>
     <?php endif; ?>
 
     <button class="secondary-btn" onclick="window.location.href='connexion.php'">Se connecter</button>
-    <button class="secondary-btn" onclick="window.location.href='index.php'">Retour à l'accueil</button>
 </div>
 
 <script>
@@ -60,7 +83,7 @@ document.addEventListener("DOMContentLoaded", () => {
     setTimeout(() => {
       alert.classList.add("hide");
       setTimeout(() => alert.remove(), 800);
-    }, 5000);
+    }, 6000);
   }
 });
 </script>

@@ -3,36 +3,33 @@ require_once 'db.php';
 if (session_status() === PHP_SESSION_NONE) session_start();
 
 $message = '';
+$token = $_GET['token'] ?? '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $email = trim($_POST['email'] ?? '');
+    $token = $_POST['token'] ?? '';
+    $mdp = $_POST['mdp'] ?? '';
+    $confirm = $_POST['mdp_confirm'] ?? '';
 
-    if (!empty($email)) {
-        $stmt = $pdo->prepare("SELECT * FROM utilisateurs WHERE email = ?");
-        $stmt->execute([$email]);
-        $user = $stmt->fetch();
+    if ($mdp !== $confirm) {
+        $message = "Les mots de passe ne correspondent pas.";
+    } elseif (strlen($mdp) < 6) {
+        $message = "Le mot de passe doit contenir au moins 6 caractères.";
+    } else {
+        $stmt = $pdo->prepare("SELECT * FROM utilisateurs WHERE token_reset = ? AND reset_expire > NOW()");
+        $stmt->execute([$token]);
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ($user) {
-            $token = bin2hex(random_bytes(32));
-            $expiration = date('d-m-Y H:i:s', strtotime('+1 hour'));
+            $hash = password_hash($mdp, PASSWORD_DEFAULT);
+            $pdo->prepare("UPDATE utilisateurs SET mot_de_passe=?, token_reset=NULL, reset_expire=NULL WHERE utilisateur_id=?")
+                ->execute([$hash, $user['utilisateur_id']]);
 
-            $stmt = $pdo->prepare("UPDATE utilisateurs SET reset_token = ?, reset_expires = ? WHERE email = ?");
-            $stmt->execute([$token, $expiration, $email]);
-
-            $resetLink = "https://ton-app.herokuapp.com/reinitialiser.php?token=" . $token;
-
-            $sujet = "Réinitialisation du mot de passe - BookShare";
-            $contenu = "Bonjour {$user['pseudo']},\n\nTu as demandé à réinitialiser ton mot de passe.\nClique sur ce lien pour le réinitialiser :\n$resetLink\n\nCe lien expirera dans 1 heure.";
-
-            // Envoi du mail
-            @mail($email, $sujet, $contenu, "From: no-reply@bookshare.com");
-
-            $message = "Si cette adresse est enregistrée, un lien de réinitialisation a été envoyé.";
+            $_SESSION['flash_message'] = "✅ Ton mot de passe a bien été réinitialisé. Tu peux te connecter.";
+            header('Location: connexion.php');
+            exit;
         } else {
-            $message = "Si cette adresse est enregistrée, un lien de réinitialisation a été envoyé.";
+            $message = "❌ Lien invalide ou expiré.";
         }
-    } else {
-        $message = "Merci d’entrer ton adresse email.";
     }
 }
 ?>
@@ -40,26 +37,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<title>Mot de passe oublié - BookShare</title>
+<title>Réinitialisation du mot de passe - BookShare</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Great+Vibes&display=swap" rel="stylesheet">
-<link rel="icon" type="image/jpg" href="images/logo.jpg">
 <link rel="stylesheet" href="auth.css">
 </head>
 <body class="auth-body">
+
 <div class="auth-container">
-    <img src="images/logo.jpg" alt="Illustration" class="auth-illustration">
-    <h2>Mot de passe oublié</h2>
+    <img src="images/logo.jpg" alt="Logo" class="auth-illustration">
+    <h2>Réinitialiser le mot de passe</h2>
 
     <?php if ($message): ?>
     <div id="alert-message" class="auth-message"><?= htmlspecialchars($message) ?></div>
-<?php endif; ?>
+    <?php endif; ?>
 
+    <?php if ($token): ?>
     <form method="post">
-        <input type="email" name="email" placeholder="Entrez votre email" required>
-        <button type="submit">Envoyer le lien</button>
+        <input type="hidden" name="token" value="<?= htmlspecialchars($token) ?>">
+        <input type="password" name="mdp" placeholder="Nouveau mot de passe" required>
+        <input type="password" name="mdp_confirm" placeholder="Confirmer le mot de passe" required>
+        <button type="submit">Mettre à jour</button>
     </form>
-    <button class="secondary-btn" onclick="window.location.href='connexion.php'">Retour</button>
+    <?php else: ?>
+    <p>Lien de réinitialisation invalide.</p>
+    <?php endif; ?>
+
+    <button class="secondary-btn" onclick="window.location.href='connexion.php'">Retour à la connexion</button>
 </div>
 
 <script>
@@ -68,10 +72,11 @@ document.addEventListener("DOMContentLoaded", () => {
   if (alert) {
     setTimeout(() => {
       alert.classList.add("hide");
-      setTimeout(() => alert.remove(), 800); // le retire après la transition
-    }, 5000); // 5 secondes avant disparition
+      setTimeout(() => alert.remove(), 800);
+    }, 6000);
   }
 });
 </script>
+
 </body>
 </html>
