@@ -1,0 +1,80 @@
+# ===============================
+#  📦 Fichiers PHP / Composer
+# ===============================
+/vendor/                # dépendances PHP (Heroku les installe automatiquement)
+composer.phar
+composer.lock.old
+
+# ===============================
+#  🔒 Fichiers de config sensibles
+# ===============================
+/.env                   # variables d'environnement locales
+.env.local
+.env.*.local
+/.env.backup
+/.env.save
+/heroku.env
+
+# ===============================
+#  🐳 Docker
+# ===============================
+/docker-compose.override.yml
+/.dockerignore
+/docker-data/
+/docker-volumes/
+/mysql_data/
+/phpmyadmin_data/
+/mongodb_data/
+
+# ===============================
+#  🧠 IDEs et éditeurs
+# ===============================
+# VS Code
+.vscode/
+.history/
+.idea/
+nbproject/
+*.sublime-project
+*.sublime-workspace
+
+# ===============================
+#  🧪 Logs et caches
+# ===============================
+/logs/
+/tmp/
+/cache/
+/var/cache/
+/storage/
+*.log
+*.cache
+
+# ===============================
+#  🖼️ Fichiers générés
+# ===============================
+/node_modules/
+*.zip
+*.tar.gz
+*.bak
+*.swp
+*.DS_Store
+Thumbs.db
+
+# ===============================
+#  🧾 Sauvegardes SQL locales
+# ===============================
+/sql/*.sql
+!/sql/init_bookshare.sql
+!/sql/bookshare.sql
+
+# ===============================
+#  💻 Déploiement Heroku
+# ===============================
+/Procfile.local
+/heroku-debug.log
+
+# ===============================
+#  🧪 Tests / Environnements
+# ===============================
+/phpunit.xml
+/phpunit.result.cache
+/tests/.phpunit.cache/
