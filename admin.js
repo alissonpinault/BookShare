@@ -57,8 +57,11 @@ function terminer(button, reservationId, livreId) {
       if (d.success) {
         const row = button.closest("tr");
         if (row) {
-          if (row.cells[3]) row.cells[3].textContent = d.statut || "terminer";
-          if (row.cells[4]) row.cells[4].textContent = "";
+          const statusLabel = d.statut_label || d.statut || "terminer";
+          const statutCell = row.querySelector('td[data-cell="statut"]');
+          if (statutCell) statutCell.textContent = statusLabel;
+          const actionCell = row.querySelector('td[data-cell="actions"]');
+          if (actionCell) actionCell.textContent = "";
         }
       } else showError(d.message);
     })
@@ -353,22 +356,19 @@ document.addEventListener("DOMContentLoaded", () => {
         const response = await fetch("admin.php", { method: "POST", body: formData });
         const result = await response.json();
 
-       if (result.success) {
-  alert(`Réservation ${result.statut || actionButton.value} avec succès !`);
-  
-  // Trouver la ligne de tableau concernée
-  const row = form.closest("tr");
-  if (row) {
-    // Mettre à jour la colonne "statut"
-    const statutCell = row.querySelector("td:nth-child(3)");
-    if (statutCell) statutCell.textContent = result.statut || actionButton.value;
+        if (result.success) {
+          const statusLabel = result.statut_label || result.statut || actionButton.value;
+          alert(`Réservation ${statusLabel} avec succès !`);
 
-    // Supprimer les boutons d’action (valider/refuser)
-    const actionCell = row.querySelector("td:nth-child(4)");
-    if (actionCell) actionCell.innerHTML = "";
-  }
-}
- else {
+          const row = form.closest("tr");
+          if (row) {
+            const statutCell = row.querySelector('td[data-cell="statut"]');
+            if (statutCell) statutCell.textContent = statusLabel;
+
+            const actionCell = row.querySelector('td[data-cell="actions"]');
+            if (actionCell) actionCell.innerHTML = "";
+          }
+        } else {
           alert(result.message || "Une erreur est survenue.");
         }
       } catch (err) {

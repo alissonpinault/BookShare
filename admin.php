@@ -58,6 +58,23 @@ function computePagination($total, $perPage, $page){
     ];
 }
 
+function formatReservationStatus($status){
+    $map = [
+        'en_attente' => 'En attente',
+        'validee' => 'Validée',
+        'refusee' => 'Refusée',
+        'terminee' => 'Terminée',
+    ];
+
+    $key = strtolower((string) $status);
+    if(isset($map[$key])){
+        return $map[$key];
+    }
+
+    $key = str_replace('_', ' ', $key);
+    return ucfirst($key);
+}
+
 function buildPaginationUrl(array $updates, $anchor = ''){
     $params = $_GET;
     foreach($updates as $key=>$value){
@@ -119,7 +136,11 @@ if($_SERVER['REQUEST_METHOD']==='POST' && isset($_POST['action'])){
             $pdo->prepare("UPDATE reservations SET statut='validee' WHERE reservation_id=?")->execute([$id]);
             $pdo->prepare("UPDATE livres SET disponibilite='indisponible' WHERE livre_id=?")->execute([$livre_id]);
             $pdo->commit();
-            echo json_encode(['success' => true, 'statut' => 'validee']); exit;
+            echo json_encode([
+                'success' => true,
+                'statut' => 'validee',
+                'statut_label' => formatReservationStatus('validee')
+            ]); exit;
         } catch (Throwable $e) {
             $pdo->rollBack();
             error_log('Admin valider reservation error: '.$e->getMessage());
@@ -138,7 +159,11 @@ if ($_POST['action'] === 'refuser') {
             $pdo->prepare("UPDATE reservations SET statut='refusee' WHERE reservation_id=?")->execute([$id]);
             $pdo->prepare("UPDATE livres SET disponibilite='disponible' WHERE livre_id=?")->execute([$livre_id]);
             $pdo->commit();
-            echo json_encode(['success' => true, 'statut' => 'refusee']); exit;
+            echo json_encode([
+                'success' => true,
+                'statut' => 'refusee',
+                'statut_label' => formatReservationStatus('refusee')
+            ]); exit;
         } catch (Throwable $e) {
             $pdo->rollBack();
             error_log('Admin refuser reservation error: '.$e->getMessage());
@@ -159,7 +184,11 @@ if ($_POST['action'] === 'refuser') {
             $pdo->prepare("UPDATE livres SET disponibilite='disponible' WHERE livre_id=?")->execute([$livre_id]);
             $pdo->commit();
 
-            echo json_encode(['success'=>true,'statut'=>'terminee']);
+            echo json_encode([
+                'success'=>true,
+                'statut'=>'terminee',
+                'statut_label'=>formatReservationStatus('terminee')
+            ]);
             exit;
         }catch(Throwable $e){
             $pdo->rollBack();
@@ -376,6 +405,7 @@ $utilisateurs = $utilisateursStmt->fetchAll(PDO::FETCH_ASSOC);
                     <th>Utilisateur</th>
                     <th>Livre</th>
                     <th>Date</th>
+                    <th>Statut</th>
                     <th>Actions</th>
                 </tr>
                 <?php foreach ($reservationsEnAttente as $r): ?>
@@ -383,7 +413,8 @@ $utilisateurs = $utilisateursStmt->fetchAll(PDO::FETCH_ASSOC);
                     <td><?= htmlspecialchars($r['pseudo']) ?></td>
                     <td><?= htmlspecialchars($r['titre']) ?></td>
                     <td><?= date('d-m-Y', strtotime($r['date_reservation'])) ?></td>
-                    <td>
+                    <td data-cell="statut"><?= htmlspecialchars(formatReservationStatus($r['statut'])) ?></td>
+                    <td data-cell="actions">
                         <form method="post">
                             <input type="hidden" name="reservation_id" value="<?= (int)$r['reservation_id'] ?>">
                             <input type="hidden" name="livre_id" value="<?= (int)$r['livre_id'] ?>">
@@ -407,6 +438,7 @@ $utilisateurs = $utilisateursStmt->fetchAll(PDO::FETCH_ASSOC);
                     <th>Utilisateur</th>
                     <th>Livre</th>
                     <th>Date</th>
+                    <th>Statut</th>
                     <th>Actions</th>
                 </tr>
                 <?php foreach ($reservationsValidees as $r): ?>
@@ -414,7 +446,8 @@ $utilisateurs = $utilisateursStmt->fetchAll(PDO::FETCH_ASSOC);
                     <td><?= htmlspecialchars($r['pseudo']) ?></td>
                     <td><?= htmlspecialchars($r['titre']) ?></td>
                     <td><?= date('d-m-Y', strtotime($r['date_reservation'])) ?></td>
-                    <td>
+                    <td data-cell="statut"><?= htmlspecialchars(formatReservationStatus($r['statut'])) ?></td>
+                    <td data-cell="actions">
                         <form method="post">
                             <input type="hidden" name="reservation_id" value="<?= (int)$r['reservation_id'] ?>">
                             <input type="hidden" name="livre_id" value="<?= (int)$r['livre_id'] ?>">
@@ -444,7 +477,7 @@ $utilisateurs = $utilisateursStmt->fetchAll(PDO::FETCH_ASSOC);
                     <td><?= htmlspecialchars($r['pseudo']) ?></td>
                     <td><?= htmlspecialchars($r['titre']) ?></td>
                     <td><?= date('d-m-Y', strtotime($r['date_reservation'])) ?></td>
-                    <td>Terminée</td>
+                    <td data-cell="statut"><?= htmlspecialchars(formatReservationStatus($r['statut'])) ?></td>
                 </tr>
                 <?php endforeach; ?>
             </table>
