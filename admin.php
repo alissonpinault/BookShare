@@ -15,6 +15,7 @@ $utilisateur = new Utilisateur(
     $_SESSION['email'] ?? '',
     $_SESSION['role'] ?? 'user'
 );
+$utilisateurId = $utilisateur->getId();
 
 if (!$utilisateur->estAdmin()) {
     header('Location: index.php');
@@ -603,7 +604,7 @@ $utilisateurs = $utilisateursStmt->fetchAll(PDO::FETCH_ASSOC);
     <?php foreach ($utilisateurs as $u): ?>
         <?php
             $roleUtilisateur = $u['role'] ?? 'utilisateur';
-            $isSelf = $utilisateur_id && (int) $u['utilisateur_id'] === (int) $utilisateur_id;
+            $isSelf = $utilisateurId && (int) $u['utilisateur_id'] === (int) $utilisateurId;
             $isAdminRole = $roleUtilisateur === 'admin';
             $dateInscription = isset($u['date_inscription']) ? date('d-m-Y', strtotime($u['date_inscription'])) : '-';
         ?>
@@ -663,6 +664,17 @@ $utilisateurs = $utilisateursStmt->fetchAll(PDO::FETCH_ASSOC);
 
 <script src="admin.js"></script>
 
-<?php include 'footer.php'; ?>
+<?php
+require_once 'footer.php';
+renderFooter([
+    'baseUrl' => 'admin.php',
+    'pagination' => [
+        'total_items' => 0,
+        'total_pages' => 0,
+        'current_page' => 1,
+        'query_params' => [],
+    ],
+]);
+?>
 </body>
 </html>

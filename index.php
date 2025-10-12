@@ -201,7 +201,18 @@ if ($noteMin !== null) $queryParams['note_min'] = $noteMin;
     </section>
 </main>
 
-<?php include 'footer.php'; ?>
+<?php
+require_once 'footer.php';
+renderFooter([
+    'baseUrl' => 'index.php',
+    'pagination' => [
+        'total_items' => $totalLivres,
+        'total_pages' => $totalPages,
+        'current_page' => $page,
+        'query_params' => $queryParams,
+    ],
+]);
+?>
 
 <script>
 // menu burger

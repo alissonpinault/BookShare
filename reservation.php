@@ -285,6 +285,17 @@ document.querySelectorAll('.stars').forEach(starsContainer => {
 });
 </script>
 
-<?php include 'footer.php'; ?>
+<?php
+require_once 'footer.php';
+renderFooter([
+    'baseUrl' => 'reservation.php',
+    'pagination' => [
+        'total_items' => 0,
+        'total_pages' => 0,
+        'current_page' => 1,
+        'query_params' => [],
+    ],
+]);
+?>
 </body>
 </html>
