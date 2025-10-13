@@ -416,6 +416,22 @@ input:focus, textarea:focus, select:focus {
   background: #004d40;
 }
 
+.tabContent {
+  display: none;
+}
+
+.tabContent.active {
+  display: block;
+}
+
+.subTabContent {
+  display: none;
+}
+
+.subTabContent.active {
+  display: block;
+}
+
 /* Tableaux */
 .tabContent table {
   width: 100%;

@@ -394,17 +394,17 @@ $utilisateurs = $utilisateursStmt->fetchAll(PDO::FETCH_ASSOC);
 </div>
 
 <!-- Onglet Réservations -->
-<div id="reservations" class="tabContent" style="display:block;">
+<div id="reservations" class="tabContent active">
 
     <!-- Sous-onglets -->
     <div class="tab-buttons sub-tabs">
-        <button class="subTabBtnenattente active" data-subtab="attente">En attente</button>
-        <button class="subTabBtnencours" data-subtab="validees">Validées</button>
-        <button class="subTabBtnarchive" data-subtab="terminees">Terminées</button>
+        <button class="subTabBtn subTabBtnenattente active" data-subtab="attente">En attente</button>
+        <button class="subTabBtn subTabBtnencours" data-subtab="validees">Validées</button>
+        <button class="subTabBtn subTabBtnarchive" data-subtab="terminees">Terminées</button>
     </div>
 
     <!-- Réservations en attente -->
-    <div id="attente" class="subTabContentenattente" style="display:block;">
+    <div id="attente" class="subTabContent subTabContentenattente active">
         <?php if (empty($reservationsEnAttente)): ?>
             <p>Aucune réservation en attente.</p>
         <?php else: ?>
@@ -437,7 +437,7 @@ $utilisateurs = $utilisateursStmt->fetchAll(PDO::FETCH_ASSOC);
     </div>
 
     <!-- Réservations validées -->
-    <div id="validees" class="subTabContentencours">
+    <div id="validees" class="subTabContent subTabContentencours">
         <?php if (empty($reservationsValidees)): ?>
             <p>Aucune réservation validée.</p>
         <?php else: ?>
@@ -469,7 +469,7 @@ $utilisateurs = $utilisateursStmt->fetchAll(PDO::FETCH_ASSOC);
     </div>
 
     <!-- Réservations terminées -->
-    <div id="terminees" class="subTabContentarchive">
+    <div id="terminees" class="subTabContent subTabContentarchive">
         <?php if (empty($reservationsTerminees)): ?>
             <p>Aucune réservation terminée.</p>
         <?php else: ?>

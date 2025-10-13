@@ -70,22 +70,18 @@ function terminer(button, reservationId, livreId) {
 
 // Gestion sous-onglets
 document.addEventListener("DOMContentLoaded", () => {
-  const subTabButtons = document.querySelectorAll(
-    ".subTabBtnenattente, .subTabBtnencours, .subTabBtnarchive"
-  );
-  const subTabContents = document.querySelectorAll(
-    ".subTabContentenattente, .subTabContentencours, .subTabContentarchive"
-  );
+  const subTabButtons = document.querySelectorAll(".subTabBtn");
+  const subTabContents = document.querySelectorAll(".subTabContent");
 
   // Clic sur un sous-onglet
   subTabButtons.forEach((btn) => {
     btn.addEventListener("click", () => {
       subTabButtons.forEach((b) => b.classList.remove("active"));
-      subTabContents.forEach((c) => (c.style.display = "none"));
+      subTabContents.forEach((c) => c.classList.remove("active"));
 
       btn.classList.add("active");
       const target = document.getElementById(btn.dataset.subtab);
-      if (target) target.style.display = "block";
+      if (target) target.classList.add("active");
     });
   });
 
@@ -95,9 +91,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (defaultBtn && defaultContent) {
     subTabButtons.forEach((b) => b.classList.remove("active"));
-    subTabContents.forEach((c) => (c.style.display = "none"));
+    subTabContents.forEach((c) => c.classList.remove("active"));
     defaultBtn.classList.add("active");
-    defaultContent.style.display = "block";
+    defaultContent.classList.add("active");
   }
 });
 
@@ -238,9 +234,9 @@ function deleteUser(button, utilisateurId, pseudo) {
 let chartsCreated = false;
 
 function openTab(tabName, evt, skipHashUpdate) {
-  document.querySelectorAll(".tabContent").forEach((c) => (c.style.display = "none"));
+  document.querySelectorAll(".tabContent").forEach((c) => c.classList.remove("active"));
   const target = document.getElementById(tabName);
-  if (target) target.style.display = "block";
+  if (target) target.classList.add("active");
 
   document.querySelectorAll(".tabBtn").forEach((b) => b.classList.remove("active"));
   if (evt && evt.currentTarget) evt.currentTarget.classList.add("active");
