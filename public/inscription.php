@@ -128,8 +128,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </tr>
                         <tr>
                           <td align='center' style='background:#f0f0f0; padding:15px; font-size:13px; color:#555;'>
-                            À très vite sur <strong>BookShare</strong> ðŸ’š<br>
-                            <span style='font-size:12px; color:#888;'>Â© " . date('Y') . " BookShare. Tous droits réservés.</span>
+                            À très vite sur <strong>BookShare</strong><br>
+                            <span style='font-size:12px; color:#888;'>©" . date('Y') . " BookShare. Tous droits réservés.</span>
                           </td>
                         </tr>
                       </table>
