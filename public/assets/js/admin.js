@@ -239,8 +239,9 @@ function openTab(tabName, evt, skipHashUpdate) {
   if (target) target.classList.add("active");
 
   document.querySelectorAll(".tabBtn").forEach((b) => b.classList.remove("active"));
-  if (evt && evt.currentTarget) evt.currentTarget.classList.add("active");
-  else {
+  if (evt && evt.currentTarget) {
+    evt.currentTarget.classList.add("active");
+  } else {
     const button = document.querySelector(`.tabBtn[data-tab="${tabName}"]`);
     if (button) button.classList.add("active");
   }
@@ -333,8 +334,19 @@ document.addEventListener("DOMContentLoaded", () => {
   // --- Onglet actif par défaut ---
   const initialHash = window.location.hash ? window.location.hash.substring(1) : "reservations";
   const targetTab = document.getElementById(initialHash) ? initialHash : "reservations";
-  const button = document.querySelector(`.tabBtn[data-tab="${targetTab}"]`);
-  openTab(targetTab, { currentTarget: button }, !window.location.hash);
+const button = document.querySelector(`.tabBtn[data-tab="${targetTab}"]`);
+openTab(targetTab, { currentTarget: button }, !window.location.hash);
+
+  // --- Clics sur les onglets principaux ---
+  document.querySelectorAll(".tabBtn").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      e.preventDefault();
+      const tabName = btn.dataset.tab;
+      if (tabName) {
+        openTab(tabName, { currentTarget: btn });
+      }
+    });
+  });
 
   // --- GESTION FORMULAIRES ADMIN (Valider / Refuser / Terminer) ---
   document.querySelectorAll("form").forEach(form => {
