@@ -10,39 +10,36 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 $message = '';
+$success = false;
 $user = null;
+$token = $_GET['token'] ?? '';
 
-if (isset($_GET['token'])) {
-    $token = $_GET['token'];
-
-    // Vérifie que le token existe et n'est pas expiré
-    $stmt = $pdo->prepare("SELECT * FROM utilisateurs WHERE reset_token = ? AND reset_expires > NOW()");
+if ($token !== '') {
+    $stmt = $pdo->prepare('SELECT * FROM utilisateurs WHERE reset_token = ? AND reset_expires > NOW()');
     $stmt->execute([$token]);
-    $user = $stmt->fetch();
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if (!$user) {
-        $message = "❌ Lien invalide ou expiré.";
-    }
+        $message = '❌ Lien invalide ou expiré.';
+    } elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $password = $_POST['mdp'] ?? '';
+        $confirmation = $_POST['mdp_confirm'] ?? '';
 
-    // Si formulaire soumis
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && $user) {
-        $mdp = $_POST['mdp'] ?? '';
-        $mdp_confirm = $_POST['mdp_confirm'] ?? '';
-
-        if ($mdp === $mdp_confirm && strlen($mdp) >= 6) {
-            $hash = password_hash($mdp, PASSWORD_DEFAULT);
-
-            // Met à jour le mot de passe et nettoie le token
-            $stmt = $pdo->prepare("UPDATE utilisateurs SET mot_de_passe = ?, reset_token = NULL, reset_expires = NULL WHERE utilisateur_id = ?");
-            $stmt->execute([$hash, $user['utilisateur_id']]);
-
-            $message = "✅ Mot de passe réinitialisé avec succès. Tu peux maintenant te connecter.";
+        if ($password !== $confirmation) {
+            $message = 'Les mots de passe ne correspondent pas.';
+        } elseif (strlen($password) < 6) {
+            $message = 'Le mot de passe doit contenir au moins 6 caractères.';
         } else {
-            $message = "⚠️ Les mots de passe ne correspondent pas ou sont trop courts.";
+            $hash = password_hash($password, PASSWORD_DEFAULT);
+            $update = $pdo->prepare('UPDATE utilisateurs SET mot_de_passe = ?, reset_token = NULL, reset_expires = NULL WHERE utilisateur_id = ?');
+            $update->execute([$hash, $user['utilisateur_id']]);
+
+            $success = true;
+            $message = 'Mot de passe réinitialisé avec succès. Tu peux maintenant te connecter.';
         }
     }
 } else {
-    $message = "❌ Aucun lien valide fourni.";
+    $message = '❌ Aucun lien valide fourni.';
 }
 ?>
 <!DOCTYPE html>
@@ -57,11 +54,10 @@ if (isset($_GET['token'])) {
     <h2>Réinitialiser le mot de passe</h2>
 
     <?php if ($message): ?>
-    <div id="alert-message" class="auth-message"><?= htmlspecialchars($message) ?></div>
+    <div id="alert-message" class="auth-message <?= $success ? 'success' : '' ?>"><?= htmlspecialchars($message) ?></div>
     <?php endif; ?>
 
-
-    <?php if ($user): ?>
+    <?php if ($user && !$success): ?>
         <form method="post">
             <input type="password" name="mdp" placeholder="Nouveau mot de passe" required>
             <input type="password" name="mdp_confirm" placeholder="Confirmer le mot de passe" required>
@@ -85,4 +81,3 @@ document.addEventListener("DOMContentLoaded", () => {
 </script>
 </body>
 </html>
-
