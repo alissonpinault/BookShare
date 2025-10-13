@@ -32,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $token = bin2hex(random_bytes(32));
                 $expires = (new DateTime('+1 hour'))->format('Y-m-d H:i:s');
 
-                $update = $pdo->prepare('UPDATE utilisateurs SET reset_token = ?, reset_expires = ? WHERE utilisateur_id = ?');
+                $update = $pdo->prepare('UPDATE utilisateurs SET token_reset = ?, reset_expire = ? WHERE utilisateur_id = ?');
                 $update->execute([$token, $expires, $user['utilisateur_id']]);
 
                 $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
@@ -117,16 +117,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         error_log('Erreur log MongoDB : ' . $e->getMessage());
                     }
                 }
-                    } catch (MailerException|Throwable $e) {
-            error_log('Erreur envoi mail reset : ' . $e->getMessage());
-            $message = 'Impossible d’envoyer l’e-mail de réinitialisation pour le moment.';
-            if (isset($mail)) {
-                $message .= '<br><small>' . htmlspecialchars((string) $mail->ErrorInfo, ENT_QUOTES, 'UTF-8') . '</small>';
-            } else {
-                $message .= '<br><small>' . htmlspecialchars($e->getMessage(), ENT_QUOTES, 'UTF-8') . '</small>';
+            } catch (MailerException|Throwable $e) {
+                error_log('Erreur envoi mail reset : ' . $e->getMessage());
+                $message = 'Impossible d’envoyer l’e-mail de réinitialisation pour le moment.';
             }
-        }
-
         }
 
         if ($message === '') {
@@ -179,3 +173,4 @@ document.addEventListener("DOMContentLoaded", () => {
 </script>
 </body>
 </html>
+

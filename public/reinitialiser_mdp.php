@@ -15,7 +15,7 @@ $user = null;
 $token = $_GET['token'] ?? '';
 
 if ($token !== '') {
-    $stmt = $pdo->prepare('SELECT * FROM utilisateurs WHERE reset_token = ? AND reset_expires > NOW()');
+    $stmt = $pdo->prepare('SELECT * FROM utilisateurs WHERE token_reset = ? AND reset_expire > NOW()');
     $stmt->execute([$token]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -31,7 +31,7 @@ if ($token !== '') {
             $message = 'Le mot de passe doit contenir au moins 6 caractères.';
         } else {
             $hash = password_hash($password, PASSWORD_DEFAULT);
-            $update = $pdo->prepare('UPDATE utilisateurs SET mot_de_passe = ?, reset_token = NULL, reset_expires = NULL WHERE utilisateur_id = ?');
+            $update = $pdo->prepare('UPDATE utilisateurs SET mot_de_passe = ?, token_reset = NULL, reset_expire = NULL WHERE utilisateur_id = ?');
             $update->execute([$hash, $user['utilisateur_id']]);
 
             $success = true;
