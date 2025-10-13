@@ -33,7 +33,7 @@ if ($token !== '') {
 
     if ($user) {
         if ((int)($user['est_valide'] ?? 0) === 1) {
-            $message = '[OK] Ton compte est deja active ! Tu peux te connecter.';
+            $message = 'Ton compte est déjà activé ! Tu peux te connecter.';
         } else {
             $update = $pdo->prepare('UPDATE utilisateurs SET est_valide = 1, token_validation = NULL WHERE utilisateur_id = ?');
             $update->execute([$user['utilisateur_id']]);
@@ -52,13 +52,13 @@ if ($token !== '') {
                 }
             }
 
-            $message = '[OK] Compte active avec succes ! Tu peux maintenant te connecter.';
+            $message = 'Compte activé avec succès ! Tu peux maintenant te connecter.';
         }
     } else {
-        $message = '[ERREUR] Lien invalide ou deja utilise.';
+        $message = 'Lien invalide ou déjà utilisé.';
     }
 } else {
-    $message = '[ERREUR] Aucun token fourni.';
+    $message = 'Aucun token fourni.';
 }
 
 ?>
@@ -78,7 +78,7 @@ if ($token !== '') {
     <h2>Validation du compte</h2>
 
     <?php if ($message): ?>
-        <div id="alert-message" class="auth-message"><?= htmlspecialchars($message) ?></div>
+        <div id="alert-message" class="auth-message"><?= htmlspecialchars($message, ENT_QUOTES, 'UTF-8') ?></div>
     <?php endif; ?>
 
     <button class="secondary-btn" onclick="window.location.href='connexion.php'">Se connecter</button>
