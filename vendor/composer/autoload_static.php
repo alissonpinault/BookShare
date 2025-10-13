@@ -25,6 +25,10 @@ class ComposerStaticInitb6820f436ec90f45ba20ad59143d5679
         array (
             'MongoDB\\' => 8,
         ),
+        'B' => 
+        array (
+            'Bookshare\\' => 10,
+        ),
     );
 
     public static $prefixDirsPsr4 = array (
@@ -43,6 +47,10 @@ class ComposerStaticInitb6820f436ec90f45ba20ad59143d5679
         'MongoDB\\' => 
         array (
             0 => __DIR__ . '/..' . '/mongodb/mongodb/src',
+        ),
+        'Bookshare\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/src',
         ),
     );
 

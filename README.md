@@ -1,155 +1,243 @@
-📚 BookShare
+﻿# ðŸ“š BookShare
 
-BookShare est une application web de gestion et de partage de livres, permettant aux utilisateurs de réserver des ouvrages, de gérer leurs emprunts et de donner leur avis.
-Le projet a été conçu dans le cadre d’un exercice de développement web full-stack, en combinant PHP, MySQL, MongoDB, Docker et TailwindCSS.
+**BookShare** est une plateforme de partage de livres entre particuliers.  
+Chaque utilisateur peut prÃªter, emprunter et noter des ouvrages, le tout via une interface moderne et intuitive.  
+Le projet a Ã©tÃ© dÃ©veloppÃ© dans le cadre de lâ€™**Ã©valuation ECF â€“ DÃ©veloppeur Web & Web Mobile**.
 
-🚀 Fonctionnalités principales
+---
 
-Authentification sécurisée
+## ðŸš€ DÃ©monstration
 
-Création de compte, connexion/déconnexion
+ðŸ”— **Application en ligne :** [https://bookshare-655b6c07c913.herokuapp.com](https://bookshare-655b6c07c913.herokuapp.com)
 
-Gestion des rôles (utilisateur / admin)
+---
 
-Gestion des livres
+## ðŸ§­ Sommaire
 
-Consultation des livres disponibles avec titre, auteur, image
+1. [ðŸŽ¯ Objectifs du projet](#-objectifs-du-projet)  
+2. [ðŸ’» Installation locale](#-installation-locale)  
+3. [ðŸ§© FonctionnalitÃ©s principales](#-fonctionnalitÃ©s-principales)  
+4. [ðŸ› ï¸ Technologies utilisÃ©es](#ï¸-technologies-utilisÃ©es)  
+5. [ðŸ—ï¸ Architecture du projet](#ï¸-architecture-du-projet)  
+6. [ðŸ—ƒï¸ Base de donnÃ©es](#ï¸-base-de-donnÃ©es)  
+7. [ðŸ” SÃ©curitÃ©](#-sÃ©curitÃ©)  
+8. [ðŸ“¬ SystÃ¨me dâ€™e-mails](#-systÃ¨me-de-mails)  
+9. [â˜ï¸ DÃ©ploiement Heroku](#ï¸-dÃ©ploiement-heroku)  
+10. [ðŸ“¸ Captures dâ€™Ã©cran](#-captures-dÃ©cran)  
+11. [ðŸ‘¤ Auteur](#-auteur)
 
-Filtrage et recherche dynamique
+---
 
-Gestion des réservations
+## ðŸŽ¯ Objectifs du projet
 
-Réserver un livre disponible
+- DÃ©velopper une **plateforme communautaire de partage de livres**.  
+- GÃ©rer des **inscriptions sÃ©curisÃ©es** avec validation par e-mail.  
+- Offrir une **interface intuitive** pour la recherche et la rÃ©servation de livres.  
+- CrÃ©er un **espace administrateur** pour la modÃ©ration du contenu.  
+- IntÃ©grer **MySQL** (structure principale) et **MongoDB** (suivi des logs).
 
-Affichage des réservations en cours et archivées (onglets dynamiques)
+---
 
-Annulation d’une réservation en cours
+## ðŸ’» Installation locale
 
-Archivage automatique des réservations terminées
+### ðŸ‹ Option 1 : via Docker (recommandÃ©e)
 
-Espace utilisateur
+#### 1ï¸âƒ£ Cloner le dÃ©pÃ´t
 
-Informations personnelles
+```bash
+git clone https://github.com/alissonpinault/BookShare.git
+cd BookShare
 
-Gestion de ses réservations
-
-Attribution de notes aux ouvrages
-
-Administration (rôle admin)
-
-Consultation et gestion des utilisateurs
-
-Suivi des réservations
-
-Validation des contenus
-
-🛠️ Technologies utilisées
-Front-End
-
-HTML5 / CSS3 / JavaScript
-
-TailwindCSS (design responsive et moderne)
-
-Font Awesome (icônes)
-
-Back-End
-
-PHP 8 (POO)
-
-MySQL (stockage des données principales : utilisateurs, livres, réservations)
-
-MongoDB (stockage complémentaire : avis, logs, interactions dynamiques)
-
-PDO (requêtes SQL sécurisées avec requêtes préparées)
-
-Environnement & outils
-
-Docker (conteneurs pour Apache/PHP, MySQL, MongoDB)
-
-phpMyAdmin (administration de MySQL)
-
-Composer (gestion des dépendances PHP)
-
-Git/GitHub (gestion de version)
-
-⚙️ Installation
-1. Cloner le projet
-git clone https://github.com/votre-utilisateur/bookshare.git
-cd bookshare
-
-2. Lancer Docker
-
-Assurez-vous que Docker est installé puis exécutez :
-
+2ï¸âƒ£ Lancer les conteneurs
 docker-compose up -d
 
 
-Cela démarre les services suivants :
+Cela crÃ©e :
 
-Apache/PHP → http://localhost:8080
+un conteneur PHP/Apache pour le site : http://localhost:8080
 
-MySQL → port 3306
+un conteneur MySQL : localhost:3306
 
-MongoDB → port 27017
+un conteneur phpMyAdmin : http://localhost:8084
 
-phpMyAdmin → http://localhost:8081
+un conteneur MongoDB pour les logs utilisateurs
 
-3. Base de données
+3ï¸âƒ£ Importer la base MySQL
 
-Importez le fichier bookshare.sql dans MySQL via phpMyAdmin.
+Depuis phpMyAdmin :
 
-Vérifiez la configuration de la connexion dans db.php.
+CrÃ©e une base bookshare
 
-4. Accéder à l’application
+Importe le fichier /sql/bookshare.sql fourni.
 
-Ouvrez http://localhost:8080
- dans votre navigateur.
+4ï¸âƒ£ Configurer le fichier db.php
+$pdo = new PDO('mysql:host=mysql;dbname=bookshare;charset=utf8', 'user', 'password');
+$mongoClient = new MongoDB\Client("mongodb://mongo:27017");
+$mongoDB = $mongoClient->bookshare;
 
-📂 Structure du projet
-bookshare/
-│── classes/            # Classes PHP (POO : Utilisateur, Livre, Reservation…)
-│── php/             # Fichiers accessibles (index.php, reservation.php, etc.)
-│── docker-compose.yml  # Configuration Docker
-│── db.php              # Connexion base MySQL
-│── README.md           # Documentation projet
-│── images/             # Images, logos, CSS custom
+5ï¸âƒ£ AccÃ©der Ã  lâ€™application
 
-👤 Comptes de test
+ðŸ‘‰ http://localhost:8080
 
-Utilisateur standard
+ðŸ–¥ï¸ Option 2 : via XAMPP (ou WAMP)
 
-Email : user@bookshare.fr
+1ï¸âƒ£ Copier le projet dans :
 
-Mot de passe : user123
+C:\xampp\htdocs\BookShare
 
-Administrateur
 
-Email : admin@bookshare.fr
+2ï¸âƒ£ DÃ©marrer Apache et MySQL depuis le panneau XAMPP.
+3ï¸âƒ£ CrÃ©er une base bookshare dans phpMyAdmin.
+4ï¸âƒ£ Importer le fichier /sql/bookshare.sql.
+5ï¸âƒ£ VÃ©rifier le fichier db.php :
 
-Mot de passe : admin123
+$pdo = new PDO('mysql:host=localhost;dbname=bookshare;charset=utf8', 'root', '');
 
-📸 Captures d’écran
 
-Des captures d’écran (front + back) sont disponibles en annexe :
+6ï¸âƒ£ Ouvrir le site dans le navigateur :
+ðŸ‘‰ http://localhost/BookShare
 
-Page d’accueil avec liste des livres
+ðŸ§© FonctionnalitÃ©s principales
+ðŸ‘¥ Utilisateurs
 
-Formulaire de connexion
+Inscription avec vÃ©rification par e-mail
 
-Espace utilisateur avec onglets réservations
+Connexion sÃ©curisÃ©e (mots de passe hachÃ©s)
 
-phpMyAdmin (tables MySQL)
+RÃ©initialisation du mot de passe
 
-Docker (conteneurs en cours d’exécution)
+Modification du profil
 
-✨ Objectif pédagogique
+ðŸ“š Livres
 
-BookShare a été développé pour :
+Ajout, Ã©dition, suppression
 
-Mettre en pratique les concepts front-end (HTML/CSS/JS) et back-end (PHP/MySQL/MongoDB).
+Recherche et filtres dynamiques
 
-Appliquer une architecture orientée objet (POO) côté PHP.
+RÃ©servation et notation (1 Ã  5 Ã©toiles)
 
-Expérimenter le déploiement en conteneurs Docker.
+ðŸ›¡ï¸ Administration
 
-Illustrer une approche full-stack dans un projet concret.
+Validation manuelle des inscriptions
+
+ModÃ©ration des avis et signalements
+
+Visualisation des logs depuis MongoDB
+
+ðŸ› ï¸ Technologies utilisÃ©es
+Type	Technologies
+Front-end	HTML5, CSS3, Tailwind CSS, Font Awesome
+Back-end	PHP 8 (POO), PDO, PHPMailer
+Base SQL	MySQL
+Base NoSQL	MongoDB
+HÃ©bergement	Heroku
+Versioning	Git / GitHub
+Outils	VS Code, phpMyAdmin, Composer
+ðŸ—ï¸ Architecture du projet
+BookShare/
+â”œâ”€â”€ php/                     â†’ Classes PHP (POO)
+â”‚   â”œâ”€â”€ UtilisateurPOO.php
+â”‚   â”œâ”€â”€ LivrePOO.php
+â”‚   â””â”€â”€ ReservationPOO.php
+â”œâ”€â”€ utiles/                  â†’ Scripts utilitaires
+â”‚   â”œâ”€â”€ db.php
+â”‚   â”œâ”€â”€ header.php / footer.php
+â”‚   â””â”€â”€ style.css
+â”œâ”€â”€ public/assets/images/    â†’ Logos et icÃ´nes
+â”œâ”€â”€ auth.css                 â†’ Feuille de style pour les pages dâ€™authentification
+â”œâ”€â”€ inscription.php          â†’ Inscription avec e-mail de validation
+â”œâ”€â”€ connexion.php            â†’ Connexion utilisateur
+â”œâ”€â”€ mdp_oublie.php           â†’ RÃ©initialisation du mot de passe
+â”œâ”€â”€ valider.php              â†’ Validation de compte via token
+â”œâ”€â”€ index.php                â†’ Page dâ€™accueil
+â”œâ”€â”€ admin.php                â†’ Interface dâ€™administration
+â”œâ”€â”€ composer.json            â†’ DÃ©pendances (PHPMailer, MongoDB, etc.)
+â””â”€â”€ README.md                â†’ Documentation du projet
+
+ðŸ—ƒï¸ Base de donnÃ©es
+ðŸ’¾ MySQL (principale)
+
+utilisateurs : identifiants, rÃ´les, tokens, statut
+
+livres : informations sur les ouvrages
+
+reservations : historique des prÃªts/emprunts
+
+ðŸ“Š MongoDB (logs)
+
+logs_connexion : trace les connexions, inscriptions, rÃ©initialisations
+
+ðŸ” SÃ©curitÃ©
+
+Hachage des mots de passe avec password_hash()
+
+Validation serveur + protection CSRF (via tokens)
+
+VÃ©rification des rÃ´les (admin/utilisateur)
+
+Logs dâ€™activitÃ© enregistrÃ©s dans MongoDB
+
+RequÃªtes SQL sÃ©curisÃ©es via PDO prÃ©parÃ©
+
+ðŸ“¬ SystÃ¨me de mails
+
+ðŸ“¤ Envoi via Mailgun SMTP (configurÃ© sur Heroku).
+ðŸ“¦ Gestion avec PHPMailer.
+ðŸ“Ž E-mails HTML stylÃ©s avec logo intÃ©grÃ©.
+
+Cas dâ€™usage :
+
+Validation du compte aprÃ¨s inscription
+
+RÃ©initialisation du mot de passe (lien unique)
+
+â˜ï¸ DÃ©ploiement Heroku
+ðŸ”§ Ã‰tapes de dÃ©ploiement
+
+DÃ©pÃ´t GitHub connectÃ© Ã  Heroku
+
+Add-ons :
+
+JawsDB MySQL
+
+Mailgun
+
+Variables dâ€™environnement :
+
+MAILGUN_SMTP_LOGIN
+
+MAILGUN_SMTP_PASSWORD
+
+MAILGUN_SMTP_SERVER
+
+MAILGUN_SMTP_PORT
+
+DÃ©ploiement :
+
+git push heroku main
+
+ðŸ“¸ Captures dâ€™Ã©cran
+
+(Ã  insÃ©rer plus tard)
+
+Page dâ€™accueil
+
+Formulaire dâ€™inscription
+
+E-mail de validation
+
+Espace administrateur
+
+ðŸ‘¤ Auteur
+
+ðŸ‘©â€ðŸ’» Alisson Pinault
+DÃ©veloppeuse Web & Web Mobile
+ðŸ“ France
+ðŸ“§ pinault.alisson@gmail.com
+
+ðŸ”— GitHub â€“ alissonpinault
+
+ðŸ§¾ Licence
+
+Projet rÃ©alisÃ© dans le cadre dâ€™un examen.
+Â© 2025 â€” BookShare â€“ Tous droits rÃ©servÃ©s.

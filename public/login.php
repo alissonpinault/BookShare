@@ -23,14 +23,10 @@ function login(PDO $pdo, ?MongoDatabase $mongoDB, string $pseudo, string $mdp): 
                 'ip' => $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1',
                 'resultat' => $authenticated ? 'succes' : 'echec',
             ]);
-        } catch (Throwable $e) {
+        } catch (\Throwable $e) {
             error_log('Mongo log error: ' . $e->getMessage());
         }
     }
 
-    if ($authenticated) {
-        return $user;
-    }
-
-    return null;
+    return $authenticated ? $user : null;
 }
