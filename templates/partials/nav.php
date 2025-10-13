@@ -1,5 +1,5 @@
 <nav class="site-nav">
-    <!-- Logo Ã  gauche -->
+    <!-- Logo à gauche -->
     <a href="index.php" class="logo" style="text-decoration: none; color: inherit;">
     <img src="assets/images/logo.jpg" alt="Logo BookShare">
     BookShare
@@ -33,14 +33,14 @@
                 <button onclick="window.location.href='admin.php'">Panneau Admin</button>
             <?php endif; ?>
 
-            <button onclick="window.location.href='reservation.php'">Mes RÃ©servations</button>
+            <button onclick="window.location.href='reservation.php'">Mes Réservations</button>
 
             <button onclick="window.location.href='deconnexion.php'">
-                DÃ©connexion (<?= htmlspecialchars($utilisateur->getPseudo()) ?>)
+                Déconnexion (<?= htmlspecialchars($utilisateur->getPseudo()) ?>)
             </button>
         <?php else: ?>
             <button onclick="window.location.href='connexion.php'">Connexion</button>
-            <button onclick="window.location.href='inscription.php'">CrÃ©er un compte</button>
+            <button onclick="window.location.href='inscription.php'">Créer un compte</button>
         <?php endif; ?>
     </div>
 </nav>

@@ -7,7 +7,7 @@ session_start();
 // Supprime toutes les variables de session
 $_SESSION = [];
 
-// DÃ©truit la session
+// Détruit la session
 session_destroy();
 
 // Redirection vers la page d'accueil

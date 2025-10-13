@@ -15,13 +15,13 @@ $user = null;
 if (isset($_GET['token'])) {
     $token = $_GET['token'];
 
-    // VÃ©rifie que le token existe et nâ€™est pas expirÃ©
+    // Vérifie que le token existe et n'est pas expiré
     $stmt = $pdo->prepare("SELECT * FROM utilisateurs WHERE reset_token = ? AND reset_expires > NOW()");
     $stmt->execute([$token]);
     $user = $stmt->fetch();
 
     if (!$user) {
-        $message = "âŒ Lien invalide ou expirÃ©.";
+        $message = "❌ Lien invalide ou expiré.";
     }
 
     // Si formulaire soumis
@@ -32,29 +32,29 @@ if (isset($_GET['token'])) {
         if ($mdp === $mdp_confirm && strlen($mdp) >= 6) {
             $hash = password_hash($mdp, PASSWORD_DEFAULT);
 
-            // Met Ã  jour le mot de passe et nettoie le token
+            // Met à jour le mot de passe et nettoie le token
             $stmt = $pdo->prepare("UPDATE utilisateurs SET mot_de_passe = ?, reset_token = NULL, reset_expires = NULL WHERE utilisateur_id = ?");
             $stmt->execute([$hash, $user['utilisateur_id']]);
 
-            $message = "âœ… Mot de passe rÃ©initialisÃ© avec succÃ¨s. Tu peux maintenant te connecter.";
+            $message = "✅ Mot de passe réinitialisé avec succès. Tu peux maintenant te connecter.";
         } else {
-            $message = "âš ï¸ Les mots de passe ne correspondent pas ou sont trop courts.";
+            $message = "⚠️ Les mots de passe ne correspondent pas ou sont trop courts.";
         }
     }
 } else {
-    $message = "âŒ Aucun lien valide fourni.";
+    $message = "❌ Aucun lien valide fourni.";
 }
 ?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<title>RÃ©initialiser le mot de passe - BookShare</title>
+<title>Réinitialiser le mot de passe - BookShare</title>
 <link rel="stylesheet" href="assets/css/auth.css">
 </head>
 <body class="auth-body">
 <div class="auth-container">
-    <h2>RÃ©initialiser le mot de passe</h2>
+    <h2>Réinitialiser le mot de passe</h2>
 
     <?php if ($message): ?>
     <div id="alert-message" class="auth-message"><?= htmlspecialchars($message) ?></div>
@@ -65,11 +65,11 @@ if (isset($_GET['token'])) {
         <form method="post">
             <input type="password" name="mdp" placeholder="Nouveau mot de passe" required>
             <input type="password" name="mdp_confirm" placeholder="Confirmer le mot de passe" required>
-            <button type="submit">Mettre Ã  jour</button>
+            <button type="submit">Mettre à jour</button>
         </form>
     <?php endif; ?>
 
-    <button class="secondary-btn" onclick="window.location.href='connexion.php'">Retour Ã  la connexion</button>
+    <button class="secondary-btn" onclick="window.location.href='connexion.php'">Retour à la connexion</button>
 </div>
 
 <script>

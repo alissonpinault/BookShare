@@ -10,7 +10,7 @@ $mongoDB = $container['mongoDB'] ?? null;
 
 session_start();
 
-// VÃ©rifier que l'utilisateur est admin
+// Vérifier que l'utilisateur est admin
 if (empty($_SESSION['utilisateur_id'])) {
     header('Location: index.php');
     exit;
@@ -69,9 +69,9 @@ function computePagination($total, $perPage, $page){
 function formatReservationStatus($status){
     $map = [
         'en_attente' => 'En attente',
-        'validee' => 'ValidÃ©e',
-        'refusee' => 'RefusÃ©e',
-        'terminee' => 'TerminÃ©e',
+        'validee' => 'Validée',
+        'refusee' => 'Refusée',
+        'terminee' => 'Terminée',
     ];
 
     $key = strtolower((string) $status);
@@ -113,7 +113,7 @@ function renderPagination($param, array $pagination, $anchor){
 
     $html = '<div class="pagination">';
     if($currentPage > 1){
-        $html .= '<a class="page prev" href="' . htmlspecialchars(buildPaginationUrl([$param => $currentPage - 1], $anchor), ENT_QUOTES, 'UTF-8') . '">&laquo; PrÃ©cÃ©dent</a>';
+        $html .= '<a class="page prev" href="' . htmlspecialchars(buildPaginationUrl([$param => $currentPage - 1], $anchor), ENT_QUOTES, 'UTF-8') . '">&laquo; Précédent</a>';
     }
 
     for($i = 1; $i <= $totalPages; $i++){
@@ -154,7 +154,7 @@ if($_SERVER['REQUEST_METHOD']==='POST' && isset($_POST['action'])){
             error_log('Admin valider reservation error: '.$e->getMessage());
         }
     }
-    echo json_encode(['success' => false, 'message' => 'Impossible de valider la rÃ©servation.']); exit;
+    echo json_encode(['success' => false, 'message' => 'Impossible de valider la réservation.']); exit;
 }
 
 if ($_POST['action'] === 'refuser') {
@@ -177,7 +177,7 @@ if ($_POST['action'] === 'refuser') {
             error_log('Admin refuser reservation error: '.$e->getMessage());
         }
     }
-    echo json_encode(['success' => false, 'message' => 'Impossible de refuser la rÃ©servation.']); exit;
+    echo json_encode(['success' => false, 'message' => 'Impossible de refuser la réservation.']); exit;
 }
 
     if($_POST['action']==='terminer'){
@@ -203,7 +203,7 @@ if ($_POST['action'] === 'refuser') {
             error_log('Admin terminer reservation error: '. $e->getMessage());
         }
     }
-    echo json_encode(['success'=>false,'message'=>'Impossible de terminer la rÃ©servation.']);
+    echo json_encode(['success'=>false,'message'=>'Impossible de terminer la réservation.']);
     exit;
 }
 
@@ -231,7 +231,7 @@ if ($_POST['action'] === 'refuser') {
             ]); exit;
         }catch(Throwable $e){
             error_log('Admin add book error: '. $e->getMessage());
-            echo json_encode(['success'=>false,'message'=>"L'ajout du livre a Ã©chouÃ©."]); exit;
+            echo json_encode(['success'=>false,'message'=>"L'ajout du livre a échoué."]); exit;
         }
     }
     elseif($_POST['action']==='modifierLivre'){
@@ -260,7 +260,7 @@ if ($_POST['action'] === 'refuser') {
             ]); exit;
         }catch(Throwable $e){
             error_log('Admin edit book error: '. $e->getMessage());
-            echo json_encode(['success'=>false,'message'=>'La mise Ã  jour du livre a Ã©chouÃ©.']); exit;
+            echo json_encode(['success'=>false,'message'=>'La mise à jour du livre a échoué.']); exit;
         }
     }
     elseif($_POST['action']==='supprimerLivre'){
@@ -298,7 +298,7 @@ if ($_POST['action'] === 'refuser') {
 }
 }
 
-// --- RÃ©cupÃ©ration des donnÃ©es ---
+// --- Récupération des données ---
 $reservationsPerPage = 10;
 $livresPerPage = 10;
 $utilisateursPerPage = 10;
@@ -315,7 +315,7 @@ $reservationsPagination = computePagination($totalReservations, $reservationsPer
 $livresPagination = computePagination($totalLivres, $livresPerPage, $livresPage);
 $utilisateursPagination = computePagination($totalUtilisateurs, $utilisateursPerPage, $utilisateursPage);
 
-// --- RÃ©servations par statut --- //
+// --- Réservations par statut --- //
 $reservationsEnAttente = $pdo->query("
     SELECT r.*, u.pseudo, l.titre, l.livre_id
     FROM reservations r
@@ -387,26 +387,26 @@ $utilisateurs = $utilisateursStmt->fetchAll(PDO::FETCH_ASSOC);
 <h1>Panneau Administrateur</h1>
 
 <div class="tab-buttons">
-    <button class="tabBtn active" data-tab="reservations" onclick="openTab('reservations', event)">RÃ©servations</button>
-    <button class="tabBtn" data-tab="gererLivres" onclick="openTab('gererLivres', event)">GÃ©rer les livres</button>
+    <button class="tabBtn active" data-tab="reservations" onclick="openTab('reservations', event)">Réservations</button>
+    <button class="tabBtn" data-tab="gererLivres" onclick="openTab('gererLivres', event)">Gérer les livres</button>
     <button class="tabBtn" data-tab="utilisateurs" onclick="openTab('utilisateurs', event)">Gestion utilisateurs</button>
     <button class="tabBtn" data-tab="statistiques" onclick="openTab('statistiques', event)">Statistiques</button>
 </div>
 
-<!-- Onglet RÃ©servations -->
+<!-- Onglet Réservations -->
 <div id="reservations" class="tabContent" style="display:block;">
 
     <!-- Sous-onglets -->
     <div class="tab-buttons sub-tabs">
         <button class="subTabBtnenattente active" data-subtab="attente">En attente</button>
-        <button class="subTabBtnencours" data-subtab="validees">ValidÃ©es</button>
-        <button class="subTabBtnarchive" data-subtab="terminees">TerminÃ©es</button>
+        <button class="subTabBtnencours" data-subtab="validees">Validées</button>
+        <button class="subTabBtnarchive" data-subtab="terminees">Terminées</button>
     </div>
 
-    <!-- RÃ©servations en attente -->
+    <!-- Réservations en attente -->
     <div id="attente" class="subTabContentenattente" style="display:block;">
         <?php if (empty($reservationsEnAttente)): ?>
-            <p>Aucune rÃ©servation en attente.</p>
+            <p>Aucune réservation en attente.</p>
         <?php else: ?>
             <table>
                 <tr>
@@ -436,10 +436,10 @@ $utilisateurs = $utilisateursStmt->fetchAll(PDO::FETCH_ASSOC);
         <?php endif; ?>
     </div>
 
-    <!-- RÃ©servations validÃ©es -->
+    <!-- Réservations validées -->
     <div id="validees" class="subTabContentencours">
         <?php if (empty($reservationsValidees)): ?>
-            <p>Aucune rÃ©servation validÃ©e.</p>
+            <p>Aucune réservation validée.</p>
         <?php else: ?>
             <table>
                 <tr>
@@ -468,10 +468,10 @@ $utilisateurs = $utilisateursStmt->fetchAll(PDO::FETCH_ASSOC);
         <?php endif; ?>
     </div>
 
-    <!-- RÃ©servations terminÃ©es -->
+    <!-- Réservations terminées -->
     <div id="terminees" class="subTabContentarchive">
         <?php if (empty($reservationsTerminees)): ?>
-            <p>Aucune rÃ©servation terminÃ©e.</p>
+            <p>Aucune réservation terminée.</p>
         <?php else: ?>
             <table>
                 <tr>
@@ -493,7 +493,7 @@ $utilisateurs = $utilisateursStmt->fetchAll(PDO::FETCH_ASSOC);
     </div>
 </div>
 
-<!-- Onglet GÃ©rer les livres -->
+<!-- Onglet Gérer les livres -->
 <div id="gererLivres" class="tabContent" data-page-param="livres_page" data-current-page="<?= (int) $livresPagination['page'] ?>" data-total-pages="<?= (int) $livresPagination['total_pages'] ?>">
 
 <div style="text-align:center; margin-bottom:20px;">
@@ -565,9 +565,9 @@ $utilisateurs = $utilisateursStmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 <div class="pagination-info">
     <?php if($livresCount): ?>
-        Affichage de <?= htmlspecialchars($livresStart, ENT_QUOTES, 'UTF-8') ?> Ã  <?= htmlspecialchars($livresEnd, ENT_QUOTES, 'UTF-8') ?> sur <?= htmlspecialchars($livresPagination['total_items'], ENT_QUOTES, 'UTF-8') ?> livres.
+        Affichage de <?= htmlspecialchars($livresStart, ENT_QUOTES, 'UTF-8') ?> à <?= htmlspecialchars($livresEnd, ENT_QUOTES, 'UTF-8') ?> sur <?= htmlspecialchars($livresPagination['total_items'], ENT_QUOTES, 'UTF-8') ?> livres.
     <?php else: ?>
-        Aucun livre trouvÃ©.
+        Aucun livre trouvé.
     <?php endif; ?>
 </div>
 <?= renderPagination('livres_page', $livresPagination, 'gererLivres'); ?>
@@ -598,7 +598,7 @@ $utilisateurs = $utilisateursStmt->fetchAll(PDO::FETCH_ASSOC);
         $utilisateursEnd = $utilisateursCount ? $utilisateursPagination['offset'] + $utilisateursCount : 0;
     ?>
     <?php if ($utilisateursCount === 0): ?>
-        <p style="text-align:center;">Aucun utilisateur enregistrÃ©.</p>
+        <p style="text-align:center;">Aucun utilisateur enregistré.</p>
     <?php else: ?>
         <table>
     <tr>
@@ -641,9 +641,9 @@ $utilisateurs = $utilisateursStmt->fetchAll(PDO::FETCH_ASSOC);
     <?php endif; ?>
     <div class="pagination-info">
         <?php if($utilisateursCount): ?>
-            Affichage de <?= htmlspecialchars($utilisateursStart, ENT_QUOTES, 'UTF-8') ?> Ã  <?= htmlspecialchars($utilisateursEnd, ENT_QUOTES, 'UTF-8') ?> sur <?= htmlspecialchars($utilisateursPagination['total_items'], ENT_QUOTES, 'UTF-8') ?> utilisateurs.
+            Affichage de <?= htmlspecialchars($utilisateursStart, ENT_QUOTES, 'UTF-8') ?> à <?= htmlspecialchars($utilisateursEnd, ENT_QUOTES, 'UTF-8') ?> sur <?= htmlspecialchars($utilisateursPagination['total_items'], ENT_QUOTES, 'UTF-8') ?> utilisateurs.
         <?php else: ?>
-            Aucun utilisateur Ã  afficher.
+            Aucun utilisateur à afficher.
         <?php endif; ?>
     </div>
     <?= renderPagination('utilisateurs_page', $utilisateursPagination, 'utilisateurs'); ?>
@@ -651,7 +651,7 @@ $utilisateurs = $utilisateursStmt->fetchAll(PDO::FETCH_ASSOC);
 <!-- Onglet Statistiques -->
 <div id="statistiques" class="tabContent">
     <div id="statsContent" style="text-align:center;">
-        <p id="noDataMessage" style="color:#b71c1c; font-weight:bold; display:none;">Aucune rÃ©servation pour gÃ©nÃ©rer des statistiques.</p>
+        <p id="noDataMessage" style="color:#b71c1c; font-weight:bold; display:none;">Aucune réservation pour générer des statistiques.</p>
         <canvas id="graphLivres" height="200" style="display:none;"></canvas>
         <canvas id="graphUsers" height="200" style="display:none;"></canvas>
     </div>

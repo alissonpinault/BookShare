@@ -20,15 +20,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $mdp = $_POST['mdp'] ?? '';
     $confirm = $_POST['mdp_confirm'] ?? '';
 
-    // VÃ©rifications cÃ´tÃ© serveur
+    // Vérifications côté serveur
     if (empty($token)) {
-        $message = "âŒ Lien de rÃ©initialisation invalide.";
+        $message = "❌ Lien de réinitialisation invalide.";
     } elseif ($mdp !== $confirm) {
         $message = "Les mots de passe ne correspondent pas.";
     } elseif (strlen($mdp) < 6) {
-        $message = "Le mot de passe doit contenir au moins 6 caractÃ¨res.";
+        $message = "Le mot de passe doit contenir au moins 6 caractères.";
     } else {
-        // VÃ©rifie si le token est valide et non expirÃ©
+        // Vérifie si le token est valide et non expiré
         $stmt = $pdo->prepare("SELECT * FROM utilisateurs WHERE token_reset = ? AND reset_expire > NOW()");
         $stmt->execute([$token]);
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -56,11 +56,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             // Message flash + redirection
-            $_SESSION['flash_message'] = "âœ… Ton mot de passe a bien Ã©tÃ© rÃ©initialisÃ©. Tu peux te connecter.";
+            $_SESSION['flash_message'] = "✅ Ton mot de passe a bien été réinitialisé. Tu peux te connecter.";
             header('Location: connexion.php');
             exit;
         } else {
-            $message = "âŒ Ce lien est invalide ou a expirÃ©.";
+            $message = "❌ Ce lien est invalide ou a expiré.";
         }
     }
 }
@@ -69,7 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<title>RÃ©initialisation du mot de passe - BookShare</title>
+<title>Réinitialisation du mot de passe - BookShare</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Great+Vibes&display=swap" rel="stylesheet">
 <link rel="icon" type="image/jpg" href="assets/images/logo.jpg">
@@ -79,7 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <div class="auth-container">
     <img src="assets/images/logo.jpg" alt="Logo" class="auth-illustration">
-    <h2>RÃ©initialiser le mot de passe</h2>
+    <h2>Réinitialiser le mot de passe</h2>
 
     <?php if ($message): ?>
     <div id="alert-message" class="auth-message"><?= htmlspecialchars($message) ?></div>
@@ -90,13 +90,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <input type="hidden" name="token" value="<?= htmlspecialchars($token) ?>">
         <input type="password" name="mdp" placeholder="Nouveau mot de passe" required>
         <input type="password" name="mdp_confirm" placeholder="Confirmer le mot de passe" required>
-        <button type="submit">Mettre Ã  jour</button>
+        <button type="submit">Mettre à jour</button>
     </form>
     <?php else: ?>
-    <p>âŒ Lien de rÃ©initialisation invalide.</p>
+    <p>❌ Lien de réinitialisation invalide.</p>
     <?php endif; ?>
 
-    <button class="secondary-btn" onclick="window.location.href='connexion.php'">Retour Ã  la connexion</button>
+    <button class="secondary-btn" onclick="window.location.href='connexion.php'">Retour à la connexion</button>
 </div>
 
 <script>

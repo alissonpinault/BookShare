@@ -12,9 +12,9 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// ðŸ”¹ On rÃ©cupÃ¨re le message flash sâ€™il existe
+// ðŸ”¹ On récupère le message flash s'il existe
 $message = $_SESSION['flash_message'] ?? '';
-unset($_SESSION['flash_message']); // Supprime aprÃ¨s lecture
+unset($_SESSION['flash_message']); // Supprime après lecture
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $pseudo = $_POST['pseudo'] ?? '';
@@ -24,9 +24,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($user) {
         if ($user['est_valide'] == 0) {
-            $message = "âš ï¸ Ton compte n'est pas encore activÃ©. VÃ©rifie ton email.";
+            $message = "⚠️ Ton compte n'est pas encore activé. Vérifie ton email.";
         } else {
-            // âœ… Connexion autorisÃ©e
+            // ✅ Connexion autorisée
             $_SESSION['utilisateur_id'] = $user['utilisateur_id'];
             $_SESSION['pseudo'] = $user['pseudo'];
             $_SESSION['email'] = $user['email'];
@@ -35,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
         }
     } else {
-        $message = "âŒ Pseudo ou mot de passe incorrect.";
+        $message = "❌ Pseudo ou mot de passe incorrect.";
     }
 }
 ?>
@@ -65,10 +65,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <button type="submit">Se connecter</button>
     </form>
 
-    <p><a href="mdp_oublie.php" class="forgot-link">Mot de passe oubliÃ© ?</a></p>
+    <p><a href="mdp_oublie.php" class="forgot-link">Mot de passe oublié ?</a></p>
 
-    <button class="secondary-btn" onclick="window.location.href='index.php'">Retour Ã  l'accueil</button>
-    <button class="secondary-btn" onclick="window.location.href='inscription.php'">CrÃ©er un compte</button>
+    <button class="secondary-btn" onclick="window.location.href='index.php'">Retour à l'accueil</button>
+    <button class="secondary-btn" onclick="window.location.href='inscription.php'">Créer un compte</button>
 </div>
 
 <script>

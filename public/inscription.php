@@ -40,16 +40,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $message = "Adresse email invalide.";
     } else {
-        // Vérifie si pseudo ou email dÃ©jÃ  pris
+        // Vérifie si pseudo ou email déjà  pris
         $stmt = $pdo->prepare("SELECT * FROM utilisateurs WHERE pseudo = ? OR email = ?");
         $stmt->execute([$pseudo, $email]);
         if ($stmt->fetch()) {
-            $message = "Pseudo ou email dÃ©jÃ  utilisÃ©.";
+            $message = "Pseudo ou email déjà utilisé.";
         } else {
             $hash = password_hash($mdp, PASSWORD_DEFAULT);
             $token = bin2hex(random_bytes(32));
 
-            // InsÃ¨re utilisateur non validÃ©
+            // Insère utilisateur non validé
             $stmt = $pdo->prepare("
                 INSERT INTO utilisateurs (pseudo, email, mot_de_passe, role, est_valide, token_validation)
                 VALUES (?, ?, ?, 'utilisateur', 0, ?)
@@ -57,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->execute([$pseudo, $email, $hash, $token]);
             $user_id = $pdo->lastInsertId();
 
-            // Enregistre lâ€™inscription dans MongoDB
+            // Enregistre l'inscription dans MongoDB
             if ($mongoDB) {
                 $mongoDB->logs_connexion->insertOne([
                     'utilisateur_id' => (int)$user_id,
@@ -68,7 +68,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ]);
             }
 
-            // --- PrÃ©pare le mail de validation ---
+            // --- Prépare le mail de validation ---
             $lien = "https://bookshare-655b6c07c913.herokuapp.com/valider.php?token=" . $token;
 
             $mail = new PHPMailer(true);
@@ -87,7 +87,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $mail->setFrom(getenv('MAILGUN_SMTP_LOGIN'), 'BookShare');
                 $mail->addAddress($email, $pseudo);
 
-                // Image intÃ©grÃ©e
+                // Image intégrée
                 $logoPath = __DIR__ . '/assets/images/logo.jpg';
                 $imgTag = '';
                 if (is_readable($logoPath)) {
@@ -96,7 +96,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
 
                 $mail->isHTML(true);
-                $mail->Subject = "ðŸ“š Validation de ton compte BookShare";
+                $mail->Subject = "Validation de ton compte BookShare";
                 $mail->Body = "
                     <div style='background:#f6f9fc; padding:30px 0; font-family:Arial, sans-serif;'>
                       <table align='center' cellpadding='0' cellspacing='0' width='100%' style='max-width:600px; background:white; border-radius:10px; overflow:hidden; box-shadow:0 4px 10px rgba(0,0,0,0.1);'>
@@ -110,14 +110,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                           <td style='padding:30px; color:#333;'>
                             <h2 style='text-align:center; color:#00796b;'>Bienvenue, $pseudo !</h2>
                             <p style='font-size:16px; line-height:1.6; text-align:center;'>
-                              Merci de t'Ãªtre inscrit sur <strong>BookShare</strong>.<br>
-                              Pour activer ton compte, clique sur le bouton ci-dessous ðŸ‘‡
+                              Merci de t'être inscrit sur <strong>BookShare</strong>.<br>
+                              Pour activer ton compte, clique sur le bouton ci-dessous :
                             </p>
                             <div style='text-align:center; margin:30px 0;'>
                               <a href='$lien'
                                  style='background:#00796b; color:white; padding:12px 25px; text-decoration:none; border-radius:8px;
                                         font-weight:bold; display:inline-block; font-size:16px;'>
-                                 âœ… Activer mon compte
+                                 ✅ Activer mon compte
                               </a>
                             </div>
                             <p style='font-size:15px; color:#555; text-align:center;'>
@@ -128,23 +128,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </tr>
                         <tr>
                           <td align='center' style='background:#f0f0f0; padding:15px; font-size:13px; color:#555;'>
-                            Ã€ trÃ¨s vite sur <strong>BookShare</strong> ðŸ’š<br>
-                            <span style='font-size:12px; color:#888;'>Â© " . date('Y') . " BookShare. Tous droits rÃ©servÃ©s.</span>
+                            À très vite sur <strong>BookShare</strong> ðŸ’š<br>
+                            <span style='font-size:12px; color:#888;'>Â© " . date('Y') . " BookShare. Tous droits réservés.</span>
                           </td>
                         </tr>
                       </table>
                     </div>
                 ";
 
-                $mail->AltBody = "Bonjour $pseudo,\n\nMerci de t'Ãªtre inscrit sur BookShare !\nClique sur ce lien pour activer ton compte : $lien\n\nÃ€ trÃ¨s vite sur BookShare !";
+                $mail->AltBody = "Bonjour $pseudo,\n\nMerci de t'être inscrit sur BookShare !\nClique sur ce lien pour activer ton compte : $lien\n\nÀ très vite sur BookShare !";
                 $mail->send();
 
-                $_SESSION['flash_message'] = "âœ… Inscription rÃ©ussie. VÃ©rifie ton email pour activer ton compte avant de te connecter.";
+                $_SESSION['flash_message'] = "✅ Inscription réussie. Vérifie ton email pour activer ton compte avant de te connecter.";
                 header('Location: connexion.php');
                 exit;
             } catch (MailerException $e) {
                 error_log("Erreur d'envoi de mail : " . $mail->ErrorInfo);
-                $message = "Inscription rÃ©ussie, mais l'email de validation n'a pas pu Ãªtre envoyÃ©.";
+                $message = "Inscription réussie, mais l'email de validation n'a pas pu être envoyé.";
             }
         }
     }
@@ -164,7 +164,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <div class="auth-container">
     <img src="assets/images/logo.jpg" alt="Illustration" class="auth-illustration">
-    <h2>CrÃ©er un compte</h2>
+    <h2>Créer un compte</h2>
 
     <?php if ($message): ?>
     <div id="alert-message" class="auth-message"><?= htmlspecialchars($message) ?></div>
@@ -178,8 +178,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <button type="submit">S'inscrire</button>
     </form>
 
-    <button class="secondary-btn" onclick="window.location.href='index.php'">Retour Ã  l'accueil</button>
-    <button class="secondary-btn" onclick="window.location.href='connexion.php'">DÃ©jÃ  un compte ? Connexion</button>
+    <button class="secondary-btn" onclick="window.location.href='index.php'">Retour à l'accueil</button>
+    <button class="secondary-btn" onclick="window.location.href='connexion.php'">Déjà un compte ? Connexion</button>
 </div>
 
 <script>

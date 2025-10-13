@@ -1,12 +1,12 @@
 # ðŸ“š BookShare
 
 **BookShare** est une plateforme de partage de livres entre particuliers.  
-Chaque utilisateur peut prÃªter, emprunter et noter des ouvrages, le tout via une interface moderne et intuitive.  
-Le projet a Ã©tÃ© dÃ©veloppÃ© dans le cadre de lâ€™**Ã©valuation ECF â€“ DÃ©veloppeur Web & Web Mobile**.
+Chaque utilisateur peut prêter, emprunter et noter des ouvrages, le tout via une interface moderne et intuitive.  
+Le projet a été développé dans le cadre de l'**évaluation ECF â€“ Développeur Web & Web Mobile**.
 
 ---
 
-## ðŸš€ DÃ©monstration
+## ðŸš€ Démonstration
 
 ðŸ”— **Application en ligne :** [https://bookshare-655b6c07c913.herokuapp.com](https://bookshare-655b6c07c913.herokuapp.com)
 
@@ -16,33 +16,33 @@ Le projet a Ã©tÃ© dÃ©veloppÃ© dans le cadre de lâ€™**Ã©valuation 
 
 1. [ðŸŽ¯ Objectifs du projet](#-objectifs-du-projet)  
 2. [ðŸ’» Installation locale](#-installation-locale)  
-3. [ðŸ§© FonctionnalitÃ©s principales](#-fonctionnalitÃ©s-principales)  
-4. [ðŸ› ï¸ Technologies utilisÃ©es](#ï¸-technologies-utilisÃ©es)  
+3. [ðŸ§© Fonctionnalités principales](#-fonctionnalités-principales)  
+4. [ðŸ› ï¸ Technologies utilisées](#ï¸-technologies-utilisées)  
 5. [ðŸ—ï¸ Architecture du projet](#ï¸-architecture-du-projet)  
-6. [ðŸ—ƒï¸ Base de donnÃ©es](#ï¸-base-de-donnÃ©es)  
-7. [ðŸ” SÃ©curitÃ©](#-sÃ©curitÃ©)  
-8. [ðŸ“¬ SystÃ¨me dâ€™e-mails](#-systÃ¨me-de-mails)  
-9. [â˜ï¸ DÃ©ploiement Heroku](#ï¸-dÃ©ploiement-heroku)  
-10. [ðŸ“¸ Captures dâ€™Ã©cran](#-captures-dÃ©cran)  
+6. [ðŸ—ƒï¸ Base de données](#ï¸-base-de-données)  
+7. [ðŸ” Sécurité](#-sécurité)  
+8. [ðŸ“¬ Système d'e-mails](#-système-de-mails)  
+9. [â˜ï¸ Déploiement Heroku](#ï¸-déploiement-heroku)  
+10. [ðŸ“¸ Captures d'écran](#-captures-décran)  
 11. [ðŸ‘¤ Auteur](#-auteur)
 
 ---
 
 ## ðŸŽ¯ Objectifs du projet
 
-- DÃ©velopper une **plateforme communautaire de partage de livres**.  
-- GÃ©rer des **inscriptions sÃ©curisÃ©es** avec validation par e-mail.  
-- Offrir une **interface intuitive** pour la recherche et la rÃ©servation de livres.  
-- CrÃ©er un **espace administrateur** pour la modÃ©ration du contenu.  
-- IntÃ©grer **MySQL** (structure principale) et **MongoDB** (suivi des logs).
+- Développer une **plateforme communautaire de partage de livres**.  
+- Gérer des **inscriptions sécurisées** avec validation par e-mail.  
+- Offrir une **interface intuitive** pour la recherche et la réservation de livres.  
+- Créer un **espace administrateur** pour la modération du contenu.  
+- Intégrer **MySQL** (structure principale) et **MongoDB** (suivi des logs).
 
 ---
 
 ## ðŸ’» Installation locale
 
-### ðŸ‹ Option 1 : via Docker (recommandÃ©e)
+### ðŸ‹ Option 1 : via Docker (recommandée)
 
-#### 1ï¸âƒ£ Cloner le dÃ©pÃ´t
+#### 1ï¸âƒ£ Cloner le dépôt
 
 ```bash
 git clone https://github.com/alissonpinault/BookShare.git
@@ -52,7 +52,7 @@ cd BookShare
 docker-compose up -d
 
 
-Cela crÃ©e :
+Cela crée :
 
 un conteneur PHP/Apache pour le site : http://localhost:8080
 
@@ -66,7 +66,7 @@ un conteneur MongoDB pour les logs utilisateurs
 
 Depuis phpMyAdmin :
 
-CrÃ©e une base bookshare
+Crée une base bookshare
 
 Importe le fichier /sql/bookshare.sql fourni.
 
@@ -75,7 +75,7 @@ $pdo = new PDO('mysql:host=mysql;dbname=bookshare;charset=utf8', 'user', 'passwo
 $mongoClient = new MongoDB\Client("mongodb://mongo:27017");
 $mongoDB = $mongoClient->bookshare;
 
-5ï¸âƒ£ AccÃ©der Ã  lâ€™application
+5ï¸âƒ£ Accéder à l'application
 
 ðŸ‘‰ http://localhost:8080
 
@@ -86,10 +86,10 @@ $mongoDB = $mongoClient->bookshare;
 C:\xampp\htdocs\BookShare
 
 
-2ï¸âƒ£ DÃ©marrer Apache et MySQL depuis le panneau XAMPP.
-3ï¸âƒ£ CrÃ©er une base bookshare dans phpMyAdmin.
+2ï¸âƒ£ Démarrer Apache et MySQL depuis le panneau XAMPP.
+3ï¸âƒ£ Créer une base bookshare dans phpMyAdmin.
 4ï¸âƒ£ Importer le fichier /sql/bookshare.sql.
-5ï¸âƒ£ VÃ©rifier le fichier db.php :
+5ï¸âƒ£ Vérifier le fichier db.php :
 
 $pdo = new PDO('mysql:host=localhost;dbname=bookshare;charset=utf8', 'root', '');
 
@@ -97,40 +97,40 @@ $pdo = new PDO('mysql:host=localhost;dbname=bookshare;charset=utf8', 'root', '')
 6ï¸âƒ£ Ouvrir le site dans le navigateur :
 ðŸ‘‰ http://localhost/BookShare
 
-ðŸ§© FonctionnalitÃ©s principales
+ðŸ§© Fonctionnalités principales
 ðŸ‘¥ Utilisateurs
 
-Inscription avec vÃ©rification par e-mail
+Inscription avec vérification par e-mail
 
-Connexion sÃ©curisÃ©e (mots de passe hachÃ©s)
+Connexion sécurisée (mots de passe hachés)
 
-RÃ©initialisation du mot de passe
+Réinitialisation du mot de passe
 
 Modification du profil
 
 ðŸ“š Livres
 
-Ajout, Ã©dition, suppression
+Ajout, édition, suppression
 
 Recherche et filtres dynamiques
 
-RÃ©servation et notation (1 Ã  5 Ã©toiles)
+Réservation et notation (1 à 5 étoiles)
 
 ðŸ›¡ï¸ Administration
 
 Validation manuelle des inscriptions
 
-ModÃ©ration des avis et signalements
+Modération des avis et signalements
 
 Visualisation des logs depuis MongoDB
 
-ðŸ› ï¸ Technologies utilisÃ©es
+ðŸ› ï¸ Technologies utilisées
 Type	Technologies
 Front-end	HTML5, CSS3, Tailwind CSS, Font Awesome
 Back-end	PHP 8 (POO), PDO, PHPMailer
 Base SQL	MySQL
 Base NoSQL	MongoDB
-HÃ©bergement	Heroku
+Hébergement	Heroku
 Versioning	Git / GitHub
 Outils	VS Code, phpMyAdmin, Composer
 ðŸ—ï¸ Architecture du projet
@@ -143,58 +143,58 @@ BookShare/
 â”‚   â”œâ”€â”€ db.php
 â”‚   â”œâ”€â”€ header.php / footer.php
 â”‚   â””â”€â”€ style.css
-â”œâ”€â”€ public/assets/images/    â†’ Logos et icÃ´nes
-â”œâ”€â”€ auth.css                 â†’ Feuille de style pour les pages dâ€™authentification
+â”œâ”€â”€ public/assets/images/    â†’ Logos et icônes
+â”œâ”€â”€ auth.css                 â†’ Feuille de style pour les pages d'authentification
 â”œâ”€â”€ inscription.php          â†’ Inscription avec e-mail de validation
 â”œâ”€â”€ connexion.php            â†’ Connexion utilisateur
-â”œâ”€â”€ mdp_oublie.php           â†’ RÃ©initialisation du mot de passe
+â”œâ”€â”€ mdp_oublie.php           â†’ Réinitialisation du mot de passe
 â”œâ”€â”€ valider.php              â†’ Validation de compte via token
-â”œâ”€â”€ index.php                â†’ Page dâ€™accueil
-â”œâ”€â”€ admin.php                â†’ Interface dâ€™administration
-â”œâ”€â”€ composer.json            â†’ DÃ©pendances (PHPMailer, MongoDB, etc.)
+â”œâ”€â”€ index.php                â†’ Page d'accueil
+â”œâ”€â”€ admin.php                â†’ Interface d'administration
+â”œâ”€â”€ composer.json            â†’ Dépendances (PHPMailer, MongoDB, etc.)
 â””â”€â”€ README.md                â†’ Documentation du projet
 
-ðŸ—ƒï¸ Base de donnÃ©es
+ðŸ—ƒï¸ Base de données
 ðŸ’¾ MySQL (principale)
 
-utilisateurs : identifiants, rÃ´les, tokens, statut
+utilisateurs : identifiants, rôles, tokens, statut
 
 livres : informations sur les ouvrages
 
-reservations : historique des prÃªts/emprunts
+reservations : historique des prêts/emprunts
 
 ðŸ“Š MongoDB (logs)
 
-logs_connexion : trace les connexions, inscriptions, rÃ©initialisations
+logs_connexion : trace les connexions, inscriptions, réinitialisations
 
-ðŸ” SÃ©curitÃ©
+ðŸ” Sécurité
 
 Hachage des mots de passe avec password_hash()
 
 Validation serveur + protection CSRF (via tokens)
 
-VÃ©rification des rÃ´les (admin/utilisateur)
+Vérification des rôles (admin/utilisateur)
 
-Logs dâ€™activitÃ© enregistrÃ©s dans MongoDB
+Logs d'activité enregistrés dans MongoDB
 
-RequÃªtes SQL sÃ©curisÃ©es via PDO prÃ©parÃ©
+Requêtes SQL sécurisées via PDO préparé
 
-ðŸ“¬ SystÃ¨me de mails
+ðŸ“¬ Système de mails
 
-ðŸ“¤ Envoi via Mailgun SMTP (configurÃ© sur Heroku).
+ðŸ“¤ Envoi via Mailgun SMTP (configuré sur Heroku).
 ðŸ“¦ Gestion avec PHPMailer.
-ðŸ“Ž E-mails HTML stylÃ©s avec logo intÃ©grÃ©.
+ðŸ“Ž E-mails HTML stylés avec logo intégré.
 
-Cas dâ€™usage :
+Cas d'usage :
 
-Validation du compte aprÃ¨s inscription
+Validation du compte après inscription
 
-RÃ©initialisation du mot de passe (lien unique)
+Réinitialisation du mot de passe (lien unique)
 
-â˜ï¸ DÃ©ploiement Heroku
-ðŸ”§ Ã‰tapes de dÃ©ploiement
+â˜ï¸ Déploiement Heroku
+ðŸ”§ Ã‰tapes de déploiement
 
-DÃ©pÃ´t GitHub connectÃ© Ã  Heroku
+Dépôt GitHub connecté à Heroku
 
 Add-ons :
 
@@ -202,7 +202,7 @@ JawsDB MySQL
 
 Mailgun
 
-Variables dâ€™environnement :
+Variables d'environnement :
 
 MAILGUN_SMTP_LOGIN
 
@@ -212,17 +212,17 @@ MAILGUN_SMTP_SERVER
 
 MAILGUN_SMTP_PORT
 
-DÃ©ploiement :
+Déploiement :
 
 git push heroku main
 
-ðŸ“¸ Captures dâ€™Ã©cran
+ðŸ“¸ Captures d'écran
 
-(Ã  insÃ©rer plus tard)
+(à insérer plus tard)
 
-Page dâ€™accueil
+Page d'accueil
 
-Formulaire dâ€™inscription
+Formulaire d'inscription
 
 E-mail de validation
 
@@ -231,7 +231,7 @@ Espace administrateur
 ðŸ‘¤ Auteur
 
 ðŸ‘©â€ðŸ’» Alisson Pinault
-DÃ©veloppeuse Web & Web Mobile
+Développeuse Web & Web Mobile
 ðŸ“ France
 ðŸ“§ pinault.alisson@gmail.com
 
@@ -239,5 +239,5 @@ DÃ©veloppeuse Web & Web Mobile
 
 ðŸ§¾ Licence
 
-Projet rÃ©alisÃ© dans le cadre dâ€™un examen.
-Â© 2025 â€” BookShare â€“ Tous droits rÃ©servÃ©s.
+Projet réalisé dans le cadre d'un examen.
+Â© 2025 â€” BookShare â€“ Tous droits réservés.
