@@ -1,4 +1,4 @@
-﻿<nav class="site-nav">
+<nav class="site-nav">
     <!-- Logo Ã  gauche -->
     <a href="index.php" class="logo" style="text-decoration: none; color: inherit;">
     <img src="assets/images/logo.jpg" alt="Logo BookShare">

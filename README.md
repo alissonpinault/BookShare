@@ -1,4 +1,4 @@
-﻿# ðŸ“š BookShare
+# ðŸ“š BookShare
 
 **BookShare** est une plateforme de partage de livres entre particuliers.  
 Chaque utilisateur peut prÃªter, emprunter et noter des ouvrages, le tout via une interface moderne et intuitive.  
