@@ -117,10 +117,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         error_log('Erreur log MongoDB : ' . $e->getMessage());
                     }
                 }
-            } catch (MailerException|Throwable $e) {
+                        } catch (MailerException|Throwable $e) {
                 error_log('Erreur envoi mail reset : ' . $e->getMessage());
                 $message = 'Impossible d’envoyer l’e-mail de réinitialisation pour le moment.';
+                // DEBUG local uniquement
+                $message .= '<br><small>' . htmlspecialchars($mail->ErrorInfo) . '</small>';
             }
+
         }
 
         if ($message === '') {
@@ -129,6 +132,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 }
+
 ?>
 <!DOCTYPE html>
 <html lang="fr">
