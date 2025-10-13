@@ -117,10 +117,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         error_log('Erreur log MongoDB : ' . $e->getMessage());
                     }
                 }
-            } catch (MailerException|Throwable $e) {
-                error_log('Erreur envoi mail reset : ' . $e->getMessage());
-                $message = 'Impossible d’envoyer l’e-mail de réinitialisation pour le moment.';
+                    } catch (MailerException|Throwable $e) {
+            error_log('Erreur envoi mail reset : ' . $e->getMessage());
+            $message = 'Impossible d’envoyer l’e-mail de réinitialisation pour le moment.';
+            if (isset($mail)) {
+                $message .= '<br><small>' . htmlspecialchars((string) $mail->ErrorInfo, ENT_QUOTES, 'UTF-8') . '</small>';
+            } else {
+                $message .= '<br><small>' . htmlspecialchars($e->getMessage(), ENT_QUOTES, 'UTF-8') . '</small>';
             }
+        }
+
         }
 
         if ($message === '') {
