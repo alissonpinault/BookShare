@@ -36,13 +36,13 @@ $messageType = 'success';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reserver'])) {
     if (!$utilisateurId) {
-        $message = 'Veuillez vous connecter pour réserver.';
+        $message = 'Veuillez vous connecter pour rï¿½server.';
         $messageType = 'error';
     } elseif ($livre->reserver((int) $utilisateurId)) {
-        header('Location: reservation.php?message=' . urlencode('Réservation effectuée avec succès.') . '&status=success');
+        header('Location: reservation.php?message=' . urlencode('Rï¿½servation effectuï¿½e avec succï¿½s.') . '&status=success');
         exit;
     } else {
-        $message = 'Ce livre est déjà réservé.';
+        $message = 'Ce livre est dï¿½jï¿½ rï¿½servï¿½.';
         $messageType = 'error';
     }
 }
@@ -71,8 +71,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reserver'])) {
     <img src="<?= htmlspecialchars($imagePath) ?>" alt="Livre">
     <p><strong>Auteur :</strong> <?= htmlspecialchars($livre->getAuteur()) ?></p>
     <p><strong>Genre :</strong> <?= htmlspecialchars($livre->getGenre()) ?></p>
-    <p><strong>Description :</strong><br><?= nl2br(htmlspecialchars($livre->getDescription() ?: 'Aucune description.')) ?></p>
-    <p><strong>Statut :</strong> <?= $livre->getDisponibilite() === 'disponible' ? 'Disponible' : 'Réservé' ?></p>
+    <p><strong>Description :</strong><br><?= str_replace("\n", "<br>", htmlspecialchars($livre->getDescription() ?: 'Aucune description.')) ?></p>
+    <p><strong>Statut :</strong> <?= $livre->getDisponibilite() === 'disponible' ? 'Disponible' : 'Rï¿½servï¿½' ?></p>
 
     <div class="moyenne-notes">
         <?php
@@ -97,14 +97,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reserver'])) {
     <?php endif; ?>
 
     <?php if (!$utilisateurId): ?>
-        <p style="color:red; font-weight:bold;">Veuillez vous connecter pour réserver.</p>
+        <p style="color:red; font-weight:bold;">Veuillez vous connecter pour rÃ©server.</p>
     <?php elseif ($livre->getDisponibilite() === 'disponible'): ?>
         <form method="post">
             <input type="hidden" name="livre_id" value="<?= $livre->getId() ?>">
-            <button type="submit" name="reserver">Réserver</button>
+            <button type="submit" name="reserver">RÃ©server</button>
         </form>
     <?php else: ?>
-        <button disabled>Déjà réservé</button>
+        <button disabled>DÃ©jÃ  rÃ©servÃ©</button>
     <?php endif; ?>
 </div>
 

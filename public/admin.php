@@ -74,7 +74,7 @@ function formatReservationStatus($status){
         'terminee' => 'Terminée',
     ];
 
-    $key = strtolower((string) $status);
+    $key = mb_strtolower((string) $status, 'UTF-8');
     if(isset($map[$key])){
         return $map[$key];
     }
@@ -387,7 +387,16 @@ if (isset($_GET['message']) && $_GET['message'] !== '') {
 <link rel="icon" type="image/jpg" href="https://img.freepik.com/vecteurs-premium/lire-logo-du-livre_7888-13.jpg">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <link rel="stylesheet" href="assets/css/style.css">
-
+<style>
+.modal-close {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    cursor: pointer;
+    font-size: 1.5em;
+    user-select: none;
+}
+</style>
 </head>
 <body>
 <?php include dirname(__DIR__) . '/templates/partials/nav.php'; ?>
@@ -401,7 +410,7 @@ if (isset($_GET['message']) && $_GET['message'] !== '') {
     <?php endif; ?>
 </div>
 
-<!-- ===================== ONGLETS PRINCIPAUX ===================== -->
+<!-- Onglets principaux -->
 <div class="tab-buttons">
   <button type="button" class="tabBtn active" data-tab="reservations">Réservations</button>
   <button type="button" class="tabBtn" data-tab="gererLivres">Gérer les livres</button>
@@ -412,7 +421,7 @@ if (isset($_GET['message']) && $_GET['message'] !== '') {
 <!-- ===================== CONTENU ONGLET RÉSERVATIONS ===================== -->
 <div id="reservations" class="tabContent active">
 
-  <!-- ===== Sous-onglets ===== -->
+  <!-- ===================== SOUS-ONGLETS ===================== -->
   <div class="tab-buttons sub-tabs">
     <button class="subTabBtn subTabBtnenattente active" data-subtab="attente">En attente</button>
     <button class="subTabBtn subTabBtnencours" data-subtab="validees">Validées</button>
@@ -528,7 +537,7 @@ if (isset($_GET['message']) && $_GET['message'] !== '') {
     <div style="background:white; padding:30px; border-radius:15px; max-width:500px; width:90%; 
         position:relative; box-shadow:0 10px 30px rgba(0,0,0,0.3); transform:scale(0.9); transition: transform 0.3s ease;">
         
-        <span style="position:absolute; top:15px; right:20px; cursor:pointer; font-size:1.5em;" onclick="closeAddModal()">âœ–</span>
+        <span class="modal-close" id="modalAddCloseBtn">&#10006;</span>
         <h2 style="font-family: 'Great Vibes', cursive; text-align:center; font-size:2.5em; margin-bottom:25px;">Ajouter un livre</h2>
         <form id="formAddBook" style="max-width:400px; margin:0 auto; text-align:center;">
             <input type="text" name="titre" placeholder="Titre" required>
@@ -686,6 +695,16 @@ if (isset($_GET['message']) && $_GET['message'] !== '') {
 </script>
 
 <script src="assets/js/admin.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var closeBtn = document.getElementById('modalAddCloseBtn');
+    if (closeBtn) {
+        closeBtn.addEventListener('click', function() {
+            closeAddModal();
+        });
+    }
+});
+</script>
 
 <?php
 require_once dirname(__DIR__) . '/templates/partials/footer.php';
