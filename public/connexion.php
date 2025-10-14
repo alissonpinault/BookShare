@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
+use Bookshare\Services\Auth\LoginService;
+
 $services = require dirname(__DIR__) . '/src/bootstrap.php';
 $pdo = $services['pdo'];
 $mongoDB = $services['mongoDB'] ?? null;
-
-require_once __DIR__ . '/login.php';
 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
@@ -20,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $pseudo = $_POST['pseudo'] ?? '';
     $mdp = $_POST['mdp'] ?? '';
 
-    $user = login($pdo, $mongoDB, $pseudo, $mdp);
+    $user = LoginService::authenticate($pdo, $mongoDB, $pseudo, $mdp);
 
     if ($user) {
         if ($user['est_valide'] == 0) {

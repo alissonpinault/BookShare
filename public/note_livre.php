@@ -2,24 +2,23 @@
 
 declare(strict_types=1);
 
+use Bookshare\Services\Notes\NoteService;
+
 $services = require dirname(__DIR__) . '/src/bootstrap.php';
 $pdo = $services['pdo'];
 
 $data = json_decode(file_get_contents('php://input'), true);
 
-if(!$data) exit(json_encode(['success'=>false,'message'=>'Aucune donnée']));
+if (!is_array($data)) {
+    exit(json_encode(['success' => false, 'message' => 'Aucune donnee']));
+}
 
-$livre_id = $data['livre_id'];
-$utilisateur_id = $data['utilisateur_id'];
-$note = $data['note'];
+$livreId = (int)($data['livre_id'] ?? 0);
+$utilisateurId = (int)($data['utilisateur_id'] ?? 0);
+$note = (int)($data['note'] ?? 0);
 
-// Upsert SQL : si la note existe, update sinon insert
-$stmt = $pdo->prepare("
-    INSERT INTO notes (livre_id, utilisateur_id, note) 
-    VALUES (?, ?, ?)
-    ON DUPLICATE KEY UPDATE note = ?
-");
-$success = $stmt->execute([$livre_id, $utilisateur_id, $note, $note]);
+$success = $livreId > 0 && $utilisateurId > 0 && $note > 0
+    ? NoteService::save($pdo, $livreId, $utilisateurId, $note)
+    : false;
 
-echo json_encode(['success'=>$success]);
-
+echo json_encode(['success' => $success]);
