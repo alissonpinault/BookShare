@@ -251,7 +251,6 @@ git push heroku main
 (à insérer plus tard)
 
 Page d’accueil
-<img width="1919" height="1079" alt="image" src="https://github.com/user-attachments/assets/d913e126-a41d-428f-b20c-64b49ee37ca1" />
 
 Formulaire d’inscription
 
