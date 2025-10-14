@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 use MongoDB\BSON\UTCDateTime;
 use MongoDB\Client;
-use PDO;
 
 $services = require dirname(__DIR__) . '/src/bootstrap.php';
 $pdo = $services['pdo'];

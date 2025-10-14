@@ -1,4 +1,4 @@
-﻿// ========== INITIALISATION NAV & FLASH ==========
+// ========== INITIALISATION NAV & FLASH ==========
 document.addEventListener("DOMContentLoaded", () => {
   const burger = document.querySelector(".burger");
   const actions = document.querySelector(".site-nav .actions");
@@ -11,6 +11,14 @@ document.addEventListener("DOMContentLoaded", () => {
     const delay = parseInt(el.dataset.autoDismiss, 10);
     scheduleFlashDismiss(el, Number.isFinite(delay) ? delay : FLASH_DISMISS_DELAY);
   });
+
+  document
+    .querySelectorAll("form button[type='submit'][name='action']")
+    .forEach((btn) => {
+      btn.addEventListener("click", () => {
+        if (btn.form) btn.form.dataset.lastAction = btn.value;
+      });
+    });
   try {
     const storedFlash = sessionStorage.getItem("adminFlash");
     if (storedFlash) {
@@ -103,7 +111,7 @@ function refreshSection(sectionId, options = {}) {
   window.location.href = url.toString();
 }
 
-// ========== RÃ‰SERVATIONS ==========
+// ========== RÉSERVATIONS ==========
 function terminer(button, reservationId, livreId) {
   const params = new URLSearchParams();
   params.append("action", "terminer");
@@ -145,7 +153,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // Afficher uniquement le sous-onglet "En attente" par dÃ©faut
+  // Afficher uniquement le sous-onglet "En attente" par défaut
   const defaultBtn = document.querySelector(".subTabBtnenattente");
   const defaultContent = document.getElementById("attente");
 
@@ -352,7 +360,7 @@ function createCharts() {
         labels: livres.labels,
         datasets: [
           {
-            label: "RÃ©servations",
+            label: "Réservations",
             data: livres.data,
             backgroundColor: "#52a058cc",
             borderColor: "#52a058",
@@ -375,7 +383,7 @@ function createCharts() {
         labels: users.labels,
         datasets: [
           {
-            label: "RÃ©servations",
+            label: "Réservations",
             data: users.data,
             backgroundColor: "#f5a623cc",
             borderColor: "#f57c00",
@@ -412,21 +420,24 @@ document.addEventListener("DOMContentLoaded", () => {
   // --- GESTION FORMULAIRES ADMIN (Valider / Refuser / Terminer) ---
   document.querySelectorAll("form").forEach((form) => {
     form.addEventListener("submit", async (e) => {
-      const actionButton = e.submitter;
-      if (!actionButton || !["valider", "refuser", "terminer"].includes(actionButton.value)) {
+      const submitter = e.submitter;
+      const actionValue = form.dataset.lastAction || (submitter ? submitter.value : "");
+      form.dataset.lastAction = "";
+
+      if (!actionValue || !["valider", "refuser", "terminer"].includes(actionValue)) {
         return;
       }
 
       e.preventDefault();
       const formData = new FormData(form);
-      formData.set("action", actionButton.value);
+      formData.set("action", actionValue);
 
       try {
         const response = await fetch("admin.php", { method: "POST", body: formData });
         const result = await response.json();
 
         if (result.success) {
-          const statusLabel = result.statut_label || result.statut || actionButton.value;
+          const statusLabel = result.statut_label || result.statut || actionValue;
           const row = form.closest("tr");
           if (row) {
             const statutCell = row.querySelector('td[data-cell="statut"]');
