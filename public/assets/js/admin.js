@@ -1,3 +1,5 @@
+console.log("✅ admin.js bien chargé");
+
 // ========== INITIALISATION NAV & FLASH ==========
 document.addEventListener("DOMContentLoaded", () => {
   const burger = document.querySelector(".burger");
