@@ -256,7 +256,7 @@ function openTab(tabName, evt, skipHashUpdate) {
       const url = new URL(window.location.href);
       url.hash = tabName;
       history.replaceState(null, "", url);
-    } catch {
+    } catch (error) {
       window.location.hash = tabName;
     }
   }

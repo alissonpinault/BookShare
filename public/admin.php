@@ -387,10 +387,10 @@ $utilisateurs = $utilisateursStmt->fetchAll(PDO::FETCH_ASSOC);
 <h1>Panneau Administrateur</h1>
 
 <div class="tab-buttons">
-    <button class="tabBtn active" data-tab="reservations" onclick="openTab('reservations', event)">Réservations</button>
-    <button class="tabBtn" data-tab="gererLivres" onclick="openTab('gererLivres', event)">Gérer les livres</button>
-    <button class="tabBtn" data-tab="utilisateurs" onclick="openTab('utilisateurs', event)">Gestion utilisateurs</button>
-    <button class="tabBtn" data-tab="statistiques" onclick="openTab('statistiques', event)">Statistiques</button>
+    <button type="button" class="tabBtn active" data-tab="reservations">Réservations</button>
+    <button type="button" class="tabBtn" data-tab="gererLivres">Gérer les livres</button>
+    <button type="button" class="tabBtn" data-tab="utilisateurs">Gestion utilisateurs</button>
+    <button type="button" class="tabBtn" data-tab="statistiques">Statistiques</button>
 </div>
 
 <!-- Onglet Réservations -->
