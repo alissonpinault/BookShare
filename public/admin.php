@@ -694,7 +694,7 @@ if (isset($_GET['message']) && $_GET['message'] !== '') {
   };
 </script>
 
-<script src="assets/js/admin.js"></script>
+<script src="public\assets\js\admin.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     var closeBtn = document.getElementById('modalAddCloseBtn');
