@@ -416,6 +416,7 @@ if (isset($_GET['message']) && $_GET['message'] !== '') {
         <button class="subTabBtn subTabBtnenattente active" data-subtab="attente">En attente</button>
         <button class="subTabBtn subTabBtnencours" data-subtab="validees">Validées</button>
         <button class="subTabBtn subTabBtnarchive" data-subtab="terminees">Terminées</button>
+
     </div>
 
     <!-- Réservations en attente -->
