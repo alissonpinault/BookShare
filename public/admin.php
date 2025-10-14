@@ -401,23 +401,23 @@ if (isset($_GET['message']) && $_GET['message'] !== '') {
     <?php endif; ?>
 </div>
 
+<!-- ===================== ONGLETS PRINCIPAUX ===================== -->
 <div class="tab-buttons">
-    <button type="button" class="tabBtn active" data-tab="reservations">Réservations</button>
-    <button type="button" class="tabBtn" data-tab="gererLivres">Gérer les livres</button>
-    <button type="button" class="tabBtn" data-tab="utilisateurs">Gestion utilisateurs</button>
-    <button type="button" class="tabBtn" data-tab="statistiques">Statistiques</button>
+  <button type="button" class="tabBtn active" data-tab="reservations">Réservations</button>
+  <button type="button" class="tabBtn" data-tab="gererLivres">Gérer les livres</button>
+  <button type="button" class="tabBtn" data-tab="utilisateurs">Gestion utilisateurs</button>
+  <button type="button" class="tabBtn" data-tab="statistiques">Statistiques</button>
 </div>
 
-<!-- Onglet Réservations -->
+<!-- ===================== CONTENU ONGLET RÉSERVATIONS ===================== -->
 <div id="reservations" class="tabContent active">
 
-    <!-- Sous-onglets -->
-    <div class="tab-buttons sub-tabs">
-        <button class="subTabBtn subTabBtnenattente active" data-subtab="attente">En attente</button>
-        <button class="subTabBtn subTabBtnencours" data-subtab="validees">Validées</button>
-        <button class="subTabBtn subTabBtnarchive" data-subtab="terminees">Terminées</button>
-
-    </div>
+  <!-- ===== Sous-onglets ===== -->
+  <div class="tab-buttons sub-tabs">
+    <button class="subTabBtn subTabBtnenattente active" data-subtab="attente">En attente</button>
+    <button class="subTabBtn subTabBtnencours" data-subtab="validees">Validées</button>
+    <button class="subTabBtn subTabBtnarchive" data-subtab="terminees">Terminées</button>
+  </div>
 
     <!-- Réservations en attente -->
     <div id="attente" class="subTabContent subTabContentenattente active">
