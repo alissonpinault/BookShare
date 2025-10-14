@@ -1,7 +1,7 @@
 # ===============================
-#  📦 Fichiers PHP / Composer
+#  Fichiers PHP / Composer
 # ===============================
-/vendor/                # dépendances PHP (Heroku les installe automatiquement)
+/vendor/
 composer.phar
 composer.lock.old
 
