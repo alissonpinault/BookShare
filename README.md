@@ -251,7 +251,7 @@ git push heroku main
 (à insérer plus tard)
 
 Page d’accueil
-
+![Image](https://github.com/user-attachments/assets/49e5b431-965a-42cd-ba5a-1f5069c6fe6d)
 Formulaire d’inscription
 
 E-mail de validation
