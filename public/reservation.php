@@ -83,10 +83,11 @@ try {
         $annulee = $reservationService->annulerReservation($reservationId, $utilisateur->getId());
 
         $message = $annulee
-            ? 'Réservation annulée avec succès.'
-            : "Impossible d'annuler cette réservation (déjà validée ou terminée).";
+            ? '❌ Réservation annulée avec succès.'
+            : "❌ Impossible d'annuler cette réservation (déjà validée ou terminée).";
+        $status = $annulee ? 'success' : 'error';
 
-        header("Location: reservation.php?message=" . urlencode($message));
+        header('Location: reservation.php?message=' . urlencode($message) . '&status=' . $status);
         exit;
     }
 
@@ -94,6 +95,14 @@ try {
     echo "<h2 style='color:red; text-align:center;'>Erreur : " . htmlspecialchars($e->getMessage()) . '</h2>';
     error_log('reservation.php ERROR: ' . $e->getMessage());
     exit;
+}
+
+$flashMessage = '';
+$flashStatus = 'success';
+if (isset($_GET['message']) && $_GET['message'] !== '') {
+    $flashMessage = trim((string) $_GET['message']);
+    $statusParam = $_GET['status'] ?? 'success';
+    $flashStatus = in_array($statusParam, ['error', 'success', 'info'], true) ? $statusParam : 'success';
 }
 ?>
 
@@ -113,8 +122,10 @@ try {
 <div class="container">
     <h1>Mes réservations</h1>
 
-    <?php if (!empty($_GET['message'])): ?>
-        <p style="color: green; text-align:center;"><?= htmlspecialchars($_GET['message']) ?></p>
+    <?php if ($flashMessage !== ''): ?>
+        <div class="flash-message <?= $flashStatus === 'error' ? 'error' : '' ?>" data-auto-dismiss="5000">
+            <?= htmlspecialchars($flashMessage, ENT_QUOTES, 'UTF-8') ?>
+        </div>
     <?php endif; ?>
 
     <!-- Boutons onglets -->
@@ -151,67 +162,67 @@ try {
         </ul>
     <?php endif; ?>
     </div>
-     
-    <!-- Emprunt en cours -->
+
+    <!-- Réservations validées -->
     <div id="encours" class="tabContent">
-        <?php if (empty($reservationsEnCours)): ?>
-            <p>Aucun emprunt en cours</p>
-        <?php else: ?>
-            <ul class="list">
-                <?php foreach ($reservationsEnCours as $reservation): ?>
-                    <?php
-                        $date = $reservation->getDateReservation();
-                        $dateAffichee = $date ? date('d/m/Y', strtotime($date)) : '-';
-                    ?>
-                    <li>
-                        <img src="<?= htmlspecialchars($resolveImagePath($reservation->getImageUrl())) ?>" alt="Couverture">
-                        <div class="reservation-info">
-                            <strong><?= htmlspecialchars($reservation->getTitre()) ?></strong>
-                            <span>Auteur : <?= htmlspecialchars($reservation->getAuteur()) ?></span>
-                            <span>Emprunté le : <?= htmlspecialchars($dateAffichee) ?></span>
-                        </div>
-                    </li>
-                <?php endforeach; ?>
-            </ul>
-        <?php endif; ?>
+    <?php if (empty($reservationsEnCours)): ?>
+        <p>Aucun emprunt en cours</p>
+    <?php else: ?>
+        <ul class="list">
+            <?php foreach ($reservationsEnCours as $reservation): ?>
+                <?php
+                    $date = $reservation->getDateReservation();
+                    $dateAffichee = $date ? date('d/m/Y', strtotime($date)) : '-';
+                ?>
+                <li>
+                    <img src="<?= htmlspecialchars($resolveImagePath($reservation->getImageUrl())) ?>" alt="Couverture">
+                    <div class="reservation-info">
+                        <strong><?= htmlspecialchars($reservation->getTitre()) ?></strong>
+                        <span>Auteur : <?= htmlspecialchars($reservation->getAuteur()) ?></span>
+                        <span>Emprunté le : <?= htmlspecialchars($dateAffichee) ?></span>
+                    </div>
+                </li>
+            <?php endforeach; ?>
+        </ul>
+    <?php endif; ?>
     </div>
 
     <!-- Réservations terminées -->
     <div id="archivees" class="tabContent">
-        <?php if (empty($reservationsTerminees)): ?>
-            <p>Aucune réservation archivée.</p>
-        <?php else: ?>
-            <ul class="list">
-                <?php foreach ($reservationsTerminees as $reservation): ?>
-                    <?php
-                        $date = $reservation->getDateReservation();
-                        $dateAffichee = $date ? date('d/m/Y', strtotime($date)) : '-';
-                    ?>
-                    <li>
-                        <img src="<?= htmlspecialchars($resolveImagePath($reservation->getImageUrl())) ?>" alt="Couverture">
-                        <div class="reservation-info">
-                            <strong><?= htmlspecialchars($reservation->getTitre()) ?></strong>
-                            <span>Auteur : <?= htmlspecialchars($reservation->getAuteur()) ?></span>
-                            <span>Emprunté le : <?= htmlspecialchars($dateAffichee) ?></span>
-                        </div>
+    <?php if (empty($reservationsTerminees)): ?>
+        <p>Aucune réservation archivée.</p>
+    <?php else: ?>
+        <ul class="list">
+            <?php foreach ($reservationsTerminees as $reservation): ?>
+                <?php
+                    $date = $reservation->getDateReservation();
+                    $dateAffichee = $date ? date('d/m/Y', strtotime($date)) : '-';
+                ?>
+                <li>
+                    <img src="<?= htmlspecialchars($resolveImagePath($reservation->getImageUrl())) ?>" alt="Couverture">
+                    <div class="reservation-info">
+                        <strong><?= htmlspecialchars($reservation->getTitre()) ?></strong>
+                        <span>Auteur : <?= htmlspecialchars($reservation->getAuteur()) ?></span>
+                        <span>Emprunté le : <?= htmlspecialchars($dateAffichee) ?></span>
+                    </div>
 
-                        <!-- Étoiles -->
-                        <div class="stars" 
-                             data-livre="<?= (int)$reservation->getLivreId() ?>" 
-                             data-user="<?= (int)$utilisateur->getId() ?>"
-                             data-note="<?= (int)$reservation->getNote() ?>">
-                            <?php 
-                            $note = (int) $reservation->getNote();
-                            for ($i = 1; $i <= 5; $i++): 
-                                $class = $i <= $note ? "star selected" : "star";
-                            ?>
-                                <span class="<?= $class ?>" data-value="<?= $i ?>">★</span>
-                            <?php endfor; ?>
-                        </div>
-                    </li>
-                <?php endforeach; ?>
-            </ul>
-        <?php endif; ?>
+                    <!-- Étoiles -->
+                    <div class="stars" 
+                         data-livre="<?= (int)$reservation->getLivreId() ?>" 
+                         data-user="<?= (int)$utilisateur->getId() ?>"
+                         data-note="<?= (int)$reservation->getNote() ?>">
+                        <?php 
+                        $note = (int) $reservation->getNote();
+                        for ($i = 1; $i <= 5; $i++): 
+                            $class = $i <= $note ? "star selected" : "star";
+                        ?>
+                            <span class="<?= $class ?>" data-value="<?= $i ?>">★</span>
+                        <?php endfor; ?>
+                    </div>
+                </li>
+            <?php endforeach; ?>
+        </ul>
+    <?php endif; ?>
     </div>
 </div>
 
@@ -245,6 +256,19 @@ document.addEventListener("DOMContentLoaded", () => {
       const target = document.getElementById(btn.dataset.tab);
       if (target) target.style.display = "block";
     });
+  });
+});
+
+// ---- Messages éphémères ----
+document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll(".flash-message[data-auto-dismiss]").forEach((el) => {
+    const delay = parseInt(el.dataset.autoDismiss, 10);
+    const timeout = Number.isFinite(delay) ? delay : 5000;
+    setTimeout(() => {
+      if (el.classList.contains("hide")) return;
+      el.classList.add("hide");
+      setTimeout(() => el.remove(), 800);
+    }, timeout);
   });
 });
 
@@ -312,4 +336,3 @@ renderFooter([
 ?>
 </body>
 </html>
-

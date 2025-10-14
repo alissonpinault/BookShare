@@ -91,7 +91,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => {
       alert.classList.add('hide');
       setTimeout(() => alert.remove(), 800);
-    }, 6000);
+    }, 5000);
   }
 });
 </script>

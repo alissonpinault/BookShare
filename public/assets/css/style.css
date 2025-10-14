@@ -27,6 +27,35 @@ main {
   flex-direction: column;
 }
 
+.flash-message {
+  max-width: 600px;
+  margin: 15px auto;
+  padding: 12px 18px;
+  border-radius: 6px;
+  background: rgba(82, 160, 88, 0.15);
+  color: #2e7d32;
+  border-left: 4px solid #52a058;
+  text-align: center;
+  font-weight: 500;
+  opacity: 1;
+  transition: opacity 0.8s ease;
+}
+
+.flash-message.error {
+  background: rgba(244, 67, 54, 0.12);
+  color: #b71c1c;
+  border-left-color: #e53935;
+}
+
+.flash-message.hide {
+  opacity: 0;
+}
+
+.flash-container {
+  max-width: 900px;
+  margin: 15px auto;
+}
+
 /* Containers */
 .container {
   max-width: 900px;

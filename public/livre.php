@@ -32,15 +32,18 @@ if (!$livre->getId()) {
 $moyenne = $livre->getMoyenneNote();
 $totalVotes = $livre->getNombreVotes();
 $message = '';
+$messageType = 'success';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reserver'])) {
     if (!$utilisateurId) {
-        $message = "<p style='color:red; text-align:center;'>Veuillez vous connecter pour r√©server.</p>";
-    } elseif ($livre->reserver((int)$utilisateurId)) {
-        header('Location: reservation.php?message=' . urlencode('R√©servation effectu√©e avec succ√®s !'));
+        $message = 'Veuillez vous connecter pour rÈserver.';
+        $messageType = 'error';
+    } elseif ($livre->reserver((int) $utilisateurId)) {
+        header('Location: reservation.php?message=' . urlencode('RÈservation effectuÈe avec succËs.') . '&status=success');
         exit;
     } else {
-        $message = "<p style='color:red; text-align:center;'>Ce livre est d√©j√† r√©serv√©.</p>";
+        $message = 'Ce livre est dÈj‡ rÈservÈ.';
+        $messageType = 'error';
     }
 }
 ?>
@@ -69,7 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reserver'])) {
     <p><strong>Auteur :</strong> <?= htmlspecialchars($livre->getAuteur()) ?></p>
     <p><strong>Genre :</strong> <?= htmlspecialchars($livre->getGenre()) ?></p>
     <p><strong>Description :</strong><br><?= nl2br(htmlspecialchars($livre->getDescription() ?: 'Aucune description.')) ?></p>
-    <p><strong>Statut :</strong> <?= $livre->getDisponibilite() === 'disponible' ? 'Disponible' : 'R√©serv√©' ?></p>
+    <p><strong>Statut :</strong> <?= $livre->getDisponibilite() === 'disponible' ? 'Disponible' : 'RÈservÈ' ?></p>
 
     <div class="moyenne-notes">
         <?php
@@ -87,21 +90,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reserver'])) {
         <span>(<?= number_format($moyenne, 1) ?> / 5 - <?= $totalVotes ?> vote<?= $totalVotes > 1 ? 's' : '' ?>)</span>
     </div>
 
-    <?= $message ?>
+    <?php if ($message !== ''): ?>
+        <div class="flash-message <?= $messageType === 'error' ? 'error' : '' ?>" data-auto-dismiss="5000">
+            <?= htmlspecialchars($message, ENT_QUOTES, 'UTF-8') ?>
+        </div>
+    <?php endif; ?>
 
     <?php if (!$utilisateurId): ?>
-        <p style="color:red; font-weight:bold;">Veuillez vous connecter pour r√©server.</p>
+        <p style="color:red; font-weight:bold;">Veuillez vous connecter pour rÈserver.</p>
     <?php elseif ($livre->getDisponibilite() === 'disponible'): ?>
         <form method="post">
             <input type="hidden" name="livre_id" value="<?= $livre->getId() ?>">
-            <button type="submit" name="reserver">R√©server</button>
+            <button type="submit" name="reserver">RÈserver</button>
         </form>
     <?php else: ?>
-        <button disabled>D√©j√† r√©serv√©</button>
+        <button disabled>DÈj‡ rÈservÈ</button>
     <?php endif; ?>
 </div>
 
 <script>
+document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll(".flash-message[data-auto-dismiss]").forEach((el) => {
+    const delay = parseInt(el.dataset.autoDismiss, 10);
+    const timeout = Number.isFinite(delay) ? delay : 5000;
+    setTimeout(() => {
+      if (el.classList.contains("hide")) return;
+      el.classList.add("hide");
+      setTimeout(() => el.remove(), 800);
+    }, timeout);
+  });
+});
 // menu burger
 document.addEventListener("DOMContentLoaded", () => {
   const burger  = document.querySelector(".burger");
@@ -126,5 +144,3 @@ renderFooter([
 ?>
 </body>
 </html>
-
-

@@ -367,6 +367,14 @@ $utilisateursStmt->bindValue(':limit', $utilisateursPagination['per_page'], PDO:
 $utilisateursStmt->bindValue(':offset', $utilisateursPagination['offset'], PDO::PARAM_INT);
 $utilisateursStmt->execute();
 $utilisateurs = $utilisateursStmt->fetchAll(PDO::FETCH_ASSOC);
+
+$flashMessage = '';
+$flashStatus = 'success';
+if (isset($_GET['message']) && $_GET['message'] !== '') {
+    $flashMessage = trim((string) $_GET['message']);
+    $statusParam = $_GET['status'] ?? 'success';
+    $flashStatus = in_array($statusParam, ['error', 'success', 'info'], true) ? $statusParam : 'success';
+}
 ?>
 
 <!DOCTYPE html>
@@ -385,6 +393,13 @@ $utilisateurs = $utilisateursStmt->fetchAll(PDO::FETCH_ASSOC);
 <?php include dirname(__DIR__) . '/templates/partials/nav.php'; ?>
 
 <h1>Panneau Administrateur</h1>
+<div id="flash-container" class="flash-container">
+    <?php if ($flashMessage !== ''): ?>
+        <div class="flash-message <?= $flashStatus === 'error' ? 'error' : '' ?>" data-auto-dismiss="5000">
+            <?= htmlspecialchars($flashMessage, ENT_QUOTES, 'UTF-8') ?>
+        </div>
+    <?php endif; ?>
+</div>
 
 <div class="tab-buttons">
     <button type="button" class="tabBtn active" data-tab="reservations">Réservations</button>

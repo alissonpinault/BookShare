@@ -1,29 +1,73 @@
-// ========== MENU BURGER ==========
+﻿// ========== INITIALISATION NAV & FLASH ==========
 document.addEventListener("DOMContentLoaded", () => {
   const burger = document.querySelector(".burger");
   const actions = document.querySelector(".site-nav .actions");
-  if (!burger || !actions) return;
-  actions.classList.remove("open");
-  burger.addEventListener("click", () => actions.classList.toggle("open"));
+  if (burger && actions) {
+    actions.classList.remove("open");
+    burger.addEventListener("click", () => actions.classList.toggle("open"));
+  }
+
+  document.querySelectorAll(".flash-message[data-auto-dismiss]").forEach((el) => {
+    const delay = parseInt(el.dataset.autoDismiss, 10);
+    scheduleFlashDismiss(el, Number.isFinite(delay) ? delay : FLASH_DISMISS_DELAY);
+  });
+  try {
+    const storedFlash = sessionStorage.getItem("adminFlash");
+    if (storedFlash) {
+      sessionStorage.removeItem("adminFlash");
+      const data = JSON.parse(storedFlash);
+      if (data && data.message) {
+        pushFlash(data.message, data.type || "success");
+      }
+    }
+  } catch (error) {
+    console.error("Unable to restore admin flash message:", error);
+  }
 });
 
 // ========== UTILITAIRES ==========
-const DEFAULT_ERROR_MESSAGE = "Une erreur est survenue. Veuillez réessayer.";
+const DEFAULT_ERROR_MESSAGE = "Une erreur est survenue. Veuillez reessayer.";
+const FLASH_DISMISS_DELAY = 5000;
+
+function scheduleFlashDismiss(el, timeout = FLASH_DISMISS_DELAY) {
+  const delay = Number.isFinite(timeout) ? timeout : FLASH_DISMISS_DELAY;
+  setTimeout(() => {
+    if (el.classList.contains("hide")) return;
+    el.classList.add("hide");
+    setTimeout(() => el.remove(), 800);
+  }, delay);
+}
+
+function pushFlash(message, type = "success", timeout = FLASH_DISMISS_DELAY) {
+  const container = document.getElementById("flash-container");
+  if (!container) {
+    if (type === "error") console.error(message);
+    alert(message);
+    return;
+  }
+
+  const flash = document.createElement("div");
+  flash.className = "flash-message";
+  if (type === "error") flash.classList.add("error");
+  flash.dataset.autoDismiss = String(timeout);
+  flash.textContent = message;
+  container.appendChild(flash);
+  scheduleFlashDismiss(flash, timeout);
+}
 
 function showError(message) {
-  alert(message || DEFAULT_ERROR_MESSAGE);
+  pushFlash(message || DEFAULT_ERROR_MESSAGE, "error");
 }
 
 function toJson(response) {
-  if (!response.ok) throw new Error("Réponse réseau invalide");
+  if (!response.ok) throw new Error("Reponse reseau invalide");
   return response.json();
 }
 
 function handleRequestError(error) {
   console.error(error);
-  showError("La requête a échoué. Veuillez réessayer.");
+  showError("La requete a echoue. Veuillez reessayer.");
 }
-
 function getSectionMeta(sectionId) {
   const section = document.getElementById(sectionId);
   if (!section) return null;
@@ -33,18 +77,33 @@ function getSectionMeta(sectionId) {
   return { section, page, param };
 }
 
-function refreshSection(sectionId) {
+function refreshSection(sectionId, options = {}) {
   const meta = getSectionMeta(sectionId);
   const url = new URL(window.location.href);
   if (meta && meta.param) {
     if (meta.page > 1) url.searchParams.set(meta.param, meta.page);
     else url.searchParams.delete(meta.param);
   }
+
+  if (options.message) {
+    try {
+      sessionStorage.setItem(
+        "adminFlash",
+        JSON.stringify({
+          message: options.message,
+          type: options.type || "success",
+        })
+      );
+    } catch (storageError) {
+      console.error("Unable to persist admin flash message:", storageError);
+    }
+  }
+
   url.hash = sectionId;
   window.location.href = url.toString();
 }
 
-// ========== RÉSERVATIONS ==========
+// ========== RÃ‰SERVATIONS ==========
 function terminer(button, reservationId, livreId) {
   const params = new URLSearchParams();
   params.append("action", "terminer");
@@ -56,13 +115,14 @@ function terminer(button, reservationId, livreId) {
     .then((d) => {
       if (d.success) {
         const row = button.closest("tr");
+        const statusLabel = d.statut_label || d.statut || "terminer";
         if (row) {
-          const statusLabel = d.statut_label || d.statut || "terminer";
           const statutCell = row.querySelector('td[data-cell="statut"]');
           if (statutCell) statutCell.textContent = statusLabel;
           const actionCell = row.querySelector('td[data-cell="actions"]');
           if (actionCell) actionCell.textContent = "";
         }
+        pushFlash(`Reservation ${statusLabel} mise a jour.`);
       } else showError(d.message);
     })
     .catch(handleRequestError);
@@ -85,7 +145,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // Afficher uniquement le sous-onglet "En attente" par défaut
+  // Afficher uniquement le sous-onglet "En attente" par dÃ©faut
   const defaultBtn = document.querySelector(".subTabBtnenattente");
   const defaultContent = document.getElementById("attente");
 
@@ -141,7 +201,7 @@ document.addEventListener("DOMContentLoaded", () => {
           if (d.success) {
             e.target.reset();
             closeAddModal();
-            refreshSection("gererLivres");
+            refreshSection("gererLivres", { message: "Livre ajoute avec succes." });
           } else showError(d.message);
         })
         .catch(handleRequestError);
@@ -195,6 +255,7 @@ document.addEventListener("DOMContentLoaded", () => {
               if (editBtn) editBtn.dataset.livre = JSON.stringify(d.book);
             }
             closeEditModal();
+            pushFlash("Livre mis a jour.");
           } else showError(d.message);
         })
         .catch(handleRequestError);
@@ -210,7 +271,7 @@ function deleteBook(button, livreId) {
   fetch("admin.php", { method: "POST", body: params })
     .then(toJson)
     .then((d) => {
-      if (d.success) refreshSection("gererLivres");
+      if (d.success) refreshSection("gererLivres", { message: "Livre supprime." });
       else showError(d.message);
     })
     .catch(handleRequestError);
@@ -224,7 +285,7 @@ function deleteUser(button, utilisateurId, pseudo) {
   fetch("admin.php", { method: "POST", body: params })
     .then(toJson)
     .then((d) => {
-      if (d.success) refreshSection("utilisateurs");
+      if (d.success) refreshSection("utilisateurs", { message: "Utilisateur supprime." });
       else showError(d.message);
     })
     .catch(handleRequestError);
@@ -291,7 +352,7 @@ function createCharts() {
         labels: livres.labels,
         datasets: [
           {
-            label: "Réservations",
+            label: "RÃ©servations",
             data: livres.data,
             backgroundColor: "#52a058cc",
             borderColor: "#52a058",
@@ -314,7 +375,7 @@ function createCharts() {
         labels: users.labels,
         datasets: [
           {
-            label: "Réservations",
+            label: "RÃ©servations",
             data: users.data,
             backgroundColor: "#f5a623cc",
             borderColor: "#f57c00",
@@ -331,11 +392,11 @@ function createCharts() {
 
 // ========== INITIALISATION ==========
 document.addEventListener("DOMContentLoaded", () => {
-  // --- Onglet actif par défaut ---
+  // --- Onglet actif par defaut ---
   const initialHash = window.location.hash ? window.location.hash.substring(1) : "reservations";
   const targetTab = document.getElementById(initialHash) ? initialHash : "reservations";
-const button = document.querySelector(`.tabBtn[data-tab="${targetTab}"]`);
-openTab(targetTab, { currentTarget: button }, !window.location.hash);
+  const initialButton = document.querySelector(`.tabBtn[data-tab="${targetTab}"]`);
+  openTab(targetTab, { currentTarget: initialButton }, !window.location.hash);
 
   // --- Clics sur les onglets principaux ---
   document.querySelectorAll(".tabBtn").forEach((btn) => {
@@ -349,14 +410,14 @@ openTab(targetTab, { currentTarget: button }, !window.location.hash);
   });
 
   // --- GESTION FORMULAIRES ADMIN (Valider / Refuser / Terminer) ---
-  document.querySelectorAll("form").forEach(form => {
+  document.querySelectorAll("form").forEach((form) => {
     form.addEventListener("submit", async (e) => {
-      const actionButton = e.submitter; // bouton cliqué
+      const actionButton = e.submitter;
       if (!actionButton || !["valider", "refuser", "terminer"].includes(actionButton.value)) {
-        return; // autres formulaires = comportement normal
+        return;
       }
 
-      e.preventDefault(); // empêche le rechargement
+      e.preventDefault();
       const formData = new FormData(form);
       formData.set("action", actionButton.value);
 
@@ -366,8 +427,6 @@ openTab(targetTab, { currentTarget: button }, !window.location.hash);
 
         if (result.success) {
           const statusLabel = result.statut_label || result.statut || actionButton.value;
-          alert(`Réservation ${statusLabel} avec succès !`);
-
           const row = form.closest("tr");
           if (row) {
             const statutCell = row.querySelector('td[data-cell="statut"]');
@@ -376,13 +435,17 @@ openTab(targetTab, { currentTarget: button }, !window.location.hash);
             const actionCell = row.querySelector('td[data-cell="actions"]');
             if (actionCell) actionCell.innerHTML = "";
           }
+          pushFlash(`Reservation ${statusLabel} avec succes !`);
         } else {
-          alert(result.message || "Une erreur est survenue.");
+          showError(result.message || "Une erreur est survenue.");
         }
       } catch (err) {
         console.error("Erreur AJAX :", err);
-        alert("Erreur de communication avec le serveur.");
+        showError("Erreur de communication avec le serveur.");
       }
     });
   });
 });
+
+
+
