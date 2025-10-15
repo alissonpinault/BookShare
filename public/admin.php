@@ -304,7 +304,7 @@ $flashStatus = $flashStatus ?? 'success';
   <!-- ===================== SOUS-ONGLETS ===================== -->
   <div class="sub-tabs">
   <button class="subTabBtn subTabBtnenattente active" data-subtab="attente">En attente</button>
-  <button class="subTabBtn subTabBtnencours" data-subtab="encours">En cours</button>
+  <button class="subTabBtn subTabBtnencours active" data-subtab="validees">En cours</button>
   <button class="subTabBtn subTabBtnarchive" data-subtab="archive">Archivées</button>
 </div>
 
