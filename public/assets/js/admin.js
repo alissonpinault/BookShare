@@ -405,8 +405,8 @@ function createCharts() {
       {
         label: "Réservations",
         data: users.data,
-        backgroundColor: "#42a5f5cc",
-        borderColor: "#1e88e5",
+        backgroundColor: "#f57242ab",
+        borderColor: "#f57242ff",
         borderWidth: 1,
         borderRadius: 6,
         barPercentage: 0.6,
