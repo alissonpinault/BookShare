@@ -398,7 +398,7 @@ $flashStatus = $flashStatus ?? 'success';
     </div>
 </div>
 
-<!-- Onglet Gérer les livres -->
+<!-- ===================== CONTENU ONGLET Gérer les livres ===================== -->
 <div id="gererLivres" class="tabContent" data-page-param="livres_page" data-current-page="<?= (int) $livresPagination['page'] ?>" data-total-pages="<?= (int) $livresPagination['total_pages'] ?>">
 
 <div style="text-align:center; margin-bottom:20px;">
@@ -433,7 +433,7 @@ $flashStatus = $flashStatus ?? 'success';
 <!-- Barre de recherche -->
 <div style="margin-bottom:15px; text-align:center;">
     <input type="text" id="searchBook" placeholder="Rechercher un livre...">
-    <button onclick="filterBooks()">ðŸ”</button>
+    <button onclick="filterBooks()">🔍</button>
 </div>
 
 <table id="booksTable">
