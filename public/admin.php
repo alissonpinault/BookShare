@@ -709,7 +709,12 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
-<script src="assets/js/admin.js"></script>
+<?php
+$adminJsPath = 'assets/js/admin.js';
+$adminJsFullPath = __DIR__ . '/' . $adminJsPath;
+$adminJsVersion = file_exists($adminJsFullPath) ? (string) filemtime($adminJsFullPath) : (string) time();
+?>
+<script src="<?= htmlspecialchars($adminJsPath . '?v=' . $adminJsVersion, ENT_QUOTES, 'UTF-8') ?>"></script>
 
 <?php
 require_once dirname(__DIR__) . '/templates/partials/footer.php';
