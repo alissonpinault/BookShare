@@ -375,6 +375,7 @@ if (isset($_GET['message']) && $_GET['message'] !== '') {
     $statusParam = $_GET['status'] ?? 'success';
     $flashStatus = in_array($statusParam, ['error', 'success', 'info'], true) ? $statusParam : 'success';
 }
+ob_start();
 
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
@@ -724,4 +725,6 @@ renderFooter([
 <script src="/assets/js/admin.js?v=<?php echo time(); ?>"></script>
 
 </body>
+<?php ob_end_flush(); ?>
+
 </html>
