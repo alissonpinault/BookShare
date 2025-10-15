@@ -357,24 +357,27 @@ function createCharts() {
     const canvasLivres = document.getElementById("graphLivres");
     canvasLivres.style.display = "block";
     new Chart(canvasLivres, {
-      type: "bar",
-      data: {
-        labels: livres.labels,
-        datasets: [
-          {
-            label: "Réservations",
-            data: livres.data,
-            backgroundColor: "#52a058cc",
-            borderColor: "#52a058",
-            borderWidth: 1,
-            borderRadius: 6,
-            barPercentage: 0.6,
-          },
-        ],
+  type: "bar",
+  data: {
+    labels: livres.labels,
+    datasets: [
+      {
+        label: "Réservations",
+        data: livres.data,
+        backgroundColor: "#52a058cc",
+        borderColor: "#52a058",
+        borderWidth: 1,
+        borderRadius: 6,
+        barPercentage: 0.6,
       },
-      options: chartOptions,
-      indexAxis: "y",
-    });
+    ],
+  },
+  options: {
+    ...chartOptions,
+    indexAxis: "y",
+  },
+});
+
   }
 
   if (users.data.length > 0) {
