@@ -709,7 +709,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
-<script src="assets/js/admin.js"></script>
+
 
 <?php
 require_once dirname(__DIR__) . '/templates/partials/footer.php';
@@ -723,5 +723,6 @@ renderFooter([
     ],
 ]);
 ?>
+<script src="assets/js/admin.js"></script>
 </body>
 </html>
