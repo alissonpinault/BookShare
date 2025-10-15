@@ -1,8 +1,5 @@
 <?php
 
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-
 declare(strict_types=1);
 
 use Bookshare\Models\Utilisateur;
@@ -378,6 +375,9 @@ if (isset($_GET['message']) && $_GET['message'] !== '') {
     $statusParam = $_GET['status'] ?? 'success';
     $flashStatus = in_array($statusParam, ['error', 'success', 'info'], true) ? $statusParam : 'success';
 }
+
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 ?>
 
 <!DOCTYPE html>
