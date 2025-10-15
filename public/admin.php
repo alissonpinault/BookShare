@@ -422,11 +422,11 @@ if (isset($_GET['message']) && $_GET['message'] !== '') {
 <div id="reservations" class="tabContent active">
 
   <!-- ===================== SOUS-ONGLETS ===================== -->
-  <div class="tab-buttons sub-tabs">
-    <button class="subTabBtn subTabBtnenattente active" data-subtab="attente">En attente</button>
-    <button class="subTabBtn subTabBtnencours" data-subtab="validees">Validées</button>
-    <button class="subTabBtn subTabBtnarchive" data-subtab="terminees">Terminées</button>
-  </div>
+  <div class="sub-tabs">
+  <button class="subTabBtn subTabBtnenattente active" data-subtab="attente">En attente</button>
+  <button class="subTabBtn subTabBtnencours" data-subtab="encours">En cours</button>
+  <button class="subTabBtn subTabBtnarchive" data-subtab="archive">Archivées</button>
+</div>
 
     <!-- Réservations en attente -->
     <div id="attente" class="subTabContent subTabContentenattente active">
