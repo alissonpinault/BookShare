@@ -56,10 +56,6 @@ if (!function_exists('renderFooter')) {
 
     <p class="footer-text">© 2025 BookShare - Tous droits réservés</p>
 </footer>
-
-<!-- Script principal de l'interface admin -->
-<script src="/assets/js/admin.js"></script>
-
 <?php
     }
 }
