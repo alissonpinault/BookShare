@@ -687,7 +687,6 @@ ini_set('display_errors', 1);
         <canvas id="graphUsers" height="200" style="display:none;"></canvas>
     </div>
 </div>
-<script src="assets/js/admin.js"></script>
 <script>
   window.chartData = {
     livres: {
@@ -709,6 +708,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
+
+<script src="assets/js/admin.js"></script>
 
 <?php
 require_once dirname(__DIR__) . '/templates/partials/footer.php';
