@@ -1,6 +1,8 @@
 <?php
-
 declare(strict_types=1);
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+ob_start();
 
 use Bookshare\Models\Utilisateur;
 
@@ -29,276 +31,150 @@ if (!$utilisateur->estAdmin()) {
     exit;
 }
 
-function readPageParam($name){
-    if(isset($_GET[$name])){
-        $value = filter_var($_GET[$name], FILTER_VALIDATE_INT, ['options'=>['min_range'=>1]]);
-        if($value !== false){
-            return $value;
-        }
+/* ==============================
+   FONCTIONS UTILITAIRES
+================================ */
+function readPageParam($name)
+{
+    if (isset($_GET[$name])) {
+        $value = filter_var($_GET[$name], FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+        if ($value !== false) return $value;
     }
     return 1;
 }
 
-function computePagination($total, $perPage, $page){
-    $total = max(0, (int) $total);
-    $perPage = max(1, (int) $perPage);
-    $page = max(1, (int) $page);
-
-    $totalPages = (int) ceil($total / $perPage);
-    if($totalPages < 1){
-        $totalPages = 1;
-    }
-    if($page > $totalPages){
-        $page = $totalPages;
-    }
-
+function computePagination($total, $perPage, $page)
+{
+    $total = max(0, (int)$total);
+    $perPage = max(1, (int)$perPage);
+    $page = max(1, (int)$page);
+    $totalPages = (int)ceil($total / $perPage);
+    if ($totalPages < 1) $totalPages = 1;
+    if ($page > $totalPages) $page = $totalPages;
     $offset = ($page - 1) * $perPage;
-    if($offset < 0){
-        $offset = 0;
-    }
-
     return [
-        'page'=>$page,
-        'per_page'=>$perPage,
-        'total_items'=>$total,
-        'total_pages'=>$totalPages,
-        'offset'=>$offset,
+        'page' => $page,
+        'per_page' => $perPage,
+        'total_items' => $total,
+        'total_pages' => $totalPages,
+        'offset' => max(0, $offset)
     ];
 }
 
-function formatReservationStatus($status){
+function formatReservationStatus($status)
+{
     $map = [
         'en_attente' => 'En attente',
         'validee' => 'Validée',
         'refusee' => 'Refusée',
         'terminee' => 'Terminée',
     ];
-
-    $key = mb_strtolower((string) $status, 'UTF-8');
-    if(isset($map[$key])){
-        return $map[$key];
-    }
-
-    $key = str_replace('_', ' ', $key);
-    return ucfirst($key);
+    $key = mb_strtolower((string)$status, 'UTF-8');
+    return $map[$key] ?? ucfirst(str_replace('_', ' ', $key));
 }
 
-function buildPaginationUrl(array $updates, $anchor = ''){
+function buildPaginationUrl(array $updates, $anchor = '')
+{
     $params = $_GET;
-    foreach($updates as $key=>$value){
-        if($value === null){
-            unset($params[$key]);
-        }else{
-            $params[$key] = $value;
-        }
+    foreach ($updates as $key => $value) {
+        if ($value === null) unset($params[$key]);
+        else $params[$key] = $value;
     }
-
     $query = http_build_query($params);
     $url = 'admin.php';
-    if($query !== ''){
-        $url .= '?' . $query;
-    }
-    if($anchor !== ''){
-        $url .= '#' . $anchor;
-    }
+    if ($query !== '') $url .= '?' . $query;
+    if ($anchor !== '') $url .= '#' . $anchor;
     return $url;
 }
 
-function renderPagination($param, array $pagination, $anchor){
-    $totalPages = isset($pagination['total_pages']) ? (int) $pagination['total_pages'] : 1;
-    $currentPage = isset($pagination['page']) ? (int) $pagination['page'] : 1;
-    if($totalPages <= 1){
-        return '';
-    }
-
+function renderPagination($param, array $pagination, $anchor)
+{
+    $totalPages = (int)($pagination['total_pages'] ?? 1);
+    $currentPage = (int)($pagination['page'] ?? 1);
+    if ($totalPages <= 1) return '';
     $html = '<div class="pagination">';
-    if($currentPage > 1){
-        $html .= '<a class="page prev" href="' . htmlspecialchars(buildPaginationUrl([$param => $currentPage - 1], $anchor), ENT_QUOTES, 'UTF-8') . '">&laquo; Précédent</a>';
+    if ($currentPage > 1) {
+        $html .= '<a class="page prev" href="' . htmlspecialchars(buildPaginationUrl([$param => $currentPage - 1], $anchor)) . '">&laquo; Précédent</a>';
     }
-
-    for($i = 1; $i <= $totalPages; $i++){
-        if($i === $currentPage){
-            $html .= '<span class="page current">' . $i . '</span>';
-        }else{
-            $html .= '<a class="page" href="' . htmlspecialchars(buildPaginationUrl([$param => $i], $anchor), ENT_QUOTES, 'UTF-8') . '">' . $i . '</a>';
-        }
+    for ($i = 1; $i <= $totalPages; $i++) {
+        if ($i === $currentPage) $html .= '<span class="page current">' . $i . '</span>';
+        else $html .= '<a class="page" href="' . htmlspecialchars(buildPaginationUrl([$param => $i], $anchor)) . '">' . $i . '</a>';
     }
-
-    if($currentPage < $totalPages){
-        $html .= '<a class="page next" href="' . htmlspecialchars(buildPaginationUrl([$param => $currentPage + 1], $anchor), ENT_QUOTES, 'UTF-8') . '">Suivant &raquo;</a>';
+    if ($currentPage < $totalPages) {
+        $html .= '<a class="page next" href="' . htmlspecialchars(buildPaginationUrl([$param => $currentPage + 1], $anchor)) . '">Suivant &raquo;</a>';
     }
-
-    $html .= '</div>';
-    return $html;
+    return $html . '</div>';
 }
 
-// --- Gestion du POST pour actions AJAX ---
-if($_SERVER['REQUEST_METHOD']==='POST' && isset($_POST['action'])){
-  if ($_POST['action'] === 'valider') {
-    header('Content-Type: application/json');
-    $id = (int)$_POST['reservation_id'];
-    $livre_id = (int)$_POST['livre_id'];
-    if ($id && $livre_id) {
+/* ==============================
+   GESTION DES ACTIONS AJAX
+================================ */
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && !empty($_POST['action'])) {
+
+    // Ne traite que les appels AJAX
+    if (
+        !empty($_SERVER['HTTP_X_REQUESTED_WITH']) &&
+        strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest'
+    ) {
+        ob_clean();
+        header('Content-Type: application/json');
+        $action = $_POST['action'];
+
         try {
-            $pdo->beginTransaction();
-            $pdo->prepare("UPDATE reservations SET statut='validee' WHERE reservation_id=?")->execute([$id]);
-            $pdo->prepare("UPDATE livres SET disponibilite='indisponible' WHERE livre_id=?")->execute([$livre_id]);
-            $pdo->commit();
-            echo json_encode([
-                'success' => true,
-                'statut' => 'validee',
-                'statut_label' => formatReservationStatus('validee')
-            ]); exit;
-        } catch (Throwable $e) {
-            $pdo->rollBack();
-            error_log('Admin valider reservation error: '.$e->getMessage());
-        }
-    }
-    echo json_encode(['success' => false, 'message' => 'Impossible de valider la réservation.']); exit;
-}
+            switch ($action) {
+                case 'valider':
+                    $id = (int)$_POST['reservation_id'];
+                    $livre_id = (int)$_POST['livre_id'];
+                    if ($id && $livre_id) {
+                        $pdo->beginTransaction();
+                        $pdo->prepare("UPDATE reservations SET statut='validee' WHERE reservation_id=?")->execute([$id]);
+                        $pdo->prepare("UPDATE livres SET disponibilite='indisponible' WHERE livre_id=?")->execute([$livre_id]);
+                        $pdo->commit();
+                        echo json_encode(['success' => true, 'statut' => 'validee', 'statut_label' => 'Validée']);
+                        exit;
+                    }
+                    break;
 
-if ($_POST['action'] === 'refuser') {
-    header('Content-Type: application/json');
-    $id = (int)$_POST['reservation_id'];
-    $livre_id = (int)$_POST['livre_id'];
-    if ($id && $livre_id) {
-        try {
-            $pdo->beginTransaction();
-            $pdo->prepare("UPDATE reservations SET statut='refusee' WHERE reservation_id=?")->execute([$id]);
-            $pdo->prepare("UPDATE livres SET disponibilite='disponible' WHERE livre_id=?")->execute([$livre_id]);
-            $pdo->commit();
-            echo json_encode([
-                'success' => true,
-                'statut' => 'refusee',
-                'statut_label' => formatReservationStatus('refusee')
-            ]); exit;
-        } catch (Throwable $e) {
-            $pdo->rollBack();
-            error_log('Admin refuser reservation error: '.$e->getMessage());
-        }
-    }
-    echo json_encode(['success' => false, 'message' => 'Impossible de refuser la réservation.']); exit;
-}
+                case 'refuser':
+                    $id = (int)$_POST['reservation_id'];
+                    $livre_id = (int)$_POST['livre_id'];
+                    if ($id && $livre_id) {
+                        $pdo->beginTransaction();
+                        $pdo->prepare("UPDATE reservations SET statut='refusee' WHERE reservation_id=?")->execute([$id]);
+                        $pdo->prepare("UPDATE livres SET disponibilite='disponible' WHERE livre_id=?")->execute([$livre_id]);
+                        $pdo->commit();
+                        echo json_encode(['success' => true, 'statut' => 'refusee', 'statut_label' => 'Refusée']);
+                        exit;
+                    }
+                    break;
 
-    if($_POST['action']==='terminer'){
-    header('Content-Type: application/json');
-    $id = (int) $_POST['reservation_id'];
-    $livre_id = (int) $_POST['livre_id'];
-
-    if($id && $livre_id){
-        try{
-            $pdo->beginTransaction();
-            $pdo->prepare("UPDATE reservations SET statut='terminee' WHERE reservation_id=?")->execute([$id]);
-            $pdo->prepare("UPDATE livres SET disponibilite='disponible' WHERE livre_id=?")->execute([$livre_id]);
-            $pdo->commit();
-
-            echo json_encode([
-                'success'=>true,
-                'statut'=>'terminee',
-                'statut_label'=>formatReservationStatus('terminee')
-            ]);
-            exit;
-        }catch(Throwable $e){
-            $pdo->rollBack();
-            error_log('Admin terminer reservation error: '. $e->getMessage());
-        }
-    }
-    echo json_encode(['success'=>false,'message'=>'Impossible de terminer la réservation.']);
-    exit;
-}
-
-    elseif($_POST['action']==='ajouterLivre'){
-        $titre = $_POST['titre'] ?? '';
-        $auteur = $_POST['auteur'] ?? '';
-        $genre = $_POST['genre'] ?? '';
-        $description = $_POST['description'] ?? '';
-        $imageUrl = $_POST['image_url'] ?? '';
-        try{
-            $stmt = $pdo->prepare("INSERT INTO livres (titre,auteur,genre,description,image_url,disponibilite) VALUES (?,?,?,?,?,'disponible')");
-            $stmt->execute([$titre, $auteur, $genre, $description, $imageUrl]);
-            $livreId = (int) $pdo->lastInsertId();
-            echo json_encode([
-                'success'=>true,
-                'book'=>[
-                    'livre_id'=>$livreId,
-                    'titre'=>$titre,
-                    'auteur'=>$auteur,
-                    'genre'=>$genre,
-                    'description'=>$description,
-                    'image_url'=>$imageUrl,
-                    'disponibilite'=>'disponible'
-                ]
-            ]); exit;
-        }catch(Throwable $e){
-            error_log('Admin add book error: '. $e->getMessage());
-            echo json_encode(['success'=>false,'message'=>"L'ajout du livre a échoué."]); exit;
-        }
-    }
-    elseif($_POST['action']==='modifierLivre'){
-        $livreId = isset($_POST['livre_id']) ? (int) $_POST['livre_id'] : 0;
-        if(!$livreId){
-            echo json_encode(['success'=>false,'message'=>'Livre introuvable.']); exit;
-        }
-        $titre = $_POST['titre'] ?? '';
-        $auteur = $_POST['auteur'] ?? '';
-        $genre = $_POST['genre'] ?? '';
-        $description = $_POST['description'] ?? '';
-        $imageUrl = $_POST['image_url'] ?? '';
-        try{
-            $stmt = $pdo->prepare("UPDATE livres SET titre=?, auteur=?, genre=?, description=?, image_url=? WHERE livre_id=?");
-            $stmt->execute([$titre,$auteur,$genre,$description,$imageUrl,$livreId]);
-            echo json_encode([
-                'success'=>true,
-                'book'=>[
-                    'livre_id'=>$livreId,
-                    'titre'=>$titre,
-                    'auteur'=>$auteur,
-                    'genre'=>$genre,
-                    'description'=>$description,
-                    'image_url'=>$imageUrl
-                ]
-            ]); exit;
-        }catch(Throwable $e){
-            error_log('Admin edit book error: '. $e->getMessage());
-            echo json_encode(['success'=>false,'message'=>'La mise à jour du livre a échoué.']); exit;
-        }
-    }
-    elseif($_POST['action']==='supprimerLivre'){
-        $livreId = isset($_POST['livre_id']) ? (int) $_POST['livre_id'] : 0;
-        if($livreId){
-            try{
-                $pdo->prepare("DELETE FROM livres WHERE livre_id=?")->execute([$livreId]);
-                echo json_encode(['success'=>true,'livre_id'=>$livreId]); exit;
-            }catch(Throwable $e){
-                error_log('Admin delete book error: '. $e->getMessage());
+                case 'terminer':
+                    $id = (int)$_POST['reservation_id'];
+                    $livre_id = (int)$_POST['livre_id'];
+                    if ($id && $livre_id) {
+                        $pdo->beginTransaction();
+                        $pdo->prepare("UPDATE reservations SET statut='terminee' WHERE reservation_id=?")->execute([$id]);
+                        $pdo->prepare("UPDATE livres SET disponibilite='disponible' WHERE livre_id=?")->execute([$livre_id]);
+                        $pdo->commit();
+                        echo json_encode(['success' => true, 'statut' => 'terminee', 'statut_label' => 'Terminée']);
+                        exit;
+                    }
+                    break;
             }
+        } catch (Throwable $e) {
+            if ($pdo->inTransaction()) $pdo->rollBack();
+            echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+            exit;
         }
-        echo json_encode(['success'=>false,'message'=>'Suppression du livre impossible.']); exit;
+
+        echo json_encode(['success' => false, 'message' => 'Action invalide ou incomplète.']);
+        exit;
     }
-   elseif($_POST['action']==='supprimerUtilisateur'){
-    $userId = isset($_POST['utilisateur_id']) ? (int) $_POST['utilisateur_id'] : 0;
-    if ($userId === (int)$_SESSION['utilisateur_id']) {
-        echo json_encode(['success'=>false,'message'=>"Impossible de supprimer votre propre compte."]); exit;
-    }
-    if($userId){
-        try{
-            $pdo->beginTransaction();
-            $pdo->prepare("DELETE FROM notes WHERE utilisateur_id=?")->execute([$userId]);
-            $pdo->prepare("DELETE FROM reservations WHERE utilisateur_id=?")->execute([$userId]);
-            $pdo->prepare("DELETE FROM utilisateurs WHERE utilisateur_id=?")->execute([$userId]);
-            $pdo->commit();
-            echo json_encode(['success'=>true,'utilisateur_id'=>$userId]); exit;
-        }catch(Throwable $e){
-            $pdo->rollBack();
-            error_log('Admin delete user error: '. $e->getMessage());
-            echo json_encode(['success'=>false,'message'=>'Suppression impossible.']); exit;
-        }
-    }
-    echo json_encode(['success'=>false,'message'=>'Utilisateur introuvable.']); exit;
-}
 }
 
-// --- Récupération des données ---
+/* ==============================
+   CHARGEMENT DES DONNÉES
+================================ */
 $reservationsPerPage = 10;
 $livresPerPage = 10;
 $utilisateursPerPage = 10;
@@ -307,15 +183,15 @@ $reservationsPage = readPageParam('reservations_page');
 $livresPage = readPageParam('livres_page');
 $utilisateursPage = readPageParam('utilisateurs_page');
 
-$totalReservations = (int) $pdo->query("SELECT COUNT(*) FROM reservations")->fetchColumn();
-$totalLivres = (int) $pdo->query("SELECT COUNT(*) FROM livres")->fetchColumn();
-$totalUtilisateurs = (int) $pdo->query("SELECT COUNT(*) FROM utilisateurs")->fetchColumn();
+$totalReservations = (int)$pdo->query("SELECT COUNT(*) FROM reservations")->fetchColumn();
+$totalLivres = (int)$pdo->query("SELECT COUNT(*) FROM livres")->fetchColumn();
+$totalUtilisateurs = (int)$pdo->query("SELECT COUNT(*) FROM utilisateurs")->fetchColumn();
 
 $reservationsPagination = computePagination($totalReservations, $reservationsPerPage, $reservationsPage);
 $livresPagination = computePagination($totalLivres, $livresPerPage, $livresPage);
 $utilisateursPagination = computePagination($totalUtilisateurs, $utilisateursPerPage, $utilisateursPage);
 
-// --- Réservations par statut --- //
+// Données principales
 $reservationsEnAttente = $pdo->query("
     SELECT r.*, u.pseudo, l.titre, l.livre_id
     FROM reservations r
@@ -342,43 +218,6 @@ $reservationsTerminees = $pdo->query("
     WHERE r.statut = 'terminee'
     ORDER BY r.date_reservation DESC
 ")->fetchAll(PDO::FETCH_ASSOC);
-
-$livresStmt = $pdo->prepare("SELECT * FROM livres ORDER BY titre LIMIT :limit OFFSET :offset");
-$livresStmt->bindValue(':limit', $livresPagination['per_page'], PDO::PARAM_INT);
-$livresStmt->bindValue(':offset', $livresPagination['offset'], PDO::PARAM_INT);
-$livresStmt->execute();
-$livres = $livresStmt->fetchAll(PDO::FETCH_ASSOC);
-
-$chartLivres = $pdo->query("
-    SELECT l.titre, COUNT(r.reservation_id) as total
-    FROM livres l
-    LEFT JOIN reservations r ON l.livre_id = r.livre_id
-    GROUP BY l.livre_id
-")->fetchAll(PDO::FETCH_ASSOC);
-
-$chartUsers = $pdo->query("
-    SELECT u.pseudo, COUNT(r.reservation_id) as total
-    FROM utilisateurs u
-    LEFT JOIN reservations r ON u.utilisateur_id = r.utilisateur_id
-    GROUP BY u.utilisateur_id
-")->fetchAll(PDO::FETCH_ASSOC);
-$utilisateursStmt = $pdo->prepare("\n    SELECT utilisateur_id, pseudo, email, role, date_inscription\n    FROM utilisateurs\n    ORDER BY pseudo\n    LIMIT :limit OFFSET :offset\n");
-$utilisateursStmt->bindValue(':limit', $utilisateursPagination['per_page'], PDO::PARAM_INT);
-$utilisateursStmt->bindValue(':offset', $utilisateursPagination['offset'], PDO::PARAM_INT);
-$utilisateursStmt->execute();
-$utilisateurs = $utilisateursStmt->fetchAll(PDO::FETCH_ASSOC);
-
-$flashMessage = '';
-$flashStatus = 'success';
-if (isset($_GET['message']) && $_GET['message'] !== '') {
-    $flashMessage = trim((string) $_GET['message']);
-    $statusParam = $_GET['status'] ?? 'success';
-    $flashStatus = in_array($statusParam, ['error', 'success', 'info'], true) ? $statusParam : 'success';
-}
-ob_start();
-
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
 ?>
 
 <!DOCTYPE html>
@@ -707,24 +546,12 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
-
-
 <?php
 require_once dirname(__DIR__) . '/templates/partials/footer.php';
-renderFooter([
-    'baseUrl' => 'admin.php',
-    'pagination' => [
-        'total_items' => 0,
-        'total_pages' => 0,
-        'current_page' => 1,
-        'query_params' => [],
-    ],
-]);
+renderFooter(['baseUrl' => 'admin.php']);
 ?>
 
 <script src="/assets/js/admin.js?v=<?php echo time(); ?>"></script>
-
 </body>
-<?php ob_end_flush(); ?>
-
 </html>
+<?php ob_end_flush(); ?>
