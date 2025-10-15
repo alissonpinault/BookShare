@@ -218,8 +218,15 @@ $reservationsTerminees = $pdo->query("
     WHERE r.statut = 'terminee'
     ORDER BY r.date_reservation DESC
 ")->fetchAll(PDO::FETCH_ASSOC);
-?>
 
+// --- Messages flash par défaut
+$flashMessage = $flashMessage ?? '';
+$flashStatus = $flashStatus ?? 'success';
+
+/* ==============================
+   HTML
+================================ */
+?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -230,21 +237,12 @@ $reservationsTerminees = $pdo->query("
 <link rel="icon" type="image/jpg" href="https://img.freepik.com/vecteurs-premium/lire-logo-du-livre_7888-13.jpg">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <link rel="stylesheet" href="assets/css/style.css">
-<style>
-.modal-close {
-    position: absolute;
-    top: 15px;
-    right: 20px;
-    cursor: pointer;
-    font-size: 1.5em;
-    user-select: none;
-}
-</style>
 </head>
 <body>
 <?php include dirname(__DIR__) . '/templates/partials/nav.php'; ?>
 
 <h1>Panneau Administrateur</h1>
+
 <div id="flash-container" class="flash-container">
     <?php if ($flashMessage !== ''): ?>
         <div class="flash-message <?= $flashStatus === 'error' ? 'error' : '' ?>" data-auto-dismiss="5000">
@@ -253,7 +251,6 @@ $reservationsTerminees = $pdo->query("
     <?php endif; ?>
 </div>
 
-<!-- Onglets principaux -->
 <div class="tab-buttons">
   <button type="button" class="tabBtn active" data-tab="reservations">Réservations</button>
   <button type="button" class="tabBtn" data-tab="gererLivres">Gérer les livres</button>
