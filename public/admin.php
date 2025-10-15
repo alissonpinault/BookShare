@@ -69,9 +69,17 @@ function formatReservationStatus($status)
         'refusee' => 'Refusée',
         'terminee' => 'Terminée',
     ];
-    $key = mb_strtolower((string)$status, 'UTF-8');
-    return $map[$key] ?? ucfirst(str_replace('_', ' ', $key));
+
+    $key = strtolower((string)$status);
+
+    if (isset($map[$key])) {
+        return $map[$key];
+    }
+
+    $key = str_replace('_', ' ', $key);
+    return ucfirst($key);
 }
+
 
 function buildPaginationUrl(array $updates, $anchor = '')
 {
@@ -223,9 +231,6 @@ $reservationsTerminees = $pdo->query("
 $flashMessage = $flashMessage ?? '';
 $flashStatus = $flashStatus ?? 'success';
 
-/* ==============================
-   HTML
-================================ */
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -546,9 +551,13 @@ document.addEventListener('DOMContentLoaded', function() {
 <?php
 require_once dirname(__DIR__) . '/templates/partials/footer.php';
 renderFooter(['baseUrl' => 'admin.php']);
+
+$adminJsPath = 'assets/js/admin.js';
+$adminJsFullPath = __DIR__ . '/' . $adminJsPath;
+$adminJsVersion = file_exists($adminJsFullPath) ? (string) filemtime($adminJsFullPath) : (string) time();
 ?>
 
-<script src="/assets/js/admin.js?v=<?php echo time(); ?>"></script>
+<script src="<?= htmlspecialchars($adminJsPath . '?v=' . $adminJsVersion, ENT_QUOTES, 'UTF-8') ?>"></script>
 </body>
 </html>
 <?php ob_end_flush(); ?>
