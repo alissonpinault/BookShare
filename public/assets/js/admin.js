@@ -375,6 +375,20 @@ function createCharts() {
   options: {
     ...chartOptions,
     indexAxis: "y",
+    scales: {
+      x: {
+        beginAtZero: true,
+        ticks: {
+          stepSize: 1,
+          precision: 0,
+        },
+      },
+      y: {
+        ticks: {
+          autoSkip: false,
+        },
+      },
+    },
   },
 });
 
