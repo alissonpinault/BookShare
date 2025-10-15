@@ -1,14 +1,5 @@
 <?php
 declare(strict_types=1);
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-ob_start();
-
-// 🔎 Gestion des erreurs visuelles (utile sur Heroku)
-set_error_handler(function($errno, $errstr, $errfile, $errline) {
-    echo "<pre style='color:red;'>PHP ERROR [$errno] : $errstr in $errfile on line $errline</pre>";
-    return true;
-});
 
 use Bookshare\Models\Utilisateur;
 
@@ -601,4 +592,3 @@ $adminJsVersion = file_exists($adminJsFullPath) ? (string) filemtime($adminJsFul
 <script src="<?= htmlspecialchars($adminJsPath . '?v=' . $adminJsVersion, ENT_QUOTES, 'UTF-8') ?>"></script>
 </body>
 </html>
-<?php ob_end_flush(); ?>

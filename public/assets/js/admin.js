@@ -357,22 +357,25 @@ function createCharts() {
     const canvasLivres = document.getElementById("graphLivres");
     canvasLivres.style.display = "block";
     new Chart(canvasLivres, {
-      type: "bar",
-      data: {
-        labels: livres.labels,
-        datasets: [
-          {
-            label: "Réservations",
-            data: livres.data,
-            backgroundColor: "#52a058cc",
-            borderColor: "#52a058",
-            borderWidth: 1,
-            borderRadius: 6,
-            barPercentage: 0.6,
-          },
-        ],
-      },
-      options: chartOptions,
+      type: 'bar',
+options: {
+  indexAxis: 'y',
+  responsive: true,
+  plugins: {
+    legend: { display: false },
+    title: {
+      display: true,
+      text: 'Top des livres les plus réservés'
+    }
+  },
+  scales: {
+    x: {
+      beginAtZero: true,
+      ticks: { precision: 0 }
+    }
+  }
+}
+
     });
   }
 
