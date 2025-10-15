@@ -1,11 +1,21 @@
+<?php
+
+$genre   = $genre   ?? '';
+$auteur  = $auteur  ?? '';
+$statut  = $statut  ?? '';
+$noteMin = $noteMin ?? '';
+$q       = $q       ?? '';
+$utilisateur = $utilisateur ?? null;
+?>
+
 <nav class="site-nav">
     <!-- Logo à gauche -->
     <a href="index.php" class="logo" style="text-decoration: none; color: inherit;">
-    <img src="assets/images/logo.jpg" alt="Logo BookShare">
-    BookShare
+        <img src="assets/images/logo.jpg" alt="Logo BookShare">
+        BookShare
     </a>
 
-    <!-- Bouton burger  -->
+    <!-- Bouton burger -->
     <button class="burger" aria-label="Menu">&#9776;</button>
 
     <!-- Actions -->
@@ -21,7 +31,7 @@
             <?php if ($statut !== ''): ?>
                 <input type="hidden" name="statut" value="<?= htmlspecialchars($statut) ?>">
             <?php endif; ?>
-            <?php if ($noteMin !== null): ?>
+            <?php if ($noteMin !== ''): ?>
                 <input type="hidden" name="note_min" value="<?= htmlspecialchars((string)$noteMin) ?>">
             <?php endif; ?>
         </form>
