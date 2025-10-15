@@ -687,6 +687,7 @@ ini_set('display_errors', 1);
         <canvas id="graphUsers" height="200" style="display:none;"></canvas>
     </div>
 </div>
+<script src="assets/js/admin.js"></script>
 <script>
   window.chartData = {
     livres: {
@@ -698,10 +699,7 @@ ini_set('display_errors', 1);
       labels: <?= json_encode(array_column($chartUsers,'pseudo')) ?>
     }
   };
-</script>
 
-<script src="assets/js/admin.js"></script>
-<script>
 document.addEventListener('DOMContentLoaded', function() {
     var closeBtn = document.getElementById('modalAddCloseBtn');
     if (closeBtn) {
