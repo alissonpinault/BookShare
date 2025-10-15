@@ -305,7 +305,7 @@ $flashStatus = $flashStatus ?? 'success';
   <div class="sub-tabs">
   <button class="subTabBtn subTabBtnenattente active" data-subtab="attente">En attente</button>
   <button class="subTabBtn subTabBtnencours active" data-subtab="validees">En cours</button>
-  <button class="subTabBtn subTabBtnarchive" data-subtab="archive">Archivées</button>
+  <button class="subTabBtn subTabBtnarchive" data-subtab="terminees">Archivées</button>
 </div>
 
     <!-- Réservations en attente -->
