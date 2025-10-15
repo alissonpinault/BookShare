@@ -18,7 +18,7 @@ $mongoDB = $container['mongoDB'] ?? null;
 
 session_start();
 
-// ✅ Vérification du rôle admin
+// Vérification du rôle admin
 if (empty($_SESSION['utilisateur_id'])) {
     header('Location: index.php');
     exit;
@@ -266,6 +266,7 @@ $chartUsers = $pdo->query("
 $flashMessage = $flashMessage ?? '';
 $flashStatus = $flashStatus ?? 'success';
 ?>
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -285,12 +286,275 @@ $flashStatus = $flashStatus ?? 'success';
 <div id="flash-container" class="flash-container">
     <?php if ($flashMessage !== ''): ?>
         <div class="flash-message <?= $flashStatus === 'error' ? 'error' : '' ?>" data-auto-dismiss="5000">
-            <?= e($flashMessage) ?>
+            <?= htmlspecialchars($flashMessage, ENT_QUOTES, 'UTF-8') ?>
         </div>
     <?php endif; ?>
 </div>
 
-<!-- ===================== ONGLET STATISTIQUES ===================== -->
+<div class="tab-buttons">
+  <button type="button" class="tabBtn active" data-tab="reservations">Réservations</button>
+  <button type="button" class="tabBtn" data-tab="gererLivres">Gérer les livres</button>
+  <button type="button" class="tabBtn" data-tab="utilisateurs">Gestion utilisateurs</button>
+  <button type="button" class="tabBtn" data-tab="statistiques">Statistiques</button>
+</div>
+
+<!-- ===================== CONTENU ONGLET RÉSERVATIONS ===================== -->
+<div id="reservations" class="tabContent active">
+
+  <!-- ===================== SOUS-ONGLETS ===================== -->
+  <div class="sub-tabs">
+  <button class="subTabBtn subTabBtnenattente active" data-subtab="attente">En attente</button>
+  <button class="subTabBtn subTabBtnencours" data-subtab="encours">En cours</button>
+  <button class="subTabBtn subTabBtnarchive" data-subtab="archive">Archivées</button>
+</div>
+
+    <!-- Réservations en attente -->
+    <div id="attente" class="subTabContent subTabContentenattente active">
+        <?php if (empty($reservationsEnAttente)): ?>
+            <p>Aucune réservation en attente.</p>
+        <?php else: ?>
+            <table>
+                <tr>
+                    <th>Utilisateur</th>
+                    <th>Livre</th>
+                    <th>Date</th>
+                    <th>Statut</th>
+                    <th>Actions</th>
+                </tr>
+                <?php foreach ($reservationsEnAttente as $r): ?>
+                <tr>
+                    <td><?= htmlspecialchars($r['pseudo']) ?></td>
+                    <td><?= htmlspecialchars($r['titre']) ?></td>
+                    <td><?= date('d-m-Y', strtotime($r['date_reservation'])) ?></td>
+                    <td data-cell="statut"><?= htmlspecialchars(formatReservationStatus($r['statut'])) ?></td>
+                    <td data-cell="actions">
+                        <form method="post">
+                            <input type="hidden" name="reservation_id" value="<?= (int)$r['reservation_id'] ?>">
+                            <input type="hidden" name="livre_id" value="<?= (int)$r['livre_id'] ?>">
+                            <button type="submit" name="action" value="valider" class="valider">Valider</button>
+                            <button type="submit" name="action" value="refuser" class="refuser">Refuser</button>
+                        </form>
+                    </td>
+                </tr>
+                <?php endforeach; ?>
+            </table>
+        <?php endif; ?>
+    </div>
+
+    <!-- Réservations validées -->
+    <div id="validees" class="subTabContent subTabContentencours">
+        <?php if (empty($reservationsValidees)): ?>
+            <p>Aucune réservation validée.</p>
+        <?php else: ?>
+            <table>
+                <tr>
+                    <th>Utilisateur</th>
+                    <th>Livre</th>
+                    <th>Date</th>
+                    <th>Statut</th>
+                    <th>Actions</th>
+                </tr>
+                <?php foreach ($reservationsValidees as $r): ?>
+                <tr>
+                    <td><?= htmlspecialchars($r['pseudo']) ?></td>
+                    <td><?= htmlspecialchars($r['titre']) ?></td>
+                    <td><?= date('d-m-Y', strtotime($r['date_reservation'])) ?></td>
+                    <td data-cell="statut"><?= htmlspecialchars(formatReservationStatus($r['statut'])) ?></td>
+                    <td data-cell="actions">
+                        <form method="post">
+                            <input type="hidden" name="reservation_id" value="<?= (int)$r['reservation_id'] ?>">
+                            <input type="hidden" name="livre_id" value="<?= (int)$r['livre_id'] ?>">
+                            <button type="submit" name="action" value="terminer" class="terminer">Terminer</button>
+                        </form>
+                    </td>
+                </tr>
+                <?php endforeach; ?>
+            </table>
+        <?php endif; ?>
+    </div>
+
+    <!-- Réservations terminées -->
+    <div id="terminees" class="subTabContent subTabContentarchive">
+        <?php if (empty($reservationsTerminees)): ?>
+            <p>Aucune réservation terminée.</p>
+        <?php else: ?>
+            <table>
+                <tr>
+                    <th>Utilisateur</th>
+                    <th>Livre</th>
+                    <th>Date</th>
+                    <th>Statut</th>
+                </tr>
+                <?php foreach ($reservationsTerminees as $r): ?>
+                <tr>
+                    <td><?= htmlspecialchars($r['pseudo']) ?></td>
+                    <td><?= htmlspecialchars($r['titre']) ?></td>
+                    <td><?= date('d-m-Y', strtotime($r['date_reservation'])) ?></td>
+                    <td data-cell="statut"><?= htmlspecialchars(formatReservationStatus($r['statut'])) ?></td>
+                </tr>
+                <?php endforeach; ?>
+            </table>
+        <?php endif; ?>
+    </div>
+</div>
+
+<!-- Onglet Gérer les livres -->
+<div id="gererLivres" class="tabContent" data-page-param="livres_page" data-current-page="<?= (int) $livresPagination['page'] ?>" data-total-pages="<?= (int) $livresPagination['total_pages'] ?>">
+
+<div style="text-align:center; margin-bottom:20px;">
+    <button onclick="openAddModal()" style=" 
+        padding:12px 25px; font-size:16px; font-weight:bold; border:none;
+        background:#00796b; color:white; border-radius:8px; cursor:pointer;
+        box-shadow:0 4px 8px rgba(0,0,0,0.2); transition: all 0.3s;"
+        onmouseover="this.style.background='#004d40'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 12px rgba(0,0,0,0.3)';"
+        onmouseout="this.style.background='#00796b'; this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 8px rgba(0,0,0,0.2)';">
+        Ajouter un livre
+    </button>
+</div>
+
+<!-- Modal Ajouter un livre -->
+<div id="modalAdd" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); justify-content:center; align-items:center; z-index:1000;">
+    <div style="background:white; padding:30px; border-radius:15px; max-width:500px; width:90%; 
+        position:relative; box-shadow:0 10px 30px rgba(0,0,0,0.3); transform:scale(0.9); transition: transform 0.3s ease;">
+        
+        <span class="modal-close" id="modalAddCloseBtn">&#10006;</span>
+        <h2 style="font-family: 'Great Vibes', cursive; text-align:center; font-size:2.5em; margin-bottom:25px;">Ajouter un livre</h2>
+        <form id="formAddBook" style="max-width:400px; margin:0 auto; text-align:center;">
+            <input type="text" name="titre" placeholder="Titre" required>
+            <input type="text" name="auteur" placeholder="Auteur" required>
+            <input type="text" name="genre" placeholder="Genre">
+            <textarea name="description" placeholder="Description"></textarea>
+            <input type="text" name="image_url" placeholder="URL de l'image">
+            <button type="submit">Ajouter</button>
+        </form>
+    </div>
+</div>
+
+<!-- Barre de recherche -->
+<div style="margin-bottom:15px; text-align:center;">
+    <input type="text" id="searchBook" placeholder="Rechercher un livre...">
+    <button onclick="filterBooks()">ðŸ”</button>
+</div>
+
+<table id="booksTable">
+    <tr>
+        <th>Titre</th>
+        <th>Auteur</th>
+        <th>Genre</th>
+        <th>Actions</th>
+    </tr>
+    <?php foreach($livres as $b): ?>
+    <tr data-id="<?= $b['livre_id'] ?>">
+        <td data-label="Titre"><?= htmlspecialchars($b['titre']) ?></td>
+        <td data-label="Auteur"><?= htmlspecialchars($b['auteur']) ?></td>
+        <td data-label="Genre"><?= htmlspecialchars($b['genre']) ?></td>
+        <td data-label="Actions">
+            <button class="action modifier"
+                    data-livre='<?= htmlspecialchars(json_encode($b), ENT_QUOTES, 'UTF-8') ?>'
+                    onclick="openEditModal(this)">
+                Modifier
+            </button>
+            <button class="action supprimer"
+                    onclick="deleteBook(this, <?= (int) $b['livre_id'] ?>)">
+                Supprimer
+            </button>
+        </td>
+    </tr>
+    <?php endforeach; ?>
+</table>
+
+<?php
+    $livresCount = count($livres);
+    $livresStart = $livresCount ? $livresPagination['offset'] + 1 : 0;
+    $livresEnd = $livresCount ? $livresPagination['offset'] + $livresCount : 0;
+?>
+<div class="pagination-info">
+    <?php if($livresCount): ?>
+        Affichage de <?= htmlspecialchars($livresStart, ENT_QUOTES, 'UTF-8') ?> à <?= htmlspecialchars($livresEnd, ENT_QUOTES, 'UTF-8') ?> sur <?= htmlspecialchars((string)$livresPagination['total_items'], ENT_QUOTES, 'UTF-8') ?>
+ livres.
+    <?php else: ?>
+        Aucun livre trouvé.
+    <?php endif; ?>
+</div>
+<?= renderPagination('livres_page', $livresPagination, 'gererLivres'); ?>
+</div>
+
+<!-- Modal Modifier -->
+<div id="modalEdit" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); justify-content:center; align-items:center; z-index:1000;">
+    <div style="background:white; padding:30px; border-radius:15px; max-width:500px; width:90%; position:relative; box-shadow:0 10px 30px rgba(0,0,0,0.3); transform:scale(0.9); transition: transform 0.3s ease;">
+        <span style="position:absolute; top:15px; right:20px; cursor:pointer; font-size:1.5em;" onclick="closeEditModal()">âœ–</span>
+        <h2 style="font-family: 'Great Vibes', cursive; text-align:center; font-size:2.5em; margin-bottom:25px;">Modifier le livre</h2>
+        <form id="formEditBookModal" style="max-width:400px; margin:0 auto; text-align:center;">
+            <input type="hidden" name="livre_id" id="modal_edit_livre_id">
+            <input type="text" name="titre" id="modal_edit_titre" placeholder="Titre" required>
+            <input type="text" name="auteur" id="modal_edit_auteur" placeholder="Auteur" required>
+            <input type="text" name="genre" id="modal_edit_genre" placeholder="Genre">
+            <textarea name="description" id="modal_edit_description" placeholder="Description"></textarea>
+            <input type="text" name="image_url" id="modal_edit_image_url" placeholder="URL de l'image">
+            <button type="submit">Enregistrer</button>
+        </form>
+    </div>
+</div>
+
+<!-- Onglet Gestion utilisateurs -->
+<div id="utilisateurs" class="tabContent" data-page-param="utilisateurs_page" data-current-page="<?= (int) $utilisateursPagination['page'] ?>" data-total-pages="<?= (int) $utilisateursPagination['total_pages'] ?>">
+    <?php
+        $utilisateursCount = count($utilisateurs);
+        $utilisateursStart = $utilisateursCount ? $utilisateursPagination['offset'] + 1 : 0;
+        $utilisateursEnd = $utilisateursCount ? $utilisateursPagination['offset'] + $utilisateursCount : 0;
+    ?>
+    <?php if ($utilisateursCount === 0): ?>
+        <p style="text-align:center;">Aucun utilisateur enregistré.</p>
+    <?php else: ?>
+        <table>
+    <tr>
+        <th>Pseudo</th>
+        <th>Email</th>
+        <th>Role</th>
+        <th>Inscription</th>
+        <th>Actions</th>
+    </tr>
+    <?php foreach ($utilisateurs as $u): ?>
+        <?php
+            $roleUtilisateur = $u['role'] ?? 'utilisateur';
+            $isSelf = $utilisateurId && (int) $u['utilisateur_id'] === (int) $utilisateurId;
+            $isAdminRole = $roleUtilisateur === 'admin';
+            $dateInscription = isset($u['date_inscription']) ? date('d-m-Y', strtotime($u['date_inscription'])) : '-';
+        ?>
+        <tr>
+            <td data-label="Pseudo"><?= htmlspecialchars($u['pseudo']) ?></td>
+            <td data-label="Email"><?= htmlspecialchars($u['email']) ?></td>
+            <td data-label="Role"><?= htmlspecialchars($roleUtilisateur) ?></td>
+            <td data-label="Inscription"><?= htmlspecialchars($dateInscription) ?></td>
+            <td data-label="Actions">
+                <?php if ($isSelf): ?>
+                    <em>Compte actuel</em>
+                <?php elseif ($isAdminRole): ?>
+                    <em>Administrateur</em>
+                <?php else: ?>
+                    <button class="action supprimer"
+                            data-user="<?= (int) $u['utilisateur_id'] ?>"
+                            data-pseudo="<?= htmlspecialchars($u['pseudo'], ENT_QUOTES, 'UTF-8') ?>"
+                            onclick="deleteUser(this, this.dataset.user, this.dataset.pseudo)">
+                        Supprimer
+                    </button>
+                <?php endif; ?>
+            </td>
+        </tr>
+    <?php endforeach; ?>
+</table>
+
+    <?php endif; ?>
+    <div class="pagination-info">
+        <?php if($utilisateursCount): ?>
+            Affichage de <?= htmlspecialchars($utilisateursStart, ENT_QUOTES, 'UTF-8') ?> à <?= htmlspecialchars($utilisateursEnd, ENT_QUOTES, 'UTF-8') ?> sur <?= htmlspecialchars((string)$utilisateursPagination['total_items'], ENT_QUOTES, 'UTF-8') ?> utilisateurs.
+        <?php else: ?>
+            Aucun utilisateur à afficher.
+        <?php endif; ?>
+    </div>
+    <?= renderPagination('utilisateurs_page', $utilisateursPagination, 'utilisateurs'); ?>
+</div>
+<!-- Onglet Statistiques -->
 <div id="statistiques" class="tabContent">
     <div id="statsContent" style="text-align:center;">
         <p id="noDataMessage" style="color:#b71c1c; font-weight:bold; display:none;">Aucune réservation pour générer des statistiques.</p>
@@ -298,7 +562,6 @@ $flashStatus = $flashStatus ?? 'success';
         <canvas id="graphUsers" height="200" style="display:none;"></canvas>
     </div>
 </div>
-
 <script>
   window.chartData = {
     livres: {
@@ -311,12 +574,14 @@ $flashStatus = $flashStatus ?? 'success';
     }
   };
 
-  document.addEventListener('DOMContentLoaded', function() {
-      var closeBtn = document.getElementById('modalAddCloseBtn');
-      if (closeBtn) {
-          closeBtn.addEventListener('click', closeAddModal);
-      }
-  });
+document.addEventListener('DOMContentLoaded', function() {
+    var closeBtn = document.getElementById('modalAddCloseBtn');
+    if (closeBtn) {
+        closeBtn.addEventListener('click', function() {
+            closeAddModal();
+        });
+    }
+});
 </script>
 
 <?php
@@ -327,7 +592,8 @@ $adminJsPath = 'assets/js/admin.js';
 $adminJsFullPath = __DIR__ . '/' . $adminJsPath;
 $adminJsVersion = file_exists($adminJsFullPath) ? (string) filemtime($adminJsFullPath) : (string) time();
 ?>
-<script src="<?= e($adminJsPath . '?v=' . $adminJsVersion) ?>"></script>
+
+<script src="<?= htmlspecialchars($adminJsPath . '?v=' . $adminJsVersion, ENT_QUOTES, 'UTF-8') ?>"></script>
 </body>
 </html>
 <?php ob_end_flush(); ?>
