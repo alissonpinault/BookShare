@@ -3,6 +3,10 @@ declare(strict_types=1);
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 ob_start();
+set_error_handler(function($errno, $errstr, $errfile, $errline) {
+    echo "<pre style='color:red;'>PHP ERROR [$errno] : $errstr in $errfile on line $errline</pre>";
+    return true;
+});
 
 use Bookshare\Models\Utilisateur;
 
@@ -226,6 +230,32 @@ $reservationsTerminees = $pdo->query("
     WHERE r.statut = 'terminee'
     ORDER BY r.date_reservation DESC
 ")->fetchAll(PDO::FETCH_ASSOC);
+
+// --- Chargement des livres ---
+$livresStmt = $pdo->prepare("
+    SELECT * 
+    FROM livres 
+    ORDER BY titre 
+    LIMIT :limit OFFSET :offset
+");
+$livresStmt->bindValue(':limit', $livresPagination['per_page'], PDO::PARAM_INT);
+$livresStmt->bindValue(':offset', $livresPagination['offset'], PDO::PARAM_INT);
+$livresStmt->execute();
+$livres = $livresStmt->fetchAll(PDO::FETCH_ASSOC);
+if (!is_array($livres)) $livres = [];
+
+// --- Chargement des utilisateurs ---
+$utilisateursStmt = $pdo->prepare("
+    SELECT utilisateur_id, pseudo, email, role, date_inscription
+    FROM utilisateurs
+    ORDER BY pseudo
+    LIMIT :limit OFFSET :offset
+");
+$utilisateursStmt->bindValue(':limit', $utilisateursPagination['per_page'], PDO::PARAM_INT);
+$utilisateursStmt->bindValue(':offset', $utilisateursPagination['offset'], PDO::PARAM_INT);
+$utilisateursStmt->execute();
+$utilisateurs = $utilisateursStmt->fetchAll(PDO::FETCH_ASSOC);
+if (!is_array($utilisateurs)) $utilisateurs = [];
 
 // --- Messages flash par défaut
 $flashMessage = $flashMessage ?? '';
