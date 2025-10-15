@@ -465,7 +465,8 @@ $flashStatus = $flashStatus ?? 'success';
 ?>
 <div class="pagination-info">
     <?php if($livresCount): ?>
-        Affichage de <?= htmlspecialchars($livresStart, ENT_QUOTES, 'UTF-8') ?> à <?= htmlspecialchars($livresEnd, ENT_QUOTES, 'UTF-8') ?> sur <?= htmlspecialchars($livresPagination['total_items'], ENT_QUOTES, 'UTF-8') ?> livres.
+        Affichage de <?= htmlspecialchars($livresStart, ENT_QUOTES, 'UTF-8') ?> à <?= htmlspecialchars($livresEnd, ENT_QUOTES, 'UTF-8') ?> sur <?= htmlspecialchars((string)$livresPagination['total_items'], ENT_QUOTES, 'UTF-8') ?>
+ livres.
     <?php else: ?>
         Aucun livre trouvé.
     <?php endif; ?>
@@ -541,7 +542,7 @@ $flashStatus = $flashStatus ?? 'success';
     <?php endif; ?>
     <div class="pagination-info">
         <?php if($utilisateursCount): ?>
-            Affichage de <?= htmlspecialchars($utilisateursStart, ENT_QUOTES, 'UTF-8') ?> à <?= htmlspecialchars($utilisateursEnd, ENT_QUOTES, 'UTF-8') ?> sur <?= htmlspecialchars($utilisateursPagination['total_items'], ENT_QUOTES, 'UTF-8') ?> utilisateurs.
+            Affichage de <?= htmlspecialchars($utilisateursStart, ENT_QUOTES, 'UTF-8') ?> à <?= htmlspecialchars($utilisateursEnd, ENT_QUOTES, 'UTF-8') ?> sur <?= htmlspecialchars((string)$utilisateursPagination['total_items'], ENT_QUOTES, 'UTF-8') ?> utilisateurs.
         <?php else: ?>
             Aucun utilisateur à afficher.
         <?php endif; ?>
