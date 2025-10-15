@@ -548,12 +548,15 @@ $flashStatus = $flashStatus ?? 'success';
 
     <?php endif; ?>
     <div class="pagination-info">
-        <?php if($utilisateursCount): ?>
-            Affichage de <?= htmlspecialchars($utilisateursStart, ENT_QUOTES, 'UTF-8') ?> à <?= htmlspecialchars($utilisateursEnd, ENT_QUOTES, 'UTF-8') ?> sur <?= htmlspecialchars((string)$utilisateursPagination['total_items'], ENT_QUOTES, 'UTF-8') ?> utilisateurs.
-        <?php else: ?>
-            Aucun utilisateur à afficher.
-        <?php endif; ?>
-    </div>
+    <?php if ($utilisateursCount): ?>
+        Affichage de <?= htmlspecialchars((string)$utilisateursStart, ENT_QUOTES, 'UTF-8') ?>
+        à <?= htmlspecialchars((string)$utilisateursEnd, ENT_QUOTES, 'UTF-8') ?>
+        sur <?= htmlspecialchars((string)$utilisateursPagination['total_items'], ENT_QUOTES, 'UTF-8') ?> utilisateurs.
+    <?php else: ?>
+        Aucun utilisateur à afficher.
+    <?php endif; ?>
+</div>
+
     <?= renderPagination('utilisateurs_page', $utilisateursPagination, 'utilisateurs'); ?>
 </div>
 <!-- Onglet Statistiques -->
