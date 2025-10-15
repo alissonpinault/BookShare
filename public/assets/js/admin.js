@@ -398,23 +398,30 @@ function createCharts() {
     const canvasUsers = document.getElementById("graphUsers");
     canvasUsers.style.display = "block";
     new Chart(canvasUsers, {
-      type: "bar",
-      data: {
-        labels: users.labels,
-        datasets: [
-          {
-            label: "Réservations",
-            data: users.data,
-            backgroundColor: "#f5a623cc",
-            borderColor: "#f57c00",
-            borderWidth: 1,
-            borderRadius: 6,
-            barPercentage: 0.6,
-          },
-        ],
+  type: "bar",
+  data: {
+    labels: users.labels,
+    datasets: [
+      {
+        label: "Réservations",
+        data: users.data,
+        backgroundColor: "#42a5f5cc",
+        borderColor: "#1e88e5",
+        borderWidth: 1,
+        borderRadius: 6,
+        barPercentage: 0.6,
       },
-      options: chartOptions,
-    });
+    ],
+  },
+  options: {
+    ...chartOptions,
+    indexAxis: "y",
+    scales: {
+      x: { beginAtZero: true, ticks: { stepSize: 1, precision: 0 } },
+    },
+  },
+});
+
   }
 }
 
