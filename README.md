@@ -65,7 +65,7 @@ Depuis phpMyAdmin :
 
 Crée une base bookshare
 
-Importe le fichier /sql/init_bookshare.sql fourni.
+Importe le fichier /sql/bookshare.sql fourni.
 
 4️⃣ Configurer le fichier Database.php
 php
@@ -84,7 +84,7 @@ Copier le code
 C:\xampp\htdocs\BookShare
 2️⃣ Démarrer Apache et MySQL depuis le panneau XAMPP.
 3️⃣ Créer une base bookshare dans phpMyAdmin.
-4️⃣ Importer le fichier /sql/init_bookshare.sql.
+4️⃣ Importer le fichier /sql/bookshare.sql.
 5️⃣ Vérifier le fichier Database.php :
 
 php
@@ -168,7 +168,7 @@ BookShare/
 |     |- footer.php
 |     `- nav.php
 |- sql/
-|  |- init_bookshare.sql
+|  |- bookshare.sql
 |- composer.json
 |- composer.lock
 |- docker-compose.yml
