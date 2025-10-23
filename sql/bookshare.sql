@@ -72,6 +72,7 @@ CREATE TABLE `notes` (
   `date_note` DATETIME DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`note_id`),
   UNIQUE KEY `unique_note_user_livre` (`livre_id`,`utilisateur_id`),
+  CONSTRAINT `chk_note_valide` CHECK (`note` BETWEEN 1 AND 5),
   CONSTRAINT `fk_note_livre` FOREIGN KEY (`livre_id`) REFERENCES `livres` (`livre_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fk_note_utilisateur` FOREIGN KEY (`utilisateur_id`) REFERENCES `utilisateurs` (`utilisateur_id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
