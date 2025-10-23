@@ -1,5 +1,5 @@
 -- =============================================
--- SCRIPT D’INITIALISATION — BOOKSHARE (V2 PRO)
+-- SCRIPT D’INITIALISATION — BOOKSHARE
 -- Base : bookshare
 -- Contenu : création de la base, des tables,
 --           insertion d'un admin + user test
