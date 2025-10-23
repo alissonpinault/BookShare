@@ -23,7 +23,6 @@ Le projet a été développé dans le cadre de l’**évaluation ECF – Dévelo
 7. [🔐 Sécurité](#-sécurité)  
 8. [📬 Système d’e-mails](#-système-de-mails)  
 9. [☁️ Déploiement Heroku](#️-déploiement-heroku)  
-10. [📸 Captures d’écran](#-captures-décran)  
 11. [👤 Auteur](#-auteur)
 
 ---
@@ -66,9 +65,9 @@ Depuis phpMyAdmin :
 
 Crée une base bookshare
 
-Importe le fichier /sql/bookshare.sql fourni.
+Importe le fichier /sql/init_bookshare.sql fourni.
 
-4️⃣ Configurer le fichier db.php
+4️⃣ Configurer le fichier Database.php
 php
 Copier le code
 $pdo = new PDO('mysql:host=mysql;dbname=bookshare;charset=utf8', 'user', 'password');
@@ -85,8 +84,8 @@ Copier le code
 C:\xampp\htdocs\BookShare
 2️⃣ Démarrer Apache et MySQL depuis le panneau XAMPP.
 3️⃣ Créer une base bookshare dans phpMyAdmin.
-4️⃣ Importer le fichier /sql/bookshare.sql.
-5️⃣ Vérifier le fichier db.php :
+4️⃣ Importer le fichier /sql/init_bookshare.sql.
+5️⃣ Vérifier le fichier Database.php :
 
 php
 Copier le code
@@ -112,9 +111,9 @@ Recherche et filtres dynamiques
 Réservation et notation (1 à 5 étoiles)
 
 🛡️ Administration
-Validation manuelle des inscriptions
+Validation manuelle des réservations
 
-Modération des avis et signalements
+Modération des inscriptions
 
 Visualisation des logs depuis MongoDB
 
@@ -169,8 +168,7 @@ BookShare/
 |     |- footer.php
 |     `- nav.php
 |- sql/
-|  |- bookshare.sql
-|  `- init_bookshare.sql
+|  |- init_bookshare.sql
 |- composer.json
 |- composer.lock
 |- docker-compose.yml
@@ -247,16 +245,6 @@ Déploiement :
 bash
 Copier le code
 git push heroku main
-📸 Captures d’écran
-(à insérer plus tard)
-
-Page d’accueil
-![Image](https://github.com/user-attachments/assets/49e5b431-965a-42cd-ba5a-1f5069c6fe6d)
-Formulaire d’inscription
-
-E-mail de validation
-
-Espace administrateur
 
 👤 Auteur
 👩‍💻 Alisson Pinault
