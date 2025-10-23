@@ -6,7 +6,7 @@ namespace Bookshare\Services\Auth;
 
 final class LogoutService
 {
-    /** Logs out the current user and clears the session. */
+
     public static function logout(): void
     {
         if (session_status() !== PHP_SESSION_ACTIVE) {

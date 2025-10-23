@@ -1,19 +1,7 @@
 <?php
 
 if (!function_exists('renderFooter')) {
-    /**
-     * Affiche le pied de page du site avec une éventuelle pagination.
-     *
-     * @param array{
-     *     baseUrl?: string,
-     *     pagination?: array{
-     *         total_items?: int,
-     *         total_pages?: int,
-     *         current_page?: int,
-     *         query_params?: array<string, scalar>
-     *     }|null
-     * } $options
-     */
+ 
     function renderFooter(array $options = []): void
     {
         $baseUrl = $options['baseUrl'] ?? 'index.php';

@@ -36,13 +36,13 @@ $messageType = 'success';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reserver'])) {
     if (!$utilisateurId) {
-        $message = 'Veuillez vous connecter pour r�server.';
+        $message = 'Veuillez vous connecter pour réserver.';
         $messageType = 'error';
     } elseif ($livre->reserver((int) $utilisateurId)) {
-        header('Location: reservation.php?message=' . urlencode('R�servation effectu�e avec succ�s.') . '&status=success');
+        header('Location: reservation.php?message=' . urlencode('Réservation effectuée avec succès.') . '&status=success');
         exit;
     } else {
-        $message = 'Ce livre est d�j� r�serv�.';
+        $message = 'Ce livre est déjé réservé.';
         $messageType = 'error';
     }
 }
@@ -72,7 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reserver'])) {
     <p><strong>Auteur :</strong> <?= htmlspecialchars($livre->getAuteur()) ?></p>
     <p><strong>Genre :</strong> <?= htmlspecialchars($livre->getGenre()) ?></p>
     <p><strong>Description :</strong><br><?= str_replace("\n", "<br>", htmlspecialchars($livre->getDescription() ?: 'Aucune description.')) ?></p>
-    <p><strong>Statut :</strong> <?= $livre->getDisponibilite() === 'disponible' ? 'Disponible' : 'R�serv�' ?></p>
+    <p><strong>Statut :</strong> <?= $livre->getDisponibilite() === 'disponible' ? 'Disponible' : 'Réservé' ?></p>
 
     <div class="moyenne-notes">
         <?php
