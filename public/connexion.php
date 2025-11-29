@@ -12,7 +12,7 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// ðŸ”¹ On récupère le message flash s'il existe
+// On récupère le message flash s'il existe
 $message = $_SESSION['flash_message'] ?? '';
 unset($_SESSION['flash_message']); // Supprime après lecture
 
