@@ -39,19 +39,19 @@ $auteurs = $auteursStmt ? $auteursStmt->fetchAll(PDO::FETCH_COLUMN) : [];
 <body>
 <?php include dirname(__DIR__) . '/templates/partials/nav.php'; ?>
 
-<main class="layout" style="padding:2rem; max-width:1000px; margin:0 auto;">
+<main class="layout" style="padding:2rem; width:100%; max-width:none; margin:0; box-sizing:border-box;">
     <h1>Mentions légales</h1>
     <section>
         <h2>Éditeur du site</h2>
         <p>Site édité par BookShare.</p>
-        <p>Siège social : 123 Rue de la Bibliothèque, 75000 Paris, France</p>
-        <p>Contact : contact@bookshare.example</p>
-        <p>Directeur de la publication : l'équipe BookShare</p>
+        <p>Siège social: 123 Rue de la Bibliothèque, 75000 Paris, France</p>
+        <p>Contact: contact@bookshare.com</p>
+        <p>Directeur de la publication: l'équipe BookShare</p>
     </section>
 
     <section>
         <h2>Hébergement</h2>
-        <p>Site hébergé par votre fournisseur d’hébergement (voir configuration du projet).</p>
+        <p>Site hébergé par HEROKU.</p>
     </section>
 
     <hr>
