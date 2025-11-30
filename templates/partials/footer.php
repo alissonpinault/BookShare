@@ -43,6 +43,7 @@ if (!function_exists('renderFooter')) {
     <?php endif; ?>
 
     <p class="footer-text">© 2025 BookShare - Tous droits réservés</p>
+    <button onclick="window.location.href='mentions_legales.php'">Mentions légales | Politique de confidentialité | Conditions d'utilisation</button>
 </footer>
 <?php
     }
