@@ -39,11 +39,28 @@ $auteurs = $auteursStmt ? $auteursStmt->fetchAll(PDO::FETCH_COLUMN) : [];
 <body>
 <?php include dirname(__DIR__) . '/templates/partials/nav.php'; ?>
 
-<main class="layout" style="padding:2rem; max-width:900px; margin:0 auto; line-height:1.7;">
-    
-    <h1 style="margin-top:0;">Mentions légales</h1>
+<main class="layout" 
+      style="padding:2rem; max-width:900px; margin:0 auto; box-sizing:border-box;
+             display:block; text-align:left;">
 
-    <section style="margin-bottom:2rem;">
+    <style>
+        /* Force les titres à gauche */
+        main h1, 
+        main h2 {
+            text-align: left !important;
+            margin-bottom: 1rem;
+            margin-top: 2rem;
+        }
+
+        /* Supprime tout comportement flex hérité */
+        main section {
+            display: block !important;
+        }
+    </style>
+
+    <h1>Mentions légales</h1>
+
+    <section>
         <h2>Éditeur du site</h2>
         <p>Site édité par <strong>BookShare</strong>.</p>
         <p>Siège social : 123 Rue de la Bibliothèque, 75000 Paris, France</p>
@@ -51,7 +68,7 @@ $auteurs = $auteursStmt ? $auteursStmt->fetchAll(PDO::FETCH_COLUMN) : [];
         <p>Directeur de la publication : l'équipe BookShare</p>
     </section>
 
-    <section style="margin-bottom:2rem;">
+    <section>
         <h2>Hébergement</h2>
         <p>Site hébergé par <strong>HEROKU</strong>.</p>
     </section>
@@ -60,7 +77,7 @@ $auteurs = $auteursStmt ? $auteursStmt->fetchAll(PDO::FETCH_COLUMN) : [];
 
     <h1>Politique de confidentialité</h1>
 
-    <section style="margin-bottom:2rem;">
+    <section>
         <h2>1. Données collectées</h2>
         <p>
             Nous collectons les données nécessaires au fonctionnement du service : identifiants de compte 
@@ -89,7 +106,7 @@ $auteurs = $auteursStmt ? $auteursStmt->fetchAll(PDO::FETCH_COLUMN) : [];
         <h2>5. Cookies</h2>
         <p>
             Le site utilise des cookies techniques pour la session et des cookies optionnels pour améliorer 
-            l'expérience. Vous pouvez gérer les cookies depuis votre navigateur.
+            l'expérience.
         </p>
     </section>
 
@@ -97,7 +114,7 @@ $auteurs = $auteursStmt ? $auteursStmt->fetchAll(PDO::FETCH_COLUMN) : [];
 
     <h1>Conditions d'utilisation</h1>
 
-    <section style="margin-bottom:2rem;">
+    <section>
         <h2>1. Objet</h2>
         <p>
             Les présentes conditions régissent l’accès et l’utilisation du site BookShare.
@@ -105,25 +122,22 @@ $auteurs = $auteursStmt ? $auteursStmt->fetchAll(PDO::FETCH_COLUMN) : [];
 
         <h2>2. Compte utilisateur</h2>
         <p>
-            Chaque utilisateur est responsable de la confidentialité de ses identifiants. 
-            Toute utilisation frauduleuse doit être signalée.
+            Chaque utilisateur est responsable de la confidentialité de ses identifiants.
         </p>
 
         <h2>3. Contenu</h2>
         <p>
-            Les informations publiées doivent respecter la loi et ne pas porter atteinte aux tiers. 
-            BookShare peut supprimer tout contenu illicite.
+            Les informations publiées doivent respecter la loi et ne pas porter atteinte aux tiers.
         </p>
 
         <h2>4. Responsabilité</h2>
         <p>
-            BookShare met en œuvre des moyens raisonnables pour assurer la disponibilité du service, mais 
-            n’est pas responsable des interruptions ou pertes de données indépendantes de sa volonté.
+            BookShare met en œuvre des moyens raisonnables pour assurer la disponibilité du service.
         </p>
 
         <h2>5. Modification des conditions</h2>
         <p>
-            Nous pouvons modifier ces conditions. Les changements seront appliqués dès leur publication.
+            Nous pouvons modifier ces conditions. Les changements seront appliqués dès publication.
         </p>
 
         <h2>6. Droit applicable</h2>
