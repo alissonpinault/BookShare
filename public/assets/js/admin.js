@@ -69,15 +69,41 @@ function showError(message) {
   pushFlash(message || DEFAULT_ERROR_MESSAGE, "error");
 }
 
-function toJson(response) {
-  if (!response.ok) throw new Error("Reponse reseau invalide");
-  return response.json();
+function handleRequestError(error) {
+  console.error("Erreur requête:", error, error?.body ?? "");
+  pushFlash("Erreur de communication avec le serveur. Voir console pour détails.", "error");
 }
 
-function handleRequestError(error) {
-  console.error(error);
-  showError("La requete a echoue. Veuillez reessayer.");
+// helper pour ajouter headers AJAX et renvoyer la fetch
+function ajaxFetch(url, options = {}) {
+    options.headers = Object.assign({
+        'Accept': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest'
+    }, options.headers || {});
+    return fetch(url, options);
 }
+
+// Amélioration de la conversion en JSON + debug si on reçoit du HTML
+function toJson(response) {
+    const ct = (response.headers.get('content-type') || '').toLowerCase();
+    if (!response.ok) {
+        return response.text().then(text => {
+            const err = new Error(`HTTP ${response.status}`);
+            err.status = response.status;
+            err.body = text;
+            throw err;
+        });
+    }
+    if (!ct.includes('application/json')) {
+        return response.text().then(text => {
+            const err = new Error('Réponse non JSON reçue');
+            err.body = text;
+            throw err;
+        });
+    }
+    return response.json();
+}
+
 function getSectionMeta(sectionId) {
   const section = document.getElementById(sectionId);
   if (!section) return null;
