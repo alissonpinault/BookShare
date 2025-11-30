@@ -45,7 +45,7 @@ $utilisateur = $utilisateur ?? null;
 
             <button onclick="window.location.href='reservation.php'">Mes Réservations</button>
 
-            <button onclick="window.location.href='deconnexion.php'">
+            <button onclick="window.location.href='index.php'">
                 Déconnexion (<?= htmlspecialchars($utilisateur->getPseudo()) ?>)
             </button>
         <?php else: ?>
