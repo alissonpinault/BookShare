@@ -39,63 +39,99 @@ $auteurs = $auteursStmt ? $auteursStmt->fetchAll(PDO::FETCH_COLUMN) : [];
 <body>
 <?php include dirname(__DIR__) . '/templates/partials/nav.php'; ?>
 
-<main class="layout" style="padding:2rem; width:100%; max-width:none; margin:0; box-sizing:border-box;">
-    <h1>Mentions légales</h1>
-    <section>
+<main class="layout" style="padding:2rem; max-width:900px; margin:0 auto; line-height:1.7;">
+    
+    <h1 style="margin-top:0;">Mentions légales</h1>
+
+    <section style="margin-bottom:2rem;">
         <h2>Éditeur du site</h2>
-        <p>Site édité par BookShare.</p>
-        <p>Siège social: 123 Rue de la Bibliothèque, 75000 Paris, France</p>
-        <p>Contact: contact@bookshare.com</p>
-        <p>Directeur de la publication: l'équipe BookShare</p>
+        <p>Site édité par <strong>BookShare</strong>.</p>
+        <p>Siège social : 123 Rue de la Bibliothèque, 75000 Paris, France</p>
+        <p>Contact : <a href="mailto:contact@bookshare.com">contact@bookshare.com</a></p>
+        <p>Directeur de la publication : l'équipe BookShare</p>
     </section>
 
-    <section>
+    <section style="margin-bottom:2rem;">
         <h2>Hébergement</h2>
-        <p>Site hébergé par HEROKU.</p>
+        <p>Site hébergé par <strong>HEROKU</strong>.</p>
     </section>
 
-    <hr>
+    <hr style="margin:3rem 0;">
 
     <h1>Politique de confidentialité</h1>
-    <section>
+
+    <section style="margin-bottom:2rem;">
         <h2>1. Données collectées</h2>
-        <p>Nous collectons les données nécessaires au fonctionnement du service : identifiants de compte (pseudo, email), données de réservations et préférences. Aucune donnée sensible n’est collectée sans consentement explicite.</p>
+        <p>
+            Nous collectons les données nécessaires au fonctionnement du service : identifiants de compte 
+            (pseudo, email), données de réservations et préférences. Aucune donnée sensible n’est collectée 
+            sans consentement explicite.
+        </p>
 
         <h2>2. Finalités</h2>
-        <p>Les données sont utilisées pour : gestion des comptes, traitement des réservations, notifications par email et amélioration du service.</p>
+        <p>
+            Les données sont utilisées pour : gestion des comptes, traitement des réservations, notifications 
+            par email et amélioration du service.
+        </p>
 
         <h2>3. Conservation</h2>
-        <p>Les données sont conservées aussi longtemps que nécessaire pour fournir le service ou selon les obligations légales applicables.</p>
+        <p>
+            Les données sont conservées aussi longtemps que nécessaire pour fournir le service ou selon les 
+            obligations légales applicables.
+        </p>
 
         <h2>4. Droits des utilisateurs</h2>
-        <p>Vous pouvez demander l'accès, la rectification ou la suppression de vos données en contactant contact@bookshare.example.</p>
+        <p>
+            Vous pouvez demander l'accès, la rectification ou la suppression de vos données en contactant 
+            <a href="mailto:contact@bookshare.example">contact@bookshare.example</a>.
+        </p>
 
         <h2>5. Cookies</h2>
-        <p>Le site utilise des cookies techniques pour la session et des cookies optionnels pour améliorer l'expérience. Vous pouvez gérer les cookies depuis votre navigateur.</p>
+        <p>
+            Le site utilise des cookies techniques pour la session et des cookies optionnels pour améliorer 
+            l'expérience. Vous pouvez gérer les cookies depuis votre navigateur.
+        </p>
     </section>
 
-    <hr>
+    <hr style="margin:3rem 0;">
 
     <h1>Conditions d'utilisation</h1>
-    <section>
+
+    <section style="margin-bottom:2rem;">
         <h2>1. Objet</h2>
-        <p>Les présentes conditions régissent l’accès et l’utilisation du site BookShare.</p>
+        <p>
+            Les présentes conditions régissent l’accès et l’utilisation du site BookShare.
+        </p>
 
         <h2>2. Compte utilisateur</h2>
-        <p>Chaque utilisateur est responsable de la confidentialité de ses identifiants. Toute utilisation frauduleuse doit être signalée.</p>
+        <p>
+            Chaque utilisateur est responsable de la confidentialité de ses identifiants. 
+            Toute utilisation frauduleuse doit être signalée.
+        </p>
 
         <h2>3. Contenu</h2>
-        <p>Les informations publiées par les utilisateurs doivent respecter la loi et ne pas porter atteinte aux tiers. BookShare se réserve le droit de supprimer tout contenu illicite.</p>
+        <p>
+            Les informations publiées doivent respecter la loi et ne pas porter atteinte aux tiers. 
+            BookShare peut supprimer tout contenu illicite.
+        </p>
 
         <h2>4. Responsabilité</h2>
-        <p>BookShare met en œuvre des moyens raisonnables pour assurer la disponibilité du service, mais n’est pas responsable des interruptions ou pertes de données indépendantes de sa volonté.</p>
+        <p>
+            BookShare met en œuvre des moyens raisonnables pour assurer la disponibilité du service, mais 
+            n’est pas responsable des interruptions ou pertes de données indépendantes de sa volonté.
+        </p>
 
         <h2>5. Modification des conditions</h2>
-        <p>Nous pouvons modifier ces conditions. Les changements seront publiés sur cette page et s’appliqueront dès leur mise en ligne.</p>
+        <p>
+            Nous pouvons modifier ces conditions. Les changements seront appliqués dès leur publication.
+        </p>
 
         <h2>6. Droit applicable</h2>
-        <p>Les présentes conditions sont soumises au droit français.</p>
+        <p>
+            Les présentes conditions sont soumises au droit français.
+        </p>
     </section>
+
 </main>
 
 <?php
