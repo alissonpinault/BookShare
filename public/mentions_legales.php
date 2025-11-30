@@ -44,8 +44,7 @@ $auteurs = $auteursStmt ? $auteursStmt->fetchAll(PDO::FETCH_COLUMN) : [];
              display:block; text-align:left;">
 
     <style>
-        /* Force les titres à gauche */
-        main h1, 
+        /* Force les titres à gauche */ 
         main h2 {
             text-align: left !important;
             margin-bottom: 1rem;
