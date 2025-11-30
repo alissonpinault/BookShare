@@ -45,9 +45,11 @@ $utilisateur = $utilisateur ?? null;
 
             <button onclick="window.location.href='reservation.php'">Mes Réservations</button>
 
-            <button onclick="window.location.href='index.php'">
-                Déconnexion (<?= htmlspecialchars($utilisateur->getPseudo()) ?>)
-            </button>
+            <form method="post" action="deconnexion.php" style="display:inline;margin:0;">
+                <button type="submit" name="logout">
+                    Déconnexion (<?= htmlspecialchars($utilisateur->getPseudo()) ?>)
+                </button>
+            </form>
         <?php else: ?>
             <button onclick="window.location.href='connexion.php'">Connexion</button>
             <button onclick="window.location.href='inscription.php'">Créer un compte</button>
