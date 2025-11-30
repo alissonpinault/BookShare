@@ -1,17 +1,32 @@
 <?php
 declare(strict_types=1);
 
-use Bookshare\Models\Utilisateur;
+session_start();
 
 $container = require dirname(__DIR__) . '/src/bootstrap.php';
 $pdo = $container['pdo'];
 $mongoDB = $container['mongoDB'] ?? null;
 
-session_start();
+// Détection requête AJAX — à placer tôt (avant les redirections HTML)
+function isAjaxRequest(): bool {
+    $xrw = $_SERVER['HTTP_X_REQUESTED_WITH'] ?? '';
+    $accept = $_SERVER['HTTP_ACCEPT'] ?? '';
+    return strtolower($xrw) === 'xmlhttprequest' || strpos($accept, 'application/json') !== false;
+}
 
-// Vérification du rôle admin
+$isAjax = isAjaxRequest();
+if ($isAjax) {
+    header('Content-Type: application/json; charset=UTF-8');
+}
+
+// Auth check — si AJAX et non authentifié, renvoyer JSON 401 au lieu de redirection HTML
 if (empty($_SESSION['utilisateur_id'])) {
-    header('Location: index.php');
+    if ($isAjax) {
+        http_response_code(401);
+        echo json_encode(['success' => false, 'message' => 'Session expirée ou non authentifiée.']);
+        exit;
+    }
+    header('Location: login.php');
     exit;
 }
 
