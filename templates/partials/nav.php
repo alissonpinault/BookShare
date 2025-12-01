@@ -45,14 +45,13 @@ $utilisateur = $utilisateur ?? null;
 
             <button onclick="window.location.href='reservation.php'">Mes Réservations</button>
 
-            <form method="post" action="deconnexion.php" style="display:inline;margin:0;">
-                <button type="submit" name="logout">
-                    Déconnexion (<?= htmlspecialchars($utilisateur->getPseudo()) ?>)
-                </button>
-            </form>
+            <button id="logout-btn">Déconnexion (<?= htmlspecialchars($utilisateur->getPseudo()) ?>)</button>
+
         <?php else: ?>
             <button onclick="window.location.href='connexion.php'">Connexion</button>
             <button onclick="window.location.href='inscription.php'">Créer un compte</button>
         <?php endif; ?>
     </div>
 </nav>
+
+<script src="public/assets/js/logout.js" defer></script>
