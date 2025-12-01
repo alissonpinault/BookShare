@@ -54,4 +54,4 @@ $utilisateur = $utilisateur ?? null;
     </div>
 </nav>
 
-<script src="public/assets/js/logout.js" defer></script>
+<script src="public\assets\js\logout.js" defer></script>

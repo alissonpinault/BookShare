@@ -1,3 +1,5 @@
+console.log("logout.js bien chargé");
+
 document.getElementById('logout-btn').addEventListener('click', () => {
   fetch('deconnexion.php', {
     method: 'POST',
