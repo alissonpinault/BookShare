@@ -4,7 +4,7 @@ $role     = $_SESSION['role'] ?? '';
 $pseudo   = $_SESSION['pseudo'] ?? '';
 ?>
 
-<button onclick="window.location.href='index.php'">Accueil</button>
+<button class="user-btn" data-type="accueil" onclick="window.location.href='index.php'">Accueil</button>
 
 <?php if ($loggedIn): ?>
     <?php if ($role === 'admin'): ?>
