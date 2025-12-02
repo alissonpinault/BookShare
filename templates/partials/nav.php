@@ -17,7 +17,7 @@ $q       = $q       ?? '';
     <button class="burger" aria-label="Menu">&#9776;</button>
 
     <!-- Zone dynamique des boutons utilisateur -->
-    <div class="actions">
+    <div class="actions" id="nav-actions">
         <?php include __DIR__ . '/navdynamique.php'; ?>
     </div>
 
