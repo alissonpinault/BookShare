@@ -1,4 +1,6 @@
 <?php
+session_start();
+
 $genre   = $genre   ?? '';
 $auteur  = $auteur  ?? '';
 $statut  = $statut  ?? '';

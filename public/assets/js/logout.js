@@ -1,40 +1,29 @@
-console.log("logout.js bien chargé");
+console.log("logout.js chargé");
 
 document.addEventListener("DOMContentLoaded", () => {
-    const logoutBtn = document.getElementById("logout-btn");
-    if (!logoutBtn) return; // Rien si pas connecté
+  const logoutBtn = document.getElementById('logout-btn');
+  if (!logoutBtn) return; // pas de bouton => rien à faire
 
-    const handleLogout = () => {
-        fetch('/deconnexion.php', {
-            method: 'POST',
-            credentials: 'same-origin'
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
+  const handleLogout = () => {
+    fetch('/deconnexion.php', {
+      method: 'POST',
+      credentials: 'same-origin'
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        const actionsDiv = document.querySelector('.site-nav .actions');
 
-                // Recharge dynamiquement la partie .actions de la navbar
-                fetch('/nav.php')
-                    .then(res => res.text())
-                    .then(html => {
-                        const actions = document.querySelector(".actions");
-                        if (actions) {
-                            actions.innerHTML = html;
-                        }
+        // Reconstruire la nav pour utilisateur non connecté
+        actionsDiv.innerHTML = `
+          <button onclick="window.location.href='index.php'">Accueil</button>
+          <button onclick="window.location.href='connexion.php'">Connexion</button>
+          <button onclick="window.location.href='inscription.php'">Créer un compte</button>
+        `;
+      }
+    })
+    .catch(err => console.error('Erreur lors de la déconnexion:', err));
+  };
 
-                        // Réattache le listener sur le nouveau bouton de déconnexion
-                        const newLogoutBtn = document.getElementById("logout-btn");
-                        if (newLogoutBtn) {
-                            newLogoutBtn.addEventListener("click", handleLogout);
-                        }
-                    });
-
-            } else {
-                console.error("Déconnexion échouée :", data.error);
-            }
-        })
-        .catch(err => console.error("Erreur lors de la déconnexion :", err));
-    };
-
-    logoutBtn.addEventListener("click", handleLogout);
+  logoutBtn.addEventListener('click', handleLogout);
 });
