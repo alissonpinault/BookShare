@@ -16,7 +16,7 @@ $q       = $q       ?? '';
 
     <!-- Zone dynamique des boutons utilisateur -->
     <div class="actions">
-        <?php include __DIR__ . 'navdynamique.php'; ?>
+        <?php include __DIR__ . '/navdynamique.php'; ?>
     </div>
 
     <!-- Formulaire de recherche : partie statique -->
