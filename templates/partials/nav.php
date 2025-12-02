@@ -18,9 +18,6 @@ $q       = $q       ?? '';
     <!-- Zone boutons + recherche -->
     <div class="actions" id="nav-actions" style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
         
-        <!-- Bouton Accueil -->
-        <button class="user-btn" data-type="accueil" onclick="window.location.href='index.php'" style="padding: 6px 12px; border-radius: 4px; border: 1px solid #ccc; cursor: pointer;">Accueil</button>
-
         <!-- Barre de recherche -->
         <form method="get" action="index.php" id="main-search-form" style="display: flex; align-items: center; margin: 0;">
             <input type="text" id="main-search-input" name="q" placeholder="Rechercher un livre..." value="<?= htmlspecialchars($q) ?>" style="padding: 6px 10px; border-radius: 4px; border: 1px solid #ccc;">
