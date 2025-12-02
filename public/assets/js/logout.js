@@ -18,20 +18,19 @@ document.addEventListener("DOMContentLoaded", () => {
         actionsDiv.querySelectorAll('.user-btn').forEach(btn => btn.remove());
 
         // Reconstruit la nav pour utilisateur non connecté
-        const accueilBtn = document.createElement('button');
-        accueilBtn.textContent = 'Accueil';
-        accueilBtn.onclick = () => window.location.href='index.php';
-        actionsDiv.appendChild(accueilBtn);
+        const buttons = [
+          { text: 'Accueil', href: 'index.php' },
+          { text: 'Connexion', href: 'connexion.php' },
+          { text: 'Créer un compte', href: 'inscription.php' },
+        ];
 
-        const loginBtn = document.createElement('button');
-        loginBtn.textContent = 'Connexion';
-        loginBtn.onclick = () => window.location.href='connexion.php';
-        actionsDiv.appendChild(loginBtn);
-
-        const signupBtn = document.createElement('button');
-        signupBtn.textContent = 'Créer un compte';
-        signupBtn.onclick = () => window.location.href='inscription.php';
-        actionsDiv.appendChild(signupBtn);
+        buttons.forEach(b => {
+          const btn = document.createElement('button');
+          btn.className = 'user-btn';
+          btn.textContent = b.text;
+          btn.onclick = () => window.location.href = b.href;
+          actionsDiv.appendChild(btn);
+        });
       }
     })
     .catch(err => console.error('Erreur lors de la déconnexion:', err));
