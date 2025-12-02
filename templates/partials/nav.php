@@ -16,11 +16,6 @@ $q       = $q       ?? '';
     </a>
     <button class="burger" aria-label="Menu">&#9776;</button>
 
-    <!-- Zone dynamique des boutons utilisateur -->
-    <div class="actions" id="nav-actions">
-        <?php include __DIR__ . '/navdynamique.php'; ?>
-    </div>
-
     <!-- Formulaire de recherche : partie statique -->
     <form method="get" action="index.php" id="main-search-form" style="margin:0;">
         <input type="text" id="main-search-input" name="q" placeholder="Rechercher un livre..." value="<?= htmlspecialchars($q) ?>">
@@ -37,6 +32,12 @@ $q       = $q       ?? '';
             <input type="hidden" name="note_min" value="<?= htmlspecialchars((string)$noteMin) ?>">
         <?php endif; ?>
     </form>
+
+     <!-- Zone dynamique des boutons utilisateur -->
+    <div class="actions" id="nav-actions">
+        <?php include __DIR__ . '/navdynamique.php'; ?>
+    </div>
+    
 </nav>
 
 <script src="/assets/js/logout.js" defer></script>
