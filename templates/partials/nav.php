@@ -45,14 +45,4 @@ $q       = $q       ?? '';
     </div>
 </nav>
 
-<script defer>
-const burger = document.getElementById("burger-btn");
-const actions = document.getElementById("nav-actions");
-
-burger.addEventListener("click", () => {
-    actions.classList.toggle("open");
-});
-</script>
-
-
 <script src="/assets/js/logout.js" defer></script>
