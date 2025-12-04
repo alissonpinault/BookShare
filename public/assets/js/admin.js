@@ -120,7 +120,7 @@ function terminer(button, reservationId, livreId) {
   params.append("id", reservationId);
   params.append("livre_id", livreId);
 
-  fetch("/admin.php", { method: "POST", body: params })
+  fetch("admin.php", { method: "POST", body: params })
     .then(toJson)
     .then((d) => {
       if (d.success) {
