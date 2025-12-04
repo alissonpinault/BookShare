@@ -177,18 +177,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <input type="password" name="mdp_confirm" placeholder="Confirmer mot de passe" required>
 
     <!-- CONDITIONS GÉNÉRALES -->
-    <label style="display: flex; align-items: center; gap: 8px; margin: 10px 0;">
-        <input type="checkbox" name="cgu" required>
-        <span>
-            Je reconnais avoir lu et accepte les 
-            <a href="public/mentions_legales.php" target="_blank" 
-               style="text-decoration: none; cursor: pointer;"
-               onmouseover="this.style.textDecoration='underline'"
-               onmouseout="this.style.textDecoration='none'">
-               conditions générales
-            </a>.
-        </span>
-    </label>
+   <label style="display: flex; align-items: center; gap: 8px; margin: 10px 0; white-space: nowrap; text-align: left;">
+    <input type="checkbox" name="cgu" required>
+    <span>
+        Je reconnais avoir lu et accepte les 
+        <a href="mentions_legales.php" target="_blank"
+           style="text-decoration: none; cursor: pointer;"
+           onmouseover="this.style.textDecoration='underline'"
+           onmouseout="this.style.textDecoration='none'">
+           conditions générales
+        </a>.
+    </span>
+</label>
 
     <button type="submit">S'inscrire</button>
 </form>
