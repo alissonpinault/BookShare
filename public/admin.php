@@ -9,13 +9,13 @@ $mongoDB = $container['mongoDB'] ?? null;
 
 session_start();
 
-// Vérification du rôle admin - Si la requête est AJAX, on envoie une réponse JSON d'erreur
+// Vérification du rôle admin - Envoi d'une erreur JSON en cas d'accès non autorisé
 if (empty($_SESSION['utilisateur_id'])) {
-    if (!isset($_SERVER['HTTP_X_REQUESTED_WITH'])) {
-        header('Location: index.php');
+    if (isAjax()) {
+        echo json_encode(['success' => false, 'message' => 'Utilisateur non authentifié']);
         exit;
     } else {
-        echo json_encode(['success' => false, 'message' => 'Utilisateur non authentifié']);
+        header('Location: index.php');
         exit;
     }
 }
@@ -28,13 +28,13 @@ $utilisateur = new Utilisateur(
 );
 $utilisateurId = $utilisateur->getId();
 
-// Vérification si l'utilisateur est un admin - Si c'est une requête AJAX, renvoi d'une erreur JSON
+// Vérification si l'utilisateur est un admin
 if (!$utilisateur->estAdmin()) {
-    if (!isset($_SERVER['HTTP_X_REQUESTED_WITH'])) {
-        header('Location: index.php');
+    if (isAjax()) {
+        echo json_encode(['success' => false, 'message' => 'Accès interdit']);
         exit;
     } else {
-        echo json_encode(['success' => false, 'message' => 'Accès interdit']);
+        header('Location: index.php');
         exit;
     }
 }
@@ -44,6 +44,10 @@ if (!$utilisateur->estAdmin()) {
 ================================ */
 function e($value): string {
     return htmlspecialchars((string)$value, ENT_QUOTES, 'UTF-8');
+}
+
+function isAjax(): bool {
+    return isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
 }
 
 function readPageParam($name)
@@ -123,10 +127,8 @@ function renderPagination($param, array $pagination, $anchor)
 ================================ */
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && !empty($_POST['action'])) {
 
-    if (
-        !empty($_SERVER['HTTP_X_REQUESTED_WITH']) &&
-        strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest'
-    ) {
+    if (isAjax()) {
+        // Éviter toute sortie avant le JSON
         ob_clean();
         header('Content-Type: application/json');
         $action = $_POST['action'];
