@@ -21,7 +21,7 @@ $q       = $q       ?? '';
     </button>
 
     <!-- Zone boutons + recherche -->
-    <div class="actions" id="nav-actions" style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+    <div class="actions" id="nav-actions" style="align-items: center; gap: 10px; flex-wrap: wrap;">
         
         <!-- Barre de recherche -->
         <form method="get" action="index.php" id="main-search-form" style="display: flex; align-items: center; margin: 0;">
