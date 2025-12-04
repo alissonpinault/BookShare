@@ -8,23 +8,24 @@ $noteMin = $noteMin ?? '';
 $q       = $q       ?? '';
 ?>
 
-<nav class="site-nav">
+<nav class="site-nav" style="padding: 10px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap;">
     <!-- Logo -->
-    <a href="index.php" class="logo">
-        <img src="assets/images/logo.jpg" alt="Logo BookShare">
+    <a href="index.php" class="logo" style="text-decoration: none; color: inherit; display: flex; align-items: center; margin-right: 20px;">
+        <img src="assets/images/logo.jpg" alt="Logo BookShare" style="height: 40px; margin-right: 10px;">
         BookShare
     </a>
 
-    <!-- Bouton burger (mobile) -->
+    <!-- BOUTON BURGER (affiché en mobile) -->
     <button class="burger" id="burger-btn" aria-label="Menu">
         &#9776;
     </button>
 
     <!-- Zone boutons + recherche -->
-    <div class="actions" id="nav-actions">
-        <!-- Formulaire de recherche -->
-        <form method="get" action="index.php" id="main-search-form">
-            <input type="text" id="main-search-input" name="q" placeholder="Rechercher un livre..." value="<?= htmlspecialchars($q) ?>">
+    <div class="actions" id="nav-actions" style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+        
+        <!-- Barre de recherche -->
+        <form method="get" action="index.php" id="main-search-form" style="display: flex; align-items: center; margin: 0;">
+            <input type="text" id="main-search-input" name="q" placeholder="Rechercher un livre..." value="<?= htmlspecialchars($q) ?>" style="padding: 6px 10px; border-radius: 4px; border: 1px solid #ccc;">
             <?php if ($genre !== ''): ?>
                 <input type="hidden" name="genre" value="<?= htmlspecialchars($genre) ?>">
             <?php endif; ?>
@@ -37,16 +38,14 @@ $q       = $q       ?? '';
             <?php if ($noteMin !== ''): ?>
                 <input type="hidden" name="note_min" value="<?= htmlspecialchars((string)$noteMin) ?>">
             <?php endif; ?>
-            <button type="submit" style="display:none;">Rechercher</button>
         </form>
 
-        <!-- Autres boutons utilisateur -->
+        <!-- Autres boutons utilisateur (connexion/admin/mes réservations) -->
         <?php include __DIR__ . '/navdynamique.php'; ?>
     </div>
 </nav>
 
-<!-- Script burger inline -->
-<script defer>
+<script>
 document.addEventListener("DOMContentLoaded", () => {
     const burger = document.getElementById("burger-btn");
     const actions = document.getElementById("nav-actions");
@@ -56,3 +55,5 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 </script>
+
+<script src="/assets/js/logout.js" defer></script>
