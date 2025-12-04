@@ -171,12 +171,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <?php endif; ?>
 
     <form method="post">
-        <input type="text" name="pseudo" placeholder="Pseudo" required>
-        <input type="email" name="email" placeholder="Email" required>
-        <input type="password" name="mdp" placeholder="Mot de passe" required>
-        <input type="password" name="mdp_confirm" placeholder="Confirmer mot de passe" required>
-        <button type="submit">S'inscrire</button>
-    </form>
+    <input type="text" name="pseudo" placeholder="Pseudo" required>
+    <input type="email" name="email" placeholder="Email" required>
+    <input type="password" name="mdp" placeholder="Mot de passe" required>
+    <input type="password" name="mdp_confirm" placeholder="Confirmer mot de passe" required>
+
+    <!-- CONDITIONS GÉNÉRALES -->
+    <label style="display: flex; align-items: center; gap: 8px; margin: 10px 0;">
+        <input type="checkbox" name="cgu" required>
+        <span>
+            Je reconnais avoir lu et accepte les 
+            <a href="public/mentions_legales.php" target="_blank" 
+               style="text-decoration: none; cursor: pointer;"
+               onmouseover="this.style.textDecoration='underline'"
+               onmouseout="this.style.textDecoration='none'">
+               conditions générales
+            </a>.
+        </span>
+    </label>
+
+    <button type="submit">S'inscrire</button>
+</form>
 
     <button class="secondary-btn" onclick="window.location.href='index.php'">Retour à l'accueil</button>
     <button class="secondary-btn" onclick="window.location.href='connexion.php'">Déjà un compte ? Connexion</button>
