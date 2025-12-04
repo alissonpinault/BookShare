@@ -182,7 +182,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <input type="checkbox" name="cgu" required>
     <span>
       Je reconnais avoir lu et accepte les
-      <a href="public/mentions_legales.php" target="_blank" rel="noopener">conditions générales</a>.
+      <a href="mentions_legales.php" target="_blank" rel="noopener">conditions générales</a>.
     </span>
   </label>
 </div>
