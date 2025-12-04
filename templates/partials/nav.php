@@ -15,6 +15,11 @@ $q       = $q       ?? '';
         BookShare
     </a>
 
+    <!-- BOUTON BURGER (affiché en mobile) -->
+    <button class="burger" id="burger-btn" aria-label="Menu">
+        &#9776;
+    </button>
+
     <!-- Zone boutons + recherche -->
     <div class="actions" id="nav-actions" style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
         
@@ -41,3 +46,14 @@ $q       = $q       ?? '';
 </nav>
 
 <script src="/assets/js/logout.js" defer></script>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+  const burger = document.getElementById("burger-btn");
+  const actions = document.getElementById("nav-actions");
+
+  burger.addEventListener("click", () => {
+    actions.classList.toggle("open");
+  });
+});
+
+</script>
