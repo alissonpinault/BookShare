@@ -7,6 +7,9 @@ $container = require dirname(__DIR__) . '/src/bootstrap.php';
 $pdo = $container['pdo'];
 $mongoDB = $container['mongoDB'] ?? null;
 
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 session_start();
 
 // Vérification du rôle admin - Envoi d'une erreur JSON en cas d'accès non autorisé
