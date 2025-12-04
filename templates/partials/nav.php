@@ -8,7 +8,7 @@ $noteMin = $noteMin ?? '';
 $q       = $q       ?? '';
 ?>
 
-<nav class="site-nav" style="padding: 10px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap;">
+<nav class="site-nav" style="padding: 10px; align-items: center; justify-content: space-between; flex-wrap: wrap;">
     <!-- Logo -->
     <a href="index.php" class="logo" style="text-decoration: none; color: inherit; display: flex; align-items: center; margin-right: 20px;">
         <img src="assets/images/logo.jpg" alt="Logo BookShare" style="height: 40px; margin-right: 10px;">
