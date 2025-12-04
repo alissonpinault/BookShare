@@ -9,10 +9,15 @@ $mongoDB = $container['mongoDB'] ?? null;
 
 session_start();
 
-// Vérification du rôle admin
+// Vérification du rôle admin - Si la requête est AJAX, on envoie une réponse JSON d'erreur
 if (empty($_SESSION['utilisateur_id'])) {
-    header('Location: index.php');
-    exit;
+    if (!isset($_SERVER['HTTP_X_REQUESTED_WITH'])) {
+        header('Location: index.php');
+        exit;
+    } else {
+        echo json_encode(['success' => false, 'message' => 'Utilisateur non authentifié']);
+        exit;
+    }
 }
 
 $utilisateur = new Utilisateur(
@@ -23,9 +28,15 @@ $utilisateur = new Utilisateur(
 );
 $utilisateurId = $utilisateur->getId();
 
+// Vérification si l'utilisateur est un admin - Si c'est une requête AJAX, renvoi d'une erreur JSON
 if (!$utilisateur->estAdmin()) {
-    header('Location: index.php');
-    exit;
+    if (!isset($_SERVER['HTTP_X_REQUESTED_WITH'])) {
+        header('Location: index.php');
+        exit;
+    } else {
+        echo json_encode(['success' => false, 'message' => 'Accès interdit']);
+        exit;
+    }
 }
 
 /* ==============================
